@@ -13,7 +13,7 @@ $scope.set_xy_click = function(element) {
   element.y = $scope.theY;
 };
 $scope.set_xy_arc_click = function(element) {
-  element.push({x:theX, y:theY});
+  element.push({x:$scope.theX, y:$scope.theY});
 };
 $scope.op_seq = [];
 $scope.op_arc = [];
@@ -43,7 +43,9 @@ $scope.sst = {
         x: null,
         y: null
       }
-    }    
+    },
+    top_outline: [],
+    bottom_outline: []        
   },
   top: {
     zone: {
@@ -56,9 +58,7 @@ $scope.sst = {
         instruct: 'Click upper right corner of top/bottom view box zone',
         x: null,
         y: null
-      },
-      left_outline: [],
-      right_outline; []   
+      }  
     },
     reference_line: {
       nose: {
@@ -70,11 +70,10 @@ $scope.sst = {
         instruct: 'Click on tail end of top/bottom reference line',
         x: null,
         y: null
-      }
-      top_outline: [],
-      bottom_outline: []
-
-    }     
+      },
+    },
+    left_outline: [],
+    right_outline: [] 
   }  
 };
 
@@ -180,10 +179,12 @@ $scope.click_on_image = function(event) {
     - document.getElementById('the-svg').offsetLeft;
   var yOffset=Math.max(document.documentElement.scrollTop,document.body.scrollTop)  
     - document.getElementById('the-svg').offsetTop;
-  if ($scope.op_seq.length > 0) {
+  if ($scope.get_coord_live) {
     $scope.theX = event.clientX + xOffset;
     $scope.theY = event.clientY + yOffset;
-    $scope.op_seq[0].have_coords = true;
+    if ($scope.op_seq.length > 0) {
+      $scope.op_seq[0].have_coords = true;
+    }
   }
 };
 
