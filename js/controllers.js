@@ -16,7 +16,7 @@ $scope.set_xy_arc_click = function(element) {
   element.push({x:$scope.theX, y:$scope.theY});
 };
 $scope.op_seq = [];
-$scope.op_arc = [];
+
 
 $scope.sst = {
   side: {
@@ -94,7 +94,7 @@ $scope.proc_op_seq = function() {
   $scope.instruction = "";
   if (!$scope.get_coord_live) {
     clearInterval($scope.get_coord_interval);
-    $scope.apply();
+    $scope.$apply();
     return;
   }
   if ($scope.op_seq.length === 0) {
@@ -102,7 +102,7 @@ $scope.proc_op_seq = function() {
       clearInterval($scope.get_coord_interval);
       $scope.get_coord_live = false;
     }
-    $scope.apply();
+    $scope.$apply();
     return;
   }
   $scope.instruction = $scope.op_seq[0].instruction;
@@ -161,6 +161,9 @@ $scope.set_line = function(element) {
 }
 
 $scope.set_arc = function(element) {
+  for (var i=element.length;i>=0;i--) {
+    element.pop();
+  }
   $scope.stop_arc = false;
   $scope.coord_available = false;
   $scope.op_seq = [];

@@ -4,19 +4,20 @@
 <ul>
 <li ng-click='set_box(sst.side.zone)'>Set Side View Zone Box</li>
 <li ng-click='set_line(sst.side.reference_line)'>Define reference line</li>
-<li>Digitize fuselage outline upper</li>
-<li>Digitize fuselage outline lower</li>
+<li ng-click='set_arc(sst.side.top_outline)'>Digitize fuselage outline upper</li>
+<li ng-click='set_arc(sst.side.bottom_outline)'>Digitize fuselage outline lower</li>
 </ul>
 <li>Define Top/Bottom View</li>
 <ul>
 <li ng-click='set_box(sst.top.zone)'>Set Top/Bottom View Zone Box</li>
 <li ng-click='set_line(sst.top.reference_line)'>Define center line</li>
 <li ng-click='set_arc(sst.top.left_outline)'>Digitize fuselage outline left</li>
-<li>Digitize fuselage outline right</li>
+<li ng-click='set_arc(sst.top.right_outline)'>Digitize fuselage outline right</li>
 </ul>
 <li>Digitize Cross Sections</li>
-<ul>
+
 <li>Add Cross Section Zone Box</li>
+
 </ul>
 <ul>
 <li>Other Commands</li>
@@ -64,7 +65,31 @@
     ng-attr-x2="{{point.x}}"
     ng-attr-y2="{{point.y}}" 
     stroke-width="1" stroke="blue" fill="none"/>           
-</g>                                  
+</g>    
+<g ng-repeat="point in sst.top.right_outline">   
+  <line ng-show="$index > 0" 
+    ng-attr-x1="{{sst.top.right_outline[$index-1].x}}" 
+    ng-attr-y1="{{sst.top.right_outline[$index-1].y}}"
+    ng-attr-x2="{{point.x}}"
+    ng-attr-y2="{{point.y}}" 
+    stroke-width="1" stroke="blue" fill="none"/>           
+</g>   
+<g ng-repeat="point in sst.side.top_outline">   
+  <line ng-show="$index > 0" 
+    ng-attr-x1="{{sst.side.top_outline[$index-1].x}}" 
+    ng-attr-y1="{{sst.side.top_outline[$index-1].y}}"
+    ng-attr-x2="{{point.x}}"
+    ng-attr-y2="{{point.y}}" 
+    stroke-width="1" stroke="blue" fill="none"/>           
+</g>    
+<g ng-repeat="point in sst.side.bottom_outline">   
+  <line ng-show="$index > 0" 
+    ng-attr-x1="{{sst.side.bottom_outline[$index-1].x}}" 
+    ng-attr-y1="{{sst.side.bottom_outline[$index-1].y}}"
+    ng-attr-x2="{{point.x}}"
+    ng-attr-y2="{{point.y}}" 
+    stroke-width="1" stroke="blue" fill="none"/>           
+</g>                              
 
 </svg>
 </div>
