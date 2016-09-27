@@ -18,6 +18,11 @@
 <ul>
 <li>Add Cross Section Zone Box</li>
 </ul>
+<ul>
+<li>Other Commands</li>
+<ul>
+<li ng-click='get_coord_live = false'>Done (adding points)</li>
+</ul>
 </ul>
 <div>
   {{instruction}}
@@ -54,8 +59,8 @@
   stroke-width="1" stroke="orangered" fill="none" />
 <g ng-repeat="point in sst.top.left_outline">   
   <line ng-show="$index > 0" 
-    ng-attr-x1="{{sst.top.left_outline[$index-1]}}" 
-    ng-attr-y1="{{sst.top.left_outline[$index-1]}}"
+    ng-attr-x1="{{sst.top.left_outline[$index-1].x}}" 
+    ng-attr-y1="{{sst.top.left_outline[$index-1].y}}"
     ng-attr-x2="{{point.x}}"
     ng-attr-y2="{{point.y}}" 
     stroke-width="1" stroke="blue" fill="none"/>           

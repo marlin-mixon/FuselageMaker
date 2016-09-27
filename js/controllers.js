@@ -91,54 +91,49 @@ $scope.ngPopupConfig = {
 }
 
 $scope.proc_op_seq = function() {
+  $scope.instruction = "";
+  if (!$scope.get_coord_live) {
+    clearInterval($scope.get_coord_interval);
+    $scope.apply();
+    return;
+  }
   if ($scope.op_seq.length === 0) {
     if ($scope.get_coord_live) {
       clearInterval($scope.get_coord_interval);
       $scope.get_coord_live = false;
     }
-    if ($scope.instruction !== "") {
-      $scope.instruction = "";
-    }
+    $scope.apply();
     return;
   }
   $scope.instruction = $scope.op_seq[0].instruction;
-  if($scope.op_seq[0].have_coords) {
-    $scope.op_seq[0].call($scope.op_seq[0].arg);
-    $scope.op_seq.shift();
-  }
-  $scope.$apply();
-}
-
-$scope.proc_op_arc = function() {
-  if ($scope.stop_arc) {
-    if ($scope.get_coord_live) {
-      clearInterval($scope.get_coord_interval);
-      $scope.get_coord_live = false;
+  if($scope.coord_available) {
+    if ($scope.op_seq[0].is_loop) {
+      $scope.op_seq[0].handler($scope.op_seq[0].dest,$scope.op_seq[0].index);
+    } else {
+      $scope.op_seq[0].handler($scope.op_seq[0].dest);
+      $scope.op_seq.shift();
     }
-    if ($scope.instruction !== "") {
-      $scope.instruction = "";
-    }
-    return;
+    $scope.coord_available = false;
   }
-  $scope.instruction = "Click to add point. Double-click to stop";
-  $scope.op_arc[0].call($scope.op_arc[0].arg);
   $scope.$apply();
 }
 
 $scope.set_box = function(element) {
   element.lower_left.x = null; element.lower_left.y = null;
   element.upper_right.x = null;element.upper_right.y = null;
+  $scope.coord_available = false;
+  $scope.op_seq = [];
   $scope.op_seq.push({
-    call:$scope.set_xy_click,
-    arg:element.lower_left,
-    have_coords:false,
-    instruction:element.lower_left.instruct
+    handler: $scope.set_xy_click,
+    dest: element.lower_left,
+    is_loop: false,
+    instruction: element.lower_left.instruct
   }); 
   $scope.op_seq.push({
-    call:$scope.set_xy_click,
-    arg:element.upper_right,
-    have_coords:false,
-    instruction:element.upper_right.instruct
+    handler: $scope.set_xy_click,
+    dest: element.upper_right,
+    is_loop: false,
+    instruction: element.upper_right.instruct
   });
   $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
   $scope.get_coord_live = true;
@@ -147,17 +142,19 @@ $scope.set_box = function(element) {
 $scope.set_line = function(element) {
   element.nose.x = null; element.nose.y = null;
   element.tail.x = null; element.tail.y = null;
+  $scope.coord_available = false;
+  $scope.op_seq = [];
   $scope.op_seq.push({
-    call:$scope.set_xy_click,
-    arg:element.nose,
-    have_coords:false,
-    instruction:element.nose.instruct
+    handler: $scope.set_xy_click,
+    dest: element.nose,
+    is_loop: false,
+    instruction: element.nose.instruct
   }); 
   $scope.op_seq.push({
-    call:$scope.set_xy_click,
-    arg:element.tail,
-    have_coords:false,
-    instruction:element.tail.instruct
+    handler: $scope.set_xy_click,
+    dest: element.tail,
+    is_loop: false,
+    instruction: element.tail.instruct
   });
   $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
   $scope.get_coord_live = true;
@@ -165,27 +162,26 @@ $scope.set_line = function(element) {
 
 $scope.set_arc = function(element) {
   $scope.stop_arc = false;
-  $scope.op_arc.push({
-    call:$scope.set_xy_arc_click,
-    arg:element
+  $scope.coord_available = false;
+  $scope.op_seq = [];
+  $scope.op_seq.push({
+    handler:$scope.set_xy_arc_click,
+    dest: element,
+    is_loop: true,
+    instruction: 'Click to add new point. Click done when done.'
   });  
-  $scope.get_coord_interval = setInterval($scope.proc_op_arc, 500);
+  $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
   $scope.get_coord_live = true;
 }
 
 $scope.click_on_image = function(event) {
-
   var xOffset=Math.max(document.documentElement.scrollLeft,document.body.scrollLeft) 
     - document.getElementById('the-svg').offsetLeft;
   var yOffset=Math.max(document.documentElement.scrollTop,document.body.scrollTop)  
     - document.getElementById('the-svg').offsetTop;
-  if ($scope.get_coord_live) {
-    $scope.theX = event.clientX + xOffset;
-    $scope.theY = event.clientY + yOffset;
-    if ($scope.op_seq.length > 0) {
-      $scope.op_seq[0].have_coords = true;
-    }
-  }
+  $scope.theX = event.clientX + xOffset;
+  $scope.theY = event.clientY + yOffset;
+  $scope.coord_available = true;
 };
 
 
