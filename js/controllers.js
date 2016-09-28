@@ -75,7 +75,7 @@ $scope.sst = {
     left_outline: [],
     right_outline: [] 
   },  
-  x_secs: []
+  xsecs: []
 };
 
 $scope.ngPopupConfig = {

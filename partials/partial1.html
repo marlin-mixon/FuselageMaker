@@ -16,7 +16,7 @@
 </ul>
 <li>Digitize Cross Sections</li>
 <ul>
-<li ng-click='new_xsec = sst.x_secs.x_sec.push(); set_arc(sst.x_secs.x_sec[new_xsec])'>Add a new cross section</li>
+<li ng-click='new_xsec = sst.xsecs.push([]); set_arc(sst.xsecs[new_xsec-1]);'>Add a new cross section</li>
 </ul>
 
 </ul>
@@ -93,7 +93,19 @@
     ng-attr-x2="{{point.x}}"
     ng-attr-y2="{{point.y}}" 
     stroke-width="1" stroke="blue" fill="none"/>           
-</g>                              
+</g>     
+
+<!-- All cross sections -->
+<g ng-repeat="xsec in sst.xsecs">
+  <g ng-repeat="point in xsec">   
+    <line ng-show="$index > 0" 
+      ng-attr-x1="{{sst.xsecs[$parent.$index][$index-1].x}}" 
+      ng-attr-y1="{{sst.xsecs[$parent.$index][$index-1].y}}"
+      ng-attr-x2="{{point.x}}"
+      ng-attr-y2="{{point.y}}" 
+      stroke-width="1" stroke="red" fill="none"/>           
+  </g>
+</g>                            
 
 </svg>
 </div>
