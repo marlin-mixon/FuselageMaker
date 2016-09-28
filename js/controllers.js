@@ -165,13 +165,14 @@ $scope.set_line = function(element) {
   $scope.get_coord_live = true;
 }
 
-$scope.set_arc = function(element) {
+$scope.set_arc = function(element, clean) {
   for (var i=element.length;i>=0;i--) {
     element.pop();
   }
-  $scope.stop_arc = false;
-  $scope.coord_available = false;
-  $scope.op_seq = [];
+  $scope.coord_available = false; // turn off any existing point gathering
+  if (clean) {
+    $scope.op_seq = [];
+  }
   $scope.op_seq.push({
     handler:$scope.set_xy_arc_click,
     dest: element,
@@ -180,6 +181,17 @@ $scope.set_arc = function(element) {
   });  
   $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
   $scope.get_coord_live = true;
+}
+
+$scope.set_point_and_arc = function(point, arc) {
+  $scope.op_seq = [];
+  $scope.op_seq.push({
+    handler:$scope.set_xy_click,
+    dest: point,
+    is_loop: false,
+    instruction: 'Click to position cross-section on reference line.'
+  });   
+  $scope.set_arc(arc, false);
 }
 
 $scope.click_on_image = function(event) {

@@ -4,19 +4,19 @@
 <ul>
 <li ng-click='set_box(sst.side.zone)'>Set Side View Zone Box</li>
 <li ng-click='set_line(sst.side.reference_line)'>Define reference line</li>
-<li ng-click='set_arc(sst.side.top_outline)'>Digitize fuselage outline upper</li>
-<li ng-click='set_arc(sst.side.bottom_outline)'>Digitize fuselage outline lower</li>
+<li ng-click='set_arc(sst.side.top_outline, true)'>Digitize fuselage outline upper</li>
+<li ng-click='set_arc(sst.side.bottom_outline, true)'>Digitize fuselage outline lower</li>
 </ul>
 <li>Define Top/Bottom View</li>
 <ul>
 <li ng-click='set_box(sst.top.zone)'>Set Top/Bottom View Zone Box</li>
 <li ng-click='set_line(sst.top.reference_line)'>Define center line</li>
-<li ng-click='set_arc(sst.top.left_outline)'>Digitize fuselage outline left</li>
-<li ng-click='set_arc(sst.top.right_outline)'>Digitize fuselage outline right</li>
+<li ng-click='set_arc(sst.top.left_outline, true)'>Digitize fuselage outline left</li>
+<li ng-click='set_arc(sst.top.right_outline, true)'>Digitize fuselage outline right</li>
 </ul>
 <li>Digitize Cross Sections</li>
 <ul>
-<li ng-click='new_xsec = sst.xsecs.push([]); set_arc(sst.xsecs[new_xsec-1]);'>Add a new cross section</li>
+<li ng-click='new_xsec = sst.xsecs.push({}); sst.xsecs[new_xsec-1].station = {}; sst.xsecs[new_xsec-1].xsec = []; set_point_and_arc(sst.xsecs[new_xsec-1].station, sst.xsecs[new_xsec-1].xsec);'>Add a new cross section</li>
 </ul>
 
 </ul>
@@ -96,11 +96,11 @@
 </g>     
 
 <!-- All cross sections -->
-<g ng-repeat="xsec in sst.xsecs">
-  <g ng-repeat="point in xsec">   
+<g ng-repeat="this_sec in sst.xsecs">
+  <g ng-repeat="point in this_sec.xsec">   
     <line ng-show="$index > 0" 
-      ng-attr-x1="{{sst.xsecs[$parent.$index][$index-1].x}}" 
-      ng-attr-y1="{{sst.xsecs[$parent.$index][$index-1].y}}"
+      ng-attr-x1="{{sst.xsecs[$parent.$index].xsec[$index-1].x}}" 
+      ng-attr-y1="{{sst.xsecs[$parent.$index].xsec[$index-1].y}}"
       ng-attr-x2="{{point.x}}"
       ng-attr-y2="{{point.y}}" 
       stroke-width="1" stroke="red" fill="none"/>           
