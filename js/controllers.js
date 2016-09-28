@@ -16,7 +16,7 @@ $scope.set_xy_arc_click = function(element) {
   element.push({x:$scope.theX, y:$scope.theY});
 };
 $scope.op_seq = [];
-
+$scope.show_plan_image = true;
 
 $scope.sst = {
   side: {
@@ -74,7 +74,8 @@ $scope.sst = {
     },
     left_outline: [],
     right_outline: [] 
-  }  
+  },  
+  x_secs: []
 };
 
 $scope.ngPopupConfig = {
@@ -89,6 +90,10 @@ $scope.ngPopupConfig = {
         /*Some Logic...*/
     }
 }
+
+$scope.set_plan_image = function(image_file) {
+  $scope.plan_image = image_file;
+};
 
 $scope.proc_op_seq = function() {
   $scope.instruction = "";
@@ -187,6 +192,7 @@ $scope.click_on_image = function(event) {
   $scope.coord_available = true;
 };
 
+$scope.set_plan_image("img/p51_side.jpg");
 
 }])
 .controller('MyCtrl2', [function() {

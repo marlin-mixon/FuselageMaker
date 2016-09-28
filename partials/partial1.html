@@ -15,14 +15,17 @@
 <li ng-click='set_arc(sst.top.right_outline)'>Digitize fuselage outline right</li>
 </ul>
 <li>Digitize Cross Sections</li>
-
-<li>Add Cross Section Zone Box</li>
+<ul>
+<li ng-click='new_xsec = sst.x_secs.x_sec.push(); set_arc(sst.x_secs.x_sec[new_xsec])'>Add a new cross section</li>
+</ul>
 
 </ul>
 <ul>
 <li>Other Commands</li>
 <ul>
 <li ng-click='get_coord_live = false'>Done (adding points)</li>
+<li ng-click='set_plan_image("")'>Hide plan image</li>
+<li ng-click='set_plan_image("img/p51_side.jpg")'>Show plan image</li>
 </ul>
 </ul>
 <div>
@@ -30,7 +33,8 @@
 </div>
 
 </div>
-<div  ng-click="click_on_image($event)" class="desktop-panel" style="background: url('img/p51_side.jpg') no-repeat;">
+<div ng-click="click_on_image($event)" class="desktop-panel" style="background: url('{{plan_image}}') no-repeat;">
+
 <svg id="the-svg" width="3000" height="3000">
 <rect id="sideview-box" 
   ng-show="sst.side.zone.lower_left.x != null && sst.side.zone.lower_left.y != null && sst.side.zone.upper_right.x != null && sst.side.zone.upper_right.y != null"
