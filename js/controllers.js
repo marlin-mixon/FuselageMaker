@@ -193,6 +193,13 @@ $scope.set_point_and_arc = function(point, arc) {
   });   
   $scope.set_arc(arc, false);
 }
+$scope.save_data = function() {
+  localStorage.setItem('fuselage', JSON.stringify($scope.sst) );
+};
+$scope.restore_data = function() {
+  $scope.sst = JSON.parse(localStorage.getItem('fuselage') );
+  $scope.$apply();
+};
 
 $scope.click_on_image = function(event) {
   var xOffset=Math.max(document.documentElement.scrollLeft,document.body.scrollLeft) 
