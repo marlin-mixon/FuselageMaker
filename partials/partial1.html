@@ -17,6 +17,12 @@
 <li>Digitize Cross Sections</li>
 <ul>
 <li ng-click='new_xsec = sst.xsecs.push({}); sst.xsecs[new_xsec-1].station = {}; sst.xsecs[new_xsec-1].xsec = []; set_point_and_arc(sst.xsecs[new_xsec-1].station, sst.xsecs[new_xsec-1].xsec);'>Add a new cross section</li>
+<li ng-click='destroy_xsecs()'>Destroy ALL cross sections</li>
+</ul>
+<li>Bulkheads</li>
+<ul>
+<li ng-click='set_arc(sst.bulkheads, true)'>Mark Locations of Desired Bulkheads</li>
+<li>Generate Bulkheads</li>
 </ul>
 
 </ul>
@@ -35,7 +41,7 @@
 </div>
 
 </div>
-<div ng-click="click_on_image($event)" class="desktop-panel" style="background: url('{{plan_image}}') no-repeat;">
+<div ng-click="click_on_image($event)" class="desktop-panel" style="background: url('{{sst.plan_image}}') no-repeat;">
 
 <svg id="the-svg" width="3000" height="3000">
 <rect id="sideview-box" 

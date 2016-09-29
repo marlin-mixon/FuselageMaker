@@ -75,7 +75,8 @@ $scope.sst = {
     left_outline: [],
     right_outline: [] 
   },  
-  xsecs: []
+  xsecs: [],
+  bulkheads: []
 };
 
 $scope.ngPopupConfig = {
@@ -92,7 +93,7 @@ $scope.ngPopupConfig = {
 }
 
 $scope.set_plan_image = function(image_file) {
-  $scope.plan_image = image_file;
+  $scope.sst.plan_image = image_file;
 };
 
 $scope.proc_op_seq = function() {
@@ -124,6 +125,7 @@ $scope.proc_op_seq = function() {
 }
 
 $scope.set_box = function(element) {
+  $scope.is_dirty = true;
   element.lower_left.x = null; element.lower_left.y = null;
   element.upper_right.x = null;element.upper_right.y = null;
   $scope.coord_available = false;
@@ -145,6 +147,7 @@ $scope.set_box = function(element) {
 }
 
 $scope.set_line = function(element) {
+  $scope.is_dirty = true;
   element.nose.x = null; element.nose.y = null;
   element.tail.x = null; element.tail.y = null;
   $scope.coord_available = false;
@@ -166,6 +169,7 @@ $scope.set_line = function(element) {
 }
 
 $scope.set_arc = function(element, clean) {
+  $scope.is_dirty = true;
   for (var i=element.length;i>=0;i--) {
     element.pop();
   }
@@ -181,9 +185,10 @@ $scope.set_arc = function(element, clean) {
   });  
   $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
   $scope.get_coord_live = true;
-}
+};
 
 $scope.set_point_and_arc = function(point, arc) {
+  $scope.is_dirty = true;
   $scope.op_seq = [];
   $scope.op_seq.push({
     handler:$scope.set_xy_click,
@@ -192,13 +197,32 @@ $scope.set_point_and_arc = function(point, arc) {
     instruction: 'Click to position cross-section on reference line.'
   });   
   $scope.set_arc(arc, false);
-}
+};
 $scope.save_data = function() {
   localStorage.setItem('fuselage', JSON.stringify($scope.sst) );
 };
 $scope.restore_data = function() {
-  $scope.sst = JSON.parse(localStorage.getItem('fuselage') );
-  $scope.$apply();
+  var do_it = true;
+  if ($scope.is_dirty) {
+    if (!window.confirm("You have made changes.  Are you sure you want to restore on top of your changes?")) {
+      do_it = false;
+    }
+  }
+  if (do_it) {
+    $scope.sst = JSON.parse(localStorage.getItem('fuselage') );
+    $scope.$apply();
+  }
+};
+$scope.destroy_xsecs = function() {
+  if ($scope.sst.xsecs.length == 1) {
+    if (window.confirm('Are you sure you want to destroy the cross section?')) {
+      $scope.sst.xsecs = [];
+    }
+  } else if ($scope.sst.xsecs.length > 1) {
+    if (window.confirm('Are you sure you want to destroy all ' +$scope.sst.xsecs.length + ' cross sections?')) {
+      $scope.sst.xsecs = [];
+    }
+  }
 };
 
 $scope.click_on_image = function(event) {
@@ -211,6 +235,7 @@ $scope.click_on_image = function(event) {
   $scope.coord_available = true;
 };
 
+$scope.is_dirty = false;
 $scope.set_plan_image("img/p51_side.jpg");
 
 }])
