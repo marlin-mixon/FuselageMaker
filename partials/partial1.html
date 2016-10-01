@@ -1,46 +1,3 @@
-<div class="toolbox">
-<ul>
-<li>Define Side View</li>
-<ul>
-<li ng-click='set_box(sst.side.zone)'>Set Side View Zone Box</li>
-<li ng-click='set_line(sst.side.reference_line)'>Define reference line</li>
-<li ng-click='set_arc(sst.side.top_outline, true)'>Digitize fuselage outline upper</li>
-<li ng-click='set_arc(sst.side.bottom_outline, true)'>Digitize fuselage outline lower</li>
-</ul>
-<li>Define Top/Bottom View</li>
-<ul>
-<li ng-click='set_box(sst.top.zone)'>Set Top/Bottom View Zone Box</li>
-<li ng-click='set_line(sst.top.reference_line)'>Define center line</li>
-<li ng-click='set_arc(sst.top.left_outline, true)'>Digitize fuselage outline left</li>
-<li ng-click='set_arc(sst.top.right_outline, true)'>Digitize fuselage outline right</li>
-</ul>
-<li>Digitize Cross Sections</li>
-<ul>
-<li ng-click='new_xsec = sst.xsecs.push({}); sst.xsecs[new_xsec-1].station = {}; sst.xsecs[new_xsec-1].xsec = []; set_point_and_arc(sst.xsecs[new_xsec-1].station, sst.xsecs[new_xsec-1].xsec);'>Add a new cross section</li>
-<li ng-click='destroy_xsecs()'>Destroy ALL cross sections</li>
-</ul>
-<li>Bulkheads</li>
-<ul>
-<li ng-click='set_arc(sst.bulkheads, true)'>Mark Locations of Desired Bulkheads</li>
-<li>Generate Bulkheads</li>
-</ul>
-
-</ul>
-<ul>
-<li>Other Commands</li>
-<ul>
-<li ng-click='get_coord_live = false'>Done (adding points)</li>
-<li ng-click='set_plan_image("")'>Hide plan image</li>
-<li ng-click='set_plan_image("img/p51_side.jpg")'>Show plan image</li>
-<li ng-click='save_data()'>Save Changes</li>
-<li ng-click='restore_data()'>Restore Changes</li>
-</ul>
-</ul>
-<div>
-  {{instruction}}
-</div>
-
-</div>
 <div ng-click="click_on_image($event)" class="desktop-panel" style="background: url('{{sst.plan_image}}') no-repeat;">
 
 <svg id="the-svg" width="3000" height="3000">
@@ -117,3 +74,49 @@
 
 </svg>
 </div>
+
+<new-window>
+<div id='the-toolbox-2' class="toolbox">
+<div>
+  {{instruction}}
+</div>
+<ul>
+<li>Define Side View</li>
+<ul>
+<li ng-click='set_box(sst.side.zone)'>Set Side View Zone Box</li>
+<li ng-click='set_line(sst.side.reference_line)'>Define reference line</li>
+<li ng-click='set_arc(sst.side.top_outline, true)'>Digitize fuselage outline upper</li>
+<li ng-click='set_arc(sst.side.bottom_outline, true)'>Digitize fuselage outline lower</li>
+</ul>
+<li>Define Top/Bottom View</li>
+<ul>
+<li ng-click='set_box(sst.top.zone)'>Set Top/Bottom View Zone Box</li>
+<li ng-click='set_line(sst.top.reference_line)'>Define center line</li>
+<li ng-click='set_arc(sst.top.left_outline, true)'>Digitize fuselage outline left</li>
+<li ng-click='set_arc(sst.top.right_outline, true)'>Digitize fuselage outline right</li>
+</ul>
+<li>Digitize Cross Sections</li>
+<ul>
+<li ng-click='new_xsec = sst.xsecs.push({}); sst.xsecs[new_xsec-1].station = {}; sst.xsecs[new_xsec-1].xsec = []; set_point_and_arc(sst.xsecs[new_xsec-1].station, sst.xsecs[new_xsec-1].xsec);'>Add a new cross section</li>
+<li ng-click='destroy_xsecs()'>Destroy ALL cross sections</li>
+</ul>
+<li>Bulkheads</li>
+<ul>
+<li ng-click='set_arc(sst.bulkheads, true)'>Mark Locations of Desired Bulkheads</li>
+<li>Generate Bulkheads</li>
+</ul>
+
+</ul>
+<ul>
+<li>Other Commands</li>
+<ul>
+<li ng-click='get_coord_live = false'>Done (adding points)</li>
+<li ng-click='set_plan_image("")'>Hide plan image</li>
+<li ng-click='set_plan_image("img/p51_side.jpg")'>Show plan image</li>
+<li ng-click='save_data()'>Save Changes</li>
+<li ng-click='restore_data()'>Restore Changes</li>
+</ul>
+</ul>
+
+</div>
+</new-window>

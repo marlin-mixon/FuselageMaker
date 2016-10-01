@@ -3,7 +3,7 @@
 /* Controllers */
 
 angular.module('fuselageMaker.controllers', []).
-controller('MyCtrl1', ['$scope', '$q', function($scope, $q) {
+controller('MyCtrl1', ['$scope', '$window', '$rootScope', function($scope, $window, $rootScope) {
 
 $scope.Math = window.Math;
 
@@ -78,19 +78,6 @@ $scope.sst = {
   xsecs: [],
   bulkheads: []
 };
-
-$scope.ngPopupConfig = {
-    width: 200,
-    height:350,
-    templateUrl:"partials/floatingMenu.html",
-    resizable:false,
-    draggable:true,
-    isMinimized:false,
-    position: { top : 0, left : 0},
-    onOpen: function(){
-        /*Some Logic...*/
-    }
-}
 
 $scope.set_plan_image = function(image_file) {
   $scope.sst.plan_image = image_file;
@@ -225,6 +212,21 @@ $scope.destroy_xsecs = function() {
   }
 };
 
+$scope.window_width = function(){
+   return window.innerWidth||document.documentElement.clientWidth||document.body.clientWidth||0;
+};
+$scope.window_height = function(){
+   return window.innerHeight||document.documentElement.clientHeight||document.body.clientHeight||0;
+};
+
+$scope.locate_toolbox = function()  {
+  var left = $scope.window_width() - $scope.tool_box_width + "px";
+  var top = 0 + "px";
+  $scope.tool_box.style.left = left;
+  $scope.tool_box.style.top = top;
+
+};
+
 $scope.click_on_image = function(event) {
   var xOffset=Math.max(document.documentElement.scrollLeft,document.body.scrollLeft) 
     - document.getElementById('the-svg').offsetLeft;
@@ -237,6 +239,10 @@ $scope.click_on_image = function(event) {
 
 $scope.is_dirty = false;
 $scope.set_plan_image("img/p51_side.jpg");
+$scope.non_modal_shown = true;
+$scope.tool_box = document.getElementById('the-toolbox');
+$scope.tool_box_width = 300;
+$scope.tool_box_height = 500;
 
 }])
 .controller('MyCtrl2', [function() {
