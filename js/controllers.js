@@ -30,7 +30,7 @@ $scope.sst = {
         instruct: 'Click upper right corner of side view box zone',
         x: null,
         y: null,
-      }      
+      }
     },
     reference_line: {
       nose: {
@@ -45,7 +45,7 @@ $scope.sst = {
       }
     },
     top_outline: [],
-    bottom_outline: []        
+    bottom_outline: []
   },
   top: {
     zone: {
@@ -58,7 +58,7 @@ $scope.sst = {
         instruct: 'Click upper right corner of top/bottom view box zone',
         x: null,
         y: null
-      }  
+      }
     },
     reference_line: {
       nose: {
@@ -73,10 +73,20 @@ $scope.sst = {
       },
     },
     left_outline: [],
-    right_outline: [] 
-  },  
+    right_outline: []
+  },
   xsecs: [],
   bulkheads: []
+};
+
+$scope.safe_apply = function() {
+  if ($scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') {
+    $scope.$apply();
+  }
+}
+
+$scope.undo_point = function() {
+  var throw_away = $scope.undoable.pop();
 };
 
 $scope.set_plan_image = function(image_file) {
@@ -87,7 +97,7 @@ $scope.proc_op_seq = function() {
   $scope.instruction = "";
   if (!$scope.get_coord_live) {
     clearInterval($scope.get_coord_interval);
-    $scope.$apply();
+    $scope.safe_apply();
     return;
   }
   if ($scope.op_seq.length === 0) {
@@ -95,7 +105,7 @@ $scope.proc_op_seq = function() {
       clearInterval($scope.get_coord_interval);
       $scope.get_coord_live = false;
     }
-    $scope.$apply();
+    $scope.safe_apply();
     return;
   }
   $scope.instruction = $scope.op_seq[0].instruction;
@@ -108,7 +118,7 @@ $scope.proc_op_seq = function() {
     }
     $scope.coord_available = false;
   }
-  $scope.$apply();
+  $scope.safe_apply();
 }
 
 $scope.set_box = function(element) {
@@ -122,7 +132,7 @@ $scope.set_box = function(element) {
     dest: element.lower_left,
     is_loop: false,
     instruction: element.lower_left.instruct
-  }); 
+  });
   $scope.op_seq.push({
     handler: $scope.set_xy_click,
     dest: element.upper_right,
@@ -144,7 +154,7 @@ $scope.set_line = function(element) {
     dest: element.nose,
     is_loop: false,
     instruction: element.nose.instruct
-  }); 
+  });
   $scope.op_seq.push({
     handler: $scope.set_xy_click,
     dest: element.tail,
@@ -156,6 +166,8 @@ $scope.set_line = function(element) {
 }
 
 $scope.set_arc = function(element, clean) {
+  $scope.undoable = element;
+  $scope.show_done_button = true;
   $scope.is_dirty = true;
   for (var i=element.length;i>=0;i--) {
     element.pop();
@@ -168,8 +180,8 @@ $scope.set_arc = function(element, clean) {
     handler:$scope.set_xy_arc_click,
     dest: element,
     is_loop: true,
-    instruction: 'Click to add new point. Click done when done.'
-  });  
+    instruction: 'Click to add new point. Click done button when done.'
+  });
   $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
   $scope.get_coord_live = true;
 };
@@ -182,7 +194,7 @@ $scope.set_point_and_arc = function(point, arc) {
     dest: point,
     is_loop: false,
     instruction: 'Click to position cross-section on reference line.'
-  });   
+  });
   $scope.set_arc(arc, false);
 };
 $scope.save_data = function() {
@@ -197,7 +209,7 @@ $scope.restore_data = function() {
   }
   if (do_it) {
     $scope.sst = JSON.parse(localStorage.getItem('fuselage') );
-    $scope.$apply();
+    $scope.safe_apply();
   }
 };
 $scope.destroy_xsecs = function() {
@@ -228,9 +240,9 @@ $scope.locate_toolbox = function()  {
 };
 
 $scope.click_on_image = function(event) {
-  var xOffset=Math.max(document.documentElement.scrollLeft,document.body.scrollLeft) 
+  var xOffset=Math.max(document.documentElement.scrollLeft,document.body.scrollLeft)
     - document.getElementById('the-svg').offsetLeft;
-  var yOffset=Math.max(document.documentElement.scrollTop,document.body.scrollTop)  
+  var yOffset=Math.max(document.documentElement.scrollTop,document.body.scrollTop)
     - document.getElementById('the-svg').offsetTop;
   $scope.theX = event.clientX + xOffset;
   $scope.theY = event.clientY + yOffset;
@@ -238,6 +250,7 @@ $scope.click_on_image = function(event) {
 };
 
 $scope.is_dirty = false;
+$scope.show_done_button = false;
 $scope.set_plan_image("img/p51_side.jpg");
 $scope.non_modal_shown = true;
 $scope.tool_box = document.getElementById('the-toolbox');

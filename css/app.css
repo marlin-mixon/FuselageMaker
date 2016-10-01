@@ -34,29 +34,6 @@
   height: 3000px;
 }
 
-/* Non-modal dialog */
-
-.ng-non-modal-dialog {
-  /* A centered div above the overlay with a box shadow. */
-  z-index:10000;
-  position: absolute;
-  top:300px;
-  background-color: #fff;
-  box-shadow: 4px 4px 80px #000;
-  overflow: auto;
-}
-.ng-non-modal-dialog-content {
-  padding:10px;
-  text-align: left;
-}
-.ng-non-modal-close {
-  position: absolute;
-  top: 3px;
-  right: 5px;
-  padding: 5px;
-  cursor: pointer;
-  font-size: 120%;
-  display: inline-block;
-  font-weight: bold;
-  font-family: 'arial', 'sans-serif';
+.instruction {
+  color: red;
 }

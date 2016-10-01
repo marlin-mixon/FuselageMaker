@@ -1,85 +1,87 @@
 <div ng-click="click_on_image($event)" class="desktop-panel" style="background: url('{{sst.plan_image}}') no-repeat;">
 
 <svg id="the-svg" width="3000" height="3000">
-<rect id="sideview-box" 
+<rect id="sideview-box"
   ng-show="sst.side.zone.lower_left.x != null && sst.side.zone.lower_left.y != null && sst.side.zone.upper_right.x != null && sst.side.zone.upper_right.y != null"
-  ng-attr-x="{{sst.side.zone.lower_left.x}}" 
+  ng-attr-x="{{sst.side.zone.lower_left.x}}"
   ng-attr-y="{{sst.side.zone.upper_right.y}}"
   ng-attr-width="{{Math.abs(sst.side.zone.upper_right.x - sst.side.zone.lower_left.x)}}"
-  ng-attr-height="{{Math.abs(sst.side.zone.lower_left.y - sst.side.zone.upper_right.y)}}" 
+  ng-attr-height="{{Math.abs(sst.side.zone.lower_left.y - sst.side.zone.upper_right.y)}}"
   stroke-width="5" stroke="lime" fill="none" />
 <rect id="topview-box" ng-attr-x="{{sst.top.zone.lower_left.x}}"
-  ng-show="sst.top.zone.lower_left.x != null && sst.top.zone.lower_left.y != null && sst.top.zone.upper_right.x != null && sst.top.zone.upper_right.y != null" 
+  ng-show="sst.top.zone.lower_left.x != null && sst.top.zone.lower_left.y != null && sst.top.zone.upper_right.x != null && sst.top.zone.upper_right.y != null"
   ng-attr-y="{{sst.top.zone.upper_right.y}}"
   ng-attr-width="{{Math.abs(sst.top.zone.upper_right.x - sst.top.zone.lower_left.x)}}"
-  ng-attr-height="{{Math.abs(sst.top.zone.lower_left.y - sst.top.zone.upper_right.y)}}" 
+  ng-attr-height="{{Math.abs(sst.top.zone.lower_left.y - sst.top.zone.upper_right.y)}}"
   stroke-width="5" stroke="cornflowerblue" fill="none" />
-<line id="sideview-ref-line" 
-  ng-show="sst.side.reference_line.nose.x != null && sst.side.reference_line.nose.y != null && sst.side.reference_line.tail.x != null && sst.side.reference_line.tail.y != null" 
-  ng-attr-x1="{{sst.side.reference_line.nose.x}}" 
+<line id="sideview-ref-line"
+  ng-show="sst.side.reference_line.nose.x != null && sst.side.reference_line.nose.y != null && sst.side.reference_line.tail.x != null && sst.side.reference_line.tail.y != null"
+  ng-attr-x1="{{sst.side.reference_line.nose.x}}"
   ng-attr-y1="{{sst.side.reference_line.nose.y}}"
   ng-attr-x2="{{sst.side.reference_line.tail.x}}"
-  ng-attr-y2="{{sst.side.reference_line.tail.y}}" 
-  stroke-width="1" stroke="orangered" fill="none" />                          
+  ng-attr-y2="{{sst.side.reference_line.tail.y}}"
+  stroke-width="1" stroke="orangered" fill="none" />
 <line id="topview-ref-line" ng-attr-x1="{{sst.top.reference_line.nose.x}}"
-  ng-show="sst.top.reference_line.nose.x != null && sst.top.reference_line.nose.y != null && sst.top.reference_line.tail.x != null && sst.top.reference_line.tail.y != null" 
+  ng-show="sst.top.reference_line.nose.x != null && sst.top.reference_line.nose.y != null && sst.top.reference_line.tail.x != null && sst.top.reference_line.tail.y != null"
   ng-attr-y1="{{sst.top.reference_line.nose.y}}"
   ng-attr-x2="{{sst.top.reference_line.tail.x}}"
-  ng-attr-y2="{{sst.top.reference_line.tail.y}}" 
+  ng-attr-y2="{{sst.top.reference_line.tail.y}}"
   stroke-width="1" stroke="orangered" fill="none" />
-<g ng-repeat="point in sst.top.left_outline">   
-  <line ng-show="$index > 0" 
-    ng-attr-x1="{{sst.top.left_outline[$index-1].x}}" 
+<g ng-repeat="point in sst.top.left_outline">
+  <line ng-show="$index > 0"
+    ng-attr-x1="{{sst.top.left_outline[$index-1].x}}"
     ng-attr-y1="{{sst.top.left_outline[$index-1].y}}"
     ng-attr-x2="{{point.x}}"
-    ng-attr-y2="{{point.y}}" 
-    stroke-width="1" stroke="blue" fill="none"/>           
-</g>    
-<g ng-repeat="point in sst.top.right_outline">   
-  <line ng-show="$index > 0" 
-    ng-attr-x1="{{sst.top.right_outline[$index-1].x}}" 
+    ng-attr-y2="{{point.y}}"
+    stroke-width="1" stroke="blue" fill="none"/>
+</g>
+<g ng-repeat="point in sst.top.right_outline">
+  <line ng-show="$index > 0"
+    ng-attr-x1="{{sst.top.right_outline[$index-1].x}}"
     ng-attr-y1="{{sst.top.right_outline[$index-1].y}}"
     ng-attr-x2="{{point.x}}"
-    ng-attr-y2="{{point.y}}" 
-    stroke-width="1" stroke="blue" fill="none"/>           
-</g>   
-<g ng-repeat="point in sst.side.top_outline">   
-  <line ng-show="$index > 0" 
-    ng-attr-x1="{{sst.side.top_outline[$index-1].x}}" 
+    ng-attr-y2="{{point.y}}"
+    stroke-width="1" stroke="blue" fill="none"/>
+</g>
+<g ng-repeat="point in sst.side.top_outline">
+  <line ng-show="$index > 0"
+    ng-attr-x1="{{sst.side.top_outline[$index-1].x}}"
     ng-attr-y1="{{sst.side.top_outline[$index-1].y}}"
     ng-attr-x2="{{point.x}}"
-    ng-attr-y2="{{point.y}}" 
-    stroke-width="1" stroke="blue" fill="none"/>           
-</g>    
-<g ng-repeat="point in sst.side.bottom_outline">   
-  <line ng-show="$index > 0" 
-    ng-attr-x1="{{sst.side.bottom_outline[$index-1].x}}" 
+    ng-attr-y2="{{point.y}}"
+    stroke-width="1" stroke="blue" fill="none"/>
+</g>
+<g ng-repeat="point in sst.side.bottom_outline">
+  <line ng-show="$index > 0"
+    ng-attr-x1="{{sst.side.bottom_outline[$index-1].x}}"
     ng-attr-y1="{{sst.side.bottom_outline[$index-1].y}}"
     ng-attr-x2="{{point.x}}"
-    ng-attr-y2="{{point.y}}" 
-    stroke-width="1" stroke="blue" fill="none"/>           
-</g>     
+    ng-attr-y2="{{point.y}}"
+    stroke-width="1" stroke="blue" fill="none"/>
+</g>
 
 <!-- All cross sections -->
 <g ng-repeat="this_sec in sst.xsecs">
-  <g ng-repeat="point in this_sec.xsec">   
-    <line ng-show="$index > 0" 
-      ng-attr-x1="{{sst.xsecs[$parent.$index].xsec[$index-1].x}}" 
+  <g ng-repeat="point in this_sec.xsec">
+    <line ng-show="$index > 0"
+      ng-attr-x1="{{sst.xsecs[$parent.$index].xsec[$index-1].x}}"
       ng-attr-y1="{{sst.xsecs[$parent.$index].xsec[$index-1].y}}"
       ng-attr-x2="{{point.x}}"
-      ng-attr-y2="{{point.y}}" 
-      stroke-width="1" stroke="red" fill="none"/>           
+      ng-attr-y2="{{point.y}}"
+      stroke-width="1" stroke="red" fill="none"/>
   </g>
-</g>                            
+</g>
 
 </svg>
 </div>
 
 <new-window>
+  <html>
+  <head>
+      <link rel="stylesheet" href="css/app.css"/>
+  </head>
+<body>
 <div id='the-toolbox-2' class="toolbox">
-<div>
-  {{instruction}}
-</div>
 <ul>
 <li>Define Side View</li>
 <ul>
@@ -110,13 +112,23 @@
 <ul>
 <li>Other Commands</li>
 <ul>
-<li ng-click='get_coord_live = false'>Done (adding points)</li>
 <li ng-click='set_plan_image("")'>Hide plan image</li>
 <li ng-click='set_plan_image("img/p51_side.jpg")'>Show plan image</li>
 <li ng-click='save_data()'>Save Changes</li>
 <li ng-click='restore_data()'>Restore Changes</li>
 </ul>
 </ul>
+<br/>
+<div ng-show="show_done_button == true">
+  <button type="button" ng-click='get_coord_live = false;show_done_button = false;'>Done</button>
+</div>
+<button type="button" ng-click='undo_point();'>Undo Point</button>
+<br/><br/>
+<div>
+  <span clas="instruction">{{instruction}}<span>
+</div>
 
 </div>
+</body>
+</html>
 </new-window>
