@@ -101,6 +101,7 @@
 <ul>
 <li ng-click='new_xsec = sst.xsecs.push({}); sst.xsecs[new_xsec-1].station = {}; sst.xsecs[new_xsec-1].xsec = []; set_point_and_arc(sst.xsecs[new_xsec-1].station, sst.xsecs[new_xsec-1].xsec);'>Add a new cross section</li>
 <li ng-click='destroy_xsecs()'>Destroy ALL cross sections</li>
+<li ng-click='clean_up_xsecs()'>Clean up cross sections (removes malformed)</li>
 </ul>
 <li>Bulkheads</li>
 <ul>

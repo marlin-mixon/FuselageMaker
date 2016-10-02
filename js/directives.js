@@ -24,16 +24,4 @@ angular.module('fuselageMaker.directives', []).
 
       }
     }
-  }]).directive('newerWindow', ($window, $compile) => {
-    return {
-      restrict: 'E',
-      link: function(scope, element, attr) {
-        scope.window = $window.open('', '_blank');
-        angular.element(scope.window.document.body)
-          .append($compile(element.contents())(scope));
-        element.on('$destroy', function() {
-          scope.window.close();
-        });
-      }
-    };
-  });;
+  }]);

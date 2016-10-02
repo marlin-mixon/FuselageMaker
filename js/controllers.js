@@ -7,7 +7,6 @@ controller('MyCtrl1', ['$scope', '$window', '$rootScope', function($scope, $wind
 
 $scope.Math = window.Math;
 
-
 $scope.set_xy_click = function(element) {
   element.x = $scope.theX;
   element.y = $scope.theY;
@@ -221,10 +220,57 @@ $scope.destroy_xsecs = function() {
       $scope.sst.xsecs = [];
     }
   } else if ($scope.sst.xsecs.length > 1) {
-    if (window.confirm('Are you sure you want to destroy all ' +$scope.sst.xsecs.length + ' cross sections?')) {
+    if (window.confirm('Are you sure you want to destroy all ' + $scope.sst.xsecs.length + ' cross sections?')) {
       $scope.sst.xsecs = [];
     }
   }
+};
+$scope.is_empty = function(obj) {
+    for(var prop in obj) {
+        if(obj.hasOwnProperty(prop))
+            return false;
+    }
+    return true && JSON.stringify(obj) === JSON.stringify({});
+};
+
+$scope.clean_up_xsecs = function() {
+  $scope.is_dirty = true;
+  var i;
+  if ($scope.sst.xsecs.length === 0) {
+    alert("You don't have any cross sections defined.");
+    return;
+  }
+  for (i=$scope.sst.xsecs.length-1;i>=0;i--) {
+    if ($scope.is_empty($scope.sst.xsecs[i].station) || $scope.sst.xsecs[i].xsec.length === 0) {
+      $scope.sst.xsecs.splice(i,1);
+    }
+  }
+  if (!$scope.sst.side.zone.length === 2) {
+    alert("You don't have a side zone box defined (or it's improperly formed). Fix this and run this clean up again and it will be more thorough.");
+    return;
+  }
+  if (!$scope.sst.top.zone.length === 2) {
+    alert("You don't have a top zone box defined (or it's improperly formed). Fix this and run this clean up again and it will be more thorough.");
+    return;
+  }
+  for (i=$scope.sst.xsecs.length-1;i>=0;i--) {
+    if (  // Make sure station point is in one of the side or top zone boxes
+       ($scope.sst.xsecs[i].station.x >= $scope.sst.side.zone.lower_left.x &&
+        $scope.sst.xsecs[i].station.x <= $scope.sst.side.zone.upper_right.x &&
+        $scope.sst.xsecs[i].station.y >= $scope.sst.side.zone.upper_right.y &&
+        $scope.sst.xsecs[i].station.y <= $scope.sst.side.zone.lower_left.y)
+        ||
+        ($scope.sst.xsecs[i].station.x >= $scope.sst.top.zone.lower_left.x &&
+         $scope.sst.xsecs[i].station.x <= $scope.sst.top.zone.upper_right.x &&
+         $scope.sst.xsecs[i].station.y >= $scope.sst.top.zone.upper_right.y &&
+         $scope.sst.xsecs[i].station.y <= $scope.sst.top.zone.lower_left.y)
+        )
+        {
+          // It's good!
+        } else {
+          $scope.sst.xsecs.splice(i,1);
+        }
+    }
 };
 
 $scope.window_width = function(){
