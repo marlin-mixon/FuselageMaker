@@ -86,7 +86,9 @@ $scope.safe_apply = function() {
 }
 
 $scope.undo_point = function() {
-  var throw_away = $scope.undoable.pop();
+  if ($scope.undoable) {
+    var throw_away = $scope.undoable.pop();
+  }
 };
 
 $scope.set_plan_image = function(image_file) {
@@ -167,7 +169,8 @@ $scope.set_line = function(element) {
 
 $scope.set_arc = function(element, clean) {
   $scope.undoable = element;
-  $scope.show_done_button = true;
+  $scope.set_display('done-button', true);
+  $scope.set_display('undo-button', true);
   $scope.is_dirty = true;
   for (var i=element.length;i>=0;i--) {
     element.pop();
@@ -249,14 +252,33 @@ $scope.click_on_image = function(event) {
   $scope.coord_available = true;
 };
 
+$scope.set_display = function(the_id, is_showable) {
+  var display;
+  if (is_showable) {
+    display = 'block';
+  } else {
+    display = 'none';
+  }
+  if ($window.document.getElementById(the_id) !== null) {
+    $window.document.getElementById(the_id).style.display = display;
+  } else {
+    $rootScope.window.document.getElementById(the_id).style.display = display;
+  }
+};
+
+$scope.initialize_toolbox = function() {
+  $scope.set_display('undo-button', $scope.show_undo_button);
+  $scope.set_display('done-button', $scope.show_done_button)
+};
+
 $scope.is_dirty = false;
 $scope.show_done_button = false;
+$scope.show_undo_button = false;
 $scope.set_plan_image("img/p51_side.jpg");
 $scope.non_modal_shown = true;
 $scope.tool_box = document.getElementById('the-toolbox');
 $scope.tool_box_width = 300;
 $scope.tool_box_height = 500;
-
 }])
 .controller('MyCtrl2', [function() {
 

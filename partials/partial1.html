@@ -76,11 +76,11 @@
 </div>
 
 <new-window>
-  <html>
-  <head>
-      <link rel="stylesheet" href="css/app.css"/>
-  </head>
-<body>
+<style>
+.instruction {
+  color: red;
+}
+</style>
 <div id='the-toolbox-2' class="toolbox">
 <ul>
 <li>Define Side View</li>
@@ -119,16 +119,14 @@
 </ul>
 </ul>
 <br/>
-<div ng-show="show_done_button == true">
-  <button type="button" ng-click='get_coord_live = false;show_done_button = false;'>Done</button>
-</div>
-<button type="button" ng-click='undo_point();'>Undo Point</button>
+<button id="done-button" type="button" ng-click='get_coord_live = false;set_display("done-button", false);set_display("undo-button", false);undoable = undefined;'>Done</button>
+<button id="undo-button" type="button" ng-click='undo_point();'>Undo Point</button>
 <br/><br/>
 <div>
-  <span clas="instruction">{{instruction}}<span>
+  <span class="instruction">{{instruction}}<span>
 </div>
 
 </div>
-</body>
-</html>
+
+<div ng-init="initialize_toolbox()"></div>
 </new-window>
