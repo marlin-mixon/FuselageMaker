@@ -233,6 +233,39 @@ $scope.is_empty = function(obj) {
     return true && JSON.stringify(obj) === JSON.stringify({});
 };
 
+$scope.get_tmx_horizontal = function(point_a, point_b) {
+  var angle = Math.atan2(point_b.y - point_a.y, point_b.x - point_a.x);
+  var theta = -angle;
+  var costh = Math.cos(theta);
+  var sinth = Math.sin(theta);
+  var tmx = [];
+  tmx[0] = [costh, sinth, 0];
+  tmx[1] = [-sinth, costh, 0];
+  tmx[2] = [0,0,1];
+  return tmx;
+};
+
+$scope.model_integrity_check = function(obj,obj2) {
+  var tmx = $scope.get_tmx_horizontal(obj.side.reference_line.nose, obj.side.reference_line.tail);
+  var rot_point_nose = [[obj.side.reference_line.nose.x][obj.side.reference_line.nose.y][1]];
+  var rot_point_tail = [[obj.side.reference_line.tail.x][obj.side.reference_line.tail.y][1]];
+  var rotatd_nose = math.multiply(tmx, rot_point_nose);
+  var rotatd_tail = math.multiply(tmx, rot_point_tail);
+  obj2.side = {
+                    tmx: tmx,
+                    reference_line: {
+                      nose: {
+                        x: rotatd_nose[1][1],
+                        y: rotatd_nose[2][1]
+                      },
+                      tail: {
+                        x: rotatd_nose[1][1],
+                        y: rotatd_nose[2][1]
+                      }
+                    }
+                  };
+}
+
 $scope.clean_up_xsecs = function() {
   $scope.is_dirty = true;
   var i;
@@ -260,16 +293,16 @@ $scope.clean_up_xsecs = function() {
         $scope.sst.xsecs[i].station.y >= $scope.sst.side.zone.upper_right.y &&
         $scope.sst.xsecs[i].station.y <= $scope.sst.side.zone.lower_left.y)
         ||
-        ($scope.sst.xsecs[i].station.x >= $scope.sst.top.zone.lower_left.x &&
-         $scope.sst.xsecs[i].station.x <= $scope.sst.top.zone.upper_right.x &&
-         $scope.sst.xsecs[i].station.y >= $scope.sst.top.zone.upper_right.y &&
-         $scope.sst.xsecs[i].station.y <= $scope.sst.top.zone.lower_left.y)
-        )
-        {
-          // It's good!
-        } else {
-          $scope.sst.xsecs.splice(i,1);
-        }
+       ($scope.sst.xsecs[i].station.x >= $scope.sst.top.zone.lower_left.x &&
+        $scope.sst.xsecs[i].station.x <= $scope.sst.top.zone.upper_right.x &&
+        $scope.sst.xsecs[i].station.y >= $scope.sst.top.zone.upper_right.y &&
+        $scope.sst.xsecs[i].station.y <= $scope.sst.top.zone.lower_left.y)
+       )
+       {
+         // It's good!
+       } else {
+         $scope.sst.xsecs.splice(i,1);
+       }
     }
 };
 
@@ -320,6 +353,7 @@ $scope.initialize_toolbox = function() {
 $scope.is_dirty = false;
 $scope.show_done_button = false;
 $scope.show_undo_button = false;
+$scope.m = {};
 $scope.set_plan_image("img/p51_side.jpg");
 $scope.non_modal_shown = true;
 $scope.tool_box = document.getElementById('the-toolbox');
