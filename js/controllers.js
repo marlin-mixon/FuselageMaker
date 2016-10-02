@@ -255,12 +255,12 @@ $scope.model_integrity_check = function(obj,obj2) {
                     tmx: tmx,
                     reference_line: {
                       nose: {
-                        x: rotatd_nose[1][1],
-                        y: rotatd_nose[2][1]
+                        x: rotatd_nose[0][0],
+                        y: rotatd_nose[1][0]
                       },
                       tail: {
-                        x: rotatd_nose[1][1],
-                        y: rotatd_nose[2][1]
+                        x: rotatd_nose[0][0],
+                        y: rotatd_nose[1][0]
                       }
                     }
                   };
