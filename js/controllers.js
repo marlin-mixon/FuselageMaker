@@ -247,8 +247,8 @@ $scope.get_tmx_horizontal = function(point_a, point_b) {
 
 $scope.model_integrity_check = function(obj,obj2) {
   var tmx = $scope.get_tmx_horizontal(obj.side.reference_line.nose, obj.side.reference_line.tail);
-  var rot_point_nose = [[obj.side.reference_line.nose.x][obj.side.reference_line.nose.y][1]];
-  var rot_point_tail = [[obj.side.reference_line.tail.x][obj.side.reference_line.tail.y][1]];
+  var rot_point_nose = [[obj.side.reference_line.nose.x],[obj.side.reference_line.nose.y],[1]];
+  var rot_point_tail = [[obj.side.reference_line.tail.x],[obj.side.reference_line.tail.y],[1]];
   var rotatd_nose = math.multiply(tmx, rot_point_nose);
   var rotatd_tail = math.multiply(tmx, rot_point_tail);
   obj2.side = {
