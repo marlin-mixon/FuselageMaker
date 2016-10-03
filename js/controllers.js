@@ -322,7 +322,8 @@ $scope.locate_toolbox = function()  {
 };
 
 $scope.click_on_image = function(event) {
-  // Firefox needs to use getBoundingClientRect().left instead of offsetLeft and offsettop
+  // Git is not letting me make changes
+  // Firefox needs to use getBoundingClientRect().left instead of offsetLeft and offsetTop
   var xOffset=Math.max(document.documentElement.scrollLeft,document.body.scrollLeft)
     - document.getElementById('the-svg').getBoundingClientRect().left;
   var yOffset=Math.max(document.documentElement.scrollTop,document.body.scrollTop)
