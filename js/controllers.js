@@ -245,26 +245,33 @@ $scope.get_tmx_horizontal = function(point_a, point_b) {
   return tmx;
 };
 
-$scope.model_integrity_check = function(obj,obj2) {
-  var tmx = $scope.get_tmx_horizontal(obj.side.reference_line.nose, obj.side.reference_line.tail);
-  var rot_point_nose = [[obj.side.reference_line.nose.x],[obj.side.reference_line.nose.y],[1]];
-  var rot_point_tail = [[obj.side.reference_line.tail.x],[obj.side.reference_line.tail.y],[1]];
+$scope.model_integrity_check = function(obj, obj2) {
+  obj2.side = $scope.orthofix_ref_line(obj.side, obj2.side);
+  obj2.top = $scope.orthofix_ref_line(obj.top, obj2.top);
+  $scope.clean_up_xsecs();
+};
+
+$scope.orthofix_ref_line = function(obj, obj2) {
+  var tmx = $scope.get_tmx_horizontal(obj.reference_line.nose, obj.reference_line.tail);
+  var rot_point_nose = [[obj.reference_line.nose.x],[obj.reference_line.nose.y],[1]];
+  var rot_point_tail = [[obj.reference_line.tail.x],[obj.reference_line.tail.y],[1]];
   var rotatd_nose = math.multiply(tmx, rot_point_nose);
   var rotatd_tail = math.multiply(tmx, rot_point_tail);
-  obj2.side = {
-                    tmx: tmx,
-                    reference_line: {
-                      nose: {
-                        x: rotatd_nose[0][0],
-                        y: rotatd_nose[1][0]
-                      },
-                      tail: {
-                        x: rotatd_nose[0][0],
-                        y: rotatd_nose[1][0]
-                      }
-                    }
-                  };
-}
+  obj2 = {
+           tmx: tmx,
+           reference_line: {
+             nose: {
+               x: rotatd_nose[0][0],
+               y: rotatd_nose[1][0]
+             },
+             tail: {
+               x: rotatd_nose[0][0],
+               y: rotatd_nose[1][0]
+             }
+           }
+        };
+  return obj2;
+};
 
 $scope.clean_up_xsecs = function() {
   $scope.is_dirty = true;
@@ -322,7 +329,6 @@ $scope.locate_toolbox = function()  {
 };
 
 $scope.click_on_image = function(event) {
-  // Git is not letting me make changes
   // Firefox needs to use getBoundingClientRect().left instead of offsetLeft and offsetTop
   var xOffset=Math.max(document.documentElement.scrollLeft,document.body.scrollLeft)
     - document.getElementById('the-svg').getBoundingClientRect().left;
