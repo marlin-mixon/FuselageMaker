@@ -188,6 +188,11 @@ $scope.set_arc = function(element, clean) {
   $scope.get_coord_live = true;
 };
 
+$scope.set_bulkhead_arc = function(element, side, top) {
+  // Make another version of set_arc that transforms the points depending on which view they came from
+  $scope.set_arc(element, true);
+}
+
 $scope.set_point_and_arc = function(point, arc) {
   $scope.is_dirty = true;
   $scope.op_seq = [];
@@ -239,10 +244,16 @@ $scope.get_tmx_horizontal = function(point_a, point_b) {
   var costh = Math.cos(theta);
   var sinth = Math.sin(theta);
   var tmx = [];
-  tmx[0] = [costh, sinth, 0];
+  tmx[0] = [costh,  sinth, 0];
   tmx[1] = [-sinth, costh, 0];
-  tmx[2] = [0,0,1];
-  return tmx;
+  tmx[2] = [0,      0,     1];
+  theta = angle;
+  // costh = costh; // Trig identity for neg angles
+  sinth = -sinth;   // Trig identity for neg angles
+  inv_tmx[0] = [costh,  sinth, 0];
+  inv_tmx[1] = [-sinth, costh, 0];
+  inv_tmx[2] = [0,      0,     1];
+  return {tmx: tmx, inv_tmx: inv_tmx};
 };
 
 $scope.model_integrity_check = function(obj, obj2) {
@@ -252,7 +263,7 @@ $scope.model_integrity_check = function(obj, obj2) {
 };
 
 $scope.orthofix_ref_line = function(obj, obj2) {
-  var tmx = $scope.get_tmx_horizontal(obj.reference_line.nose, obj.reference_line.tail);
+  var tmx = ( $scope.get_tmx_horizontal(obj.reference_line.nose, obj.reference_line.tail) ).tmx;  // ignore inv_tmx
   var rot_point_nose = [[obj.reference_line.nose.x],[obj.reference_line.nose.y],[1]];
   var rot_point_tail = [[obj.reference_line.tail.x],[obj.reference_line.tail.y],[1]];
   var rotatd_nose = math.multiply(tmx, rot_point_nose);
