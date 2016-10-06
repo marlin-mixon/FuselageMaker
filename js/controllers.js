@@ -95,6 +95,7 @@ $scope.set_plan_image = function(image_file) {
 };
 
 $scope.proc_op_seq = function() {
+
   $scope.instruction = "";
   if (!$scope.get_coord_live) {
     clearInterval($scope.get_coord_interval);
@@ -111,8 +112,15 @@ $scope.proc_op_seq = function() {
   }
   $scope.instruction = $scope.op_seq[0].instruction;
   if($scope.coord_available) {
+      // Need handler2 & arg2, handler3 & arg3 (if they exixt)
     if ($scope.op_seq[0].is_loop) {
       $scope.op_seq[0].handler($scope.op_seq[0].dest,$scope.op_seq[0].index);
+      if ($scope.op_seq[0].handler2) {
+        $scope.op_seq[0].handler2($scope.op_seq[0].dest,$scope.op_seq[0].index);  // Huh? not quite right also need arg2
+      }
+      if ($scope.op_seq[0].handler3) {
+        $scope.op_seq[0].handler3($scope.op_seq[0].dest,$scope.op_seq[0].index);  // Huh? not quite right also need arg3
+      }
     } else {
       $scope.op_seq[0].handler($scope.op_seq[0].dest);
       $scope.op_seq.shift();
@@ -188,9 +196,35 @@ $scope.set_arc = function(element, clean) {
   $scope.get_coord_live = true;
 };
 
-$scope.set_bulkhead_arc = function(element, side, top) {
-  // Make another version of set_arc that transforms the points depending on which view they came from
-  $scope.set_arc(element, true);
+// This is used for both Cross Sections and Bulkheads
+$scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_tmxs, side_tmxs) {
+  $scope.undoable = element;
+  $scope.set_display('done-button', true);
+  $scope.set_display('undo-button', true);
+  $scope.is_dirty = true;
+  for (var i=element.length;i>=0;i--) {
+    element.pop();
+  }
+  $scope.coord_available = false; // turn off any existing point gathering
+
+  $scope.op_seq.push({
+    handler:$scope.set_xy_arc_click,
+    handler2:$scope.make_display_point,   // Top Need to pass stuff. Point is a given also need to pass tmxs.
+    args2: top_tmxs,   // Also need to pass top_disp_recvr
+    handler3:$scope.make_display_point,   // Side Need to pass stuff. Point is a given also need to pass tmxs.
+    args3: side_tmxs, // Also need to pass side_disp_recvr
+    dest: element,
+    is_loop: true,
+    instruction: 'Click to add new point. Click done button when done.'
+  });
+  $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
+  $scope.get_coord_live = true;
+};
+
+$scope.set_bulkhead_arc = function(recvr, top_ref, side_ref) {
+  var top_tmxs = $scope.get_tmx_horizontal(top_ref.nose, top_ref.tail);
+  var side_tmxs = $scope.get_tmx_horizontal(side_ref.nose, side_ref.tail);
+  $scope.set_arc_stations(recvr, top_ref.display, side_ref.display, top_tmxs, side_tmxs);
 }
 
 $scope.set_point_and_arc = function(point, arc) {
