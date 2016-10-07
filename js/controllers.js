@@ -112,14 +112,13 @@ $scope.proc_op_seq = function() {
   }
   $scope.instruction = $scope.op_seq[0].instruction;
   if($scope.coord_available) {
-      // Need handler2 & arg2, handler3 & arg3 (if they exixt)
     if ($scope.op_seq[0].is_loop) {
       $scope.op_seq[0].handler($scope.op_seq[0].dest,$scope.op_seq[0].index);
       if ($scope.op_seq[0].handler2) {
-        $scope.op_seq[0].handler2($scope.op_seq[0].dest,$scope.op_seq[0].index);  // Huh? not quite right also need arg2
+        $scope.op_seq[0].handler2($scope.op_seq[0].args2);
       }
       if ($scope.op_seq[0].handler3) {
-        $scope.op_seq[0].handler3($scope.op_seq[0].dest,$scope.op_seq[0].index);  // Huh? not quite right also need arg3
+        $scope.op_seq[0].handler3($scope.op_seq[0].args3);  // Not used yet?
       }
     } else {
       $scope.op_seq[0].handler($scope.op_seq[0].dest);
@@ -196,6 +195,79 @@ $scope.set_arc = function(element, clean) {
   $scope.get_coord_live = true;
 };
 
+$scope.is_point_in_top_or_side = function(point) {
+  var in_top_zone = false;
+  var in_side_zone = false;
+  if (!$scope.sst.side.zone) {
+    return {location:"none", message:"Need to digitize side view zone first."};
+  }
+  if (!$scope.sst.top.zone) {
+    return {location:"none", message:"Need to digitize top/bottom view zone first."};
+  }
+  if (point.x >= $scope.sst.side.zone.lower_left.x &&
+      point.x <= $scope.sst.side.zone.upper_right.x &&
+      point.y >= $scope.sst.side.upp.upper_right.x &&
+      point.y <= $scope.sst.side.zone.lower_left.y) {
+    in_side_zone = true;
+  }
+  if (point.x >= $scope.sst.top.zone.lower_left.x &&
+      point.x <= $scope.sst.top.zone.upper_right.x &&
+      point.y >= $scope.sst.top.upp.upper_right.x &&
+      point.y <= $scope.sst.top.zone.lower_left.y) {
+    in_top_zone = true;
+  }
+  if (in_side_zone && in_top_zone) {
+    return {location:"all", message:"Side view and top/bottom view zones overlap.  can't determine whether point is in side or top/bottom view zones."}
+  }
+  if (!in_side_zone && !in_top_zone) {
+    return {location:"none", message:"Point was not digitized in either the side view or top/bottom view zones."}
+  }
+  if (in_side_zone) {
+    return {location:"side", message:""}
+  }
+  if (in_top_zone) {
+    return {location:"top", message:""}
+  }
+};
+
+$scope.outline_as_function = function(x, tmx, outline) {
+  var ortho_outline = [];
+  for (var i=0;i<outline.length-1;i++) {
+    ortho_outline[i] = (typeof ortho_outine[i+1] === "undefined" ? $scope.transform(outline[i], tmx) : ortho_outline[i+1]);
+    ortho_outline[i+1] = $scope.transform(outline[i+1], tmx);
+    if (i===0 && x < ortho_outline[0].x) {
+      return {y:999999, message:'Point location is outside the outline range (beyond nose)'};
+    }
+    if (x >= ortho_outline[i] && x <= ortho_outline[i+1]) {
+      return {y:ortho_outline[i], message:'Need to finish coding this'};
+    }
+  }
+};
+
+$scope.make_display_point = function(args) {
+  point = {x:$scope.theX, y:$scope.theY};
+  var result = $scope.is_point_in_top_or_side(point);
+  if (result.location === 'none' || result.location === 'all') {
+    alert(result.message);
+    return;
+  }
+  // args {tmxs: top_tmxs, recvr: top_disp_recvr}
+  if (result.location === "top") {
+    var ortho_point = $scope.transform(point, args.top_tmxs.tmx);
+    var center_line = $scope.transform(sst.top.reference_line.nose, args.top_tmxs.tmx);
+    var center_point = {x:ortho_point.x, y:center_point.y};
+    var res_outine = $scope.outline_as_function(ortho_point.x, args.top_tmxs.tmx, sst.top.left_outline);
+    if (res_outline.message !== "") {
+      alert(res_outline.message);
+      return;
+    }
+    var edge_point = {x:ortho_point.x , y:res_outine.y};  // Need to finish coding this
+  }
+
+  args.recvr
+
+};
+
 // This is used for both Cross Sections and Bulkheads
 $scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_tmxs, side_tmxs) {
   $scope.undoable = element;
@@ -207,12 +279,11 @@ $scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_t
   }
   $scope.coord_available = false; // turn off any existing point gathering
 
+  var args2 = {top_tmxs: top_tmxs, top_recvr: top_disp_recvr, side_tmxs: side_tmxs, side_recvr: side_disp_recvr};
   $scope.op_seq.push({
     handler:$scope.set_xy_arc_click,
-    handler2:$scope.make_display_point,   // Top Need to pass stuff. Point is a given also need to pass tmxs.
-    args2: top_tmxs,   // Also need to pass top_disp_recvr
-    handler3:$scope.make_display_point,   // Side Need to pass stuff. Point is a given also need to pass tmxs.
-    args3: side_tmxs, // Also need to pass side_disp_recvr
+    handler2:$scope.make_display_point,
+    args2: args2,
     dest: element,
     is_loop: true,
     instruction: 'Click to add new point. Click done button when done.'
@@ -222,10 +293,10 @@ $scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_t
 };
 
 $scope.set_bulkhead_arc = function(recvr, top_ref, side_ref) {
-  var top_tmxs = $scope.get_tmx_horizontal(top_ref.nose, top_ref.tail);
-  var side_tmxs = $scope.get_tmx_horizontal(side_ref.nose, side_ref.tail);
+  var top_tmxs = $scope.get_tmx_horizontal(top_ref.reference_line.nose, top_ref.reference_line.tail);
+  var side_tmxs = $scope.get_tmx_horizontal(side_ref.reference_line.nose, side_ref.reference_line.tail);
   $scope.set_arc_stations(recvr, top_ref.display, side_ref.display, top_tmxs, side_tmxs);
-}
+};
 
 $scope.set_point_and_arc = function(point, arc) {
   $scope.is_dirty = true;
@@ -284,7 +355,7 @@ $scope.get_tmx_horizontal = function(point_a, point_b) {
   theta = angle;
   // costh = costh; // Trig identity for neg angles
   sinth = -sinth;   // Trig identity for neg angles
-  inv_tmx[0] = [costh,  sinth, 0];
+  var inv_tmx[0] = [costh,  sinth, 0];
   inv_tmx[1] = [-sinth, costh, 0];
   inv_tmx[2] = [0,      0,     1];
   return {tmx: tmx, inv_tmx: inv_tmx};
@@ -295,6 +366,12 @@ $scope.model_integrity_check = function(obj, obj2) {
   obj2.top = $scope.orthofix_ref_line(obj.top, obj2.top);
   $scope.clean_up_xsecs();
 };
+
+$scope.transform = function(pt, tmx) {
+  var pt_matrix = [[pt.x],[pt.y],[1]];
+  var result_matrix = math.multiply(tmx, pt_matrix);
+  return {x:result_matrix[0][0], y:result_matrix[1][0]};
+}
 
 $scope.orthofix_ref_line = function(obj, obj2) {
   var tmx = ( $scope.get_tmx_horizontal(obj.reference_line.nose, obj.reference_line.tail) ).tmx;  // ignore inv_tmx
