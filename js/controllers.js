@@ -233,15 +233,16 @@ $scope.is_point_in_top_or_side = function(point) {
 $scope.outline_as_function = function(x, tmx, outline) {
   var ortho_outline = [];
   for (var i=0;i<outline.length-1;i++) {
-    ortho_outline[i] = (typeof ortho_outine[i+1] === "undefined" ? $scope.transform(outline[i], tmx) : ortho_outline[i+1]);
-    ortho_outline[i+1] = $scope.transform(outline[i+1], tmx);
+    ortho_outline[0] = (typeof ortho_outline[1] === "undefined" ? $scope.transform(outline[i], tmx) : ortho_outline[1]);
+    ortho_outline[1] = $scope.transform(outline[i+1], tmx);
     if (i===0 && x < ortho_outline[0].x) {
       return {y:999999, message:'Point location is outside the outline range (beyond nose)'};
     }
-    if (x >= ortho_outline[i] && x <= ortho_outline[i+1]) {
-      return {y:ortho_outline[i], message:'Need to finish coding this'};
+    if (x >= ortho_outline[0] && x <= ortho_outline[1]) {
+      return {y:ortho_outline[0], message:'Need to finish coding this'};
     }
   }
+  return {y:999999, message:'Point location is outside the outline range (beyond tail)'};
 };
 
 $scope.make_display_point = function(args) {
@@ -255,13 +256,13 @@ $scope.make_display_point = function(args) {
   if (result.location === "top") {
     var ortho_point = $scope.transform(point, args.top_tmxs.tmx);
     var center_line = $scope.transform($scope.sst.top.reference_line.nose, args.top_tmxs.tmx);
-    var center_point = {x:ortho_point.x, y:center_point.y};
-    var res_outine = $scope.outline_as_function(ortho_point.x, args.top_tmxs.tmx, $scope.sst.top.left_outline);
+    var center_point = {x:ortho_point.x, y:center_line.y};
+    var res_outline = $scope.outline_as_function(ortho_point.x, args.top_tmxs.tmx, $scope.sst.top.left_outline);
     if (res_outline.message !== "") {
       alert(res_outline.message);
       return;
     }
-    var edge_point = {x:ortho_point.x , y:res_outine.y};  // Need to finish coding this
+    var edge_point = {x:ortho_point.x , y:res_outline.y};  // Need to finish coding this
   }
 
   args.recvr
