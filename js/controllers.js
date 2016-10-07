@@ -270,12 +270,12 @@ $scope.make_display_point = function(args) {
 
 // This is used for both Cross Sections and Bulkheads
 $scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_tmxs, side_tmxs) {
-  $scope.undoable = element;
+  $scope.undoable = recvr;
   $scope.set_display('done-button', true);
   $scope.set_display('undo-button', true);
   $scope.is_dirty = true;
-  for (var i=element.length;i>=0;i--) {
-    element.pop();
+  for (var i=recvr.length;i>=0;i--) {
+    recvr.pop();
   }
   $scope.coord_available = false; // turn off any existing point gathering
 
@@ -284,7 +284,7 @@ $scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_t
     handler:$scope.set_xy_arc_click,
     handler2:$scope.make_display_point,
     args2: args2,
-    dest: element,
+    dest: recvr,
     is_loop: true,
     instruction: 'Click to add new point. Click done button when done.'
   });
@@ -355,7 +355,8 @@ $scope.get_tmx_horizontal = function(point_a, point_b) {
   theta = angle;
   // costh = costh; // Trig identity for neg angles
   sinth = -sinth;   // Trig identity for neg angles
-  var inv_tmx[0] = [costh,  sinth, 0];
+  var inv_tmx = [];
+  inv_tmx[0] = [costh,  sinth, 0];
   inv_tmx[1] = [-sinth, costh, 0];
   inv_tmx[2] = [0,      0,     1];
   return {tmx: tmx, inv_tmx: inv_tmx};
