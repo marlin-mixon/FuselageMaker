@@ -206,13 +206,13 @@ $scope.is_point_in_top_or_side = function(point) {
   }
   if (point.x >= $scope.sst.side.zone.lower_left.x &&
       point.x <= $scope.sst.side.zone.upper_right.x &&
-      point.y >= $scope.sst.side.upp.upper_right.x &&
+      point.y >= $scope.sst.side.zone.upper_right.y &&
       point.y <= $scope.sst.side.zone.lower_left.y) {
     in_side_zone = true;
   }
   if (point.x >= $scope.sst.top.zone.lower_left.x &&
       point.x <= $scope.sst.top.zone.upper_right.x &&
-      point.y >= $scope.sst.top.upp.upper_right.x &&
+      point.y >= $scope.sst.top.zone.upper_right.y &&
       point.y <= $scope.sst.top.zone.lower_left.y) {
     in_top_zone = true;
   }
@@ -245,7 +245,7 @@ $scope.outline_as_function = function(x, tmx, outline) {
 };
 
 $scope.make_display_point = function(args) {
-  point = {x:$scope.theX, y:$scope.theY};
+  var point = {x:$scope.theX, y:$scope.theY};
   var result = $scope.is_point_in_top_or_side(point);
   if (result.location === 'none' || result.location === 'all') {
     alert(result.message);
@@ -254,9 +254,9 @@ $scope.make_display_point = function(args) {
   // args {tmxs: top_tmxs, recvr: top_disp_recvr}
   if (result.location === "top") {
     var ortho_point = $scope.transform(point, args.top_tmxs.tmx);
-    var center_line = $scope.transform(sst.top.reference_line.nose, args.top_tmxs.tmx);
+    var center_line = $scope.transform($scope.sst.top.reference_line.nose, args.top_tmxs.tmx);
     var center_point = {x:ortho_point.x, y:center_point.y};
-    var res_outine = $scope.outline_as_function(ortho_point.x, args.top_tmxs.tmx, sst.top.left_outline);
+    var res_outine = $scope.outline_as_function(ortho_point.x, args.top_tmxs.tmx, $scope.sst.top.left_outline);
     if (res_outline.message !== "") {
       alert(res_outline.message);
       return;
