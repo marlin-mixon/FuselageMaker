@@ -74,12 +74,22 @@
 
 <!-- All top bulkhead locations -->
 <g ng-repeat="this_bulk in sst.top.display.bulk">
-    <line
-      ng-attr-x1="{{this_bulk.x1}}"
-      ng-attr-y1="{{this_bulk.y1}}"
-      ng-attr-x2="{{this_bulk.x2}}"
-      ng-attr-y2="{{this_bulk.y2}}"
-      stroke-width="1" stroke="red" fill="none"/>
+  <line
+    ng-attr-x1="{{this_bulk.x1}}"
+    ng-attr-y1="{{this_bulk.y1}}"
+    ng-attr-x2="{{this_bulk.x2}}"
+    ng-attr-y2="{{this_bulk.y2}}"
+    stroke-width="1" stroke="red" fill="none"/>
+</g>
+
+<!-- All side bulkhead locations -->
+<g ng-repeat="this_bulk in sst.side.display.bulk">
+  <line
+    ng-attr-x1="{{this_bulk.x1}}"
+    ng-attr-y1="{{this_bulk.y1}}"
+    ng-attr-x2="{{this_bulk.x2}}"
+    ng-attr-y2="{{this_bulk.y2}}"
+    stroke-width="1" stroke="red" fill="none"/>
 </g>
 
 </svg>
