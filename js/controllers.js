@@ -230,6 +230,14 @@ $scope.is_point_in_top_or_side = function(point) {
   }
 };
 
+$scope.linear_interpolation = function(p1, p2, x) {
+  var rise = p2.y - p1.y;
+  var run = p2.x - p1.x;
+  var slope = rise/run;
+  var y = ((x - p1.x) * slope) + p1.y
+  return y;
+}
+
 $scope.outline_as_function = function(x, tmx, outline) {
   var ortho_outline = [];
   for (var i=0;i<outline.length-1;i++) {
@@ -238,8 +246,9 @@ $scope.outline_as_function = function(x, tmx, outline) {
     if (i===0 && x < ortho_outline[0].x) {
       return {y:999999, message:'Point location is outside the outline range (beyond nose)'};
     }
-    if (x >= ortho_outline[0] && x <= ortho_outline[1]) {
-      return {y:ortho_outline[0], message:'Need to finish coding this'};
+    if (x > ortho_outline[0].x && x < ortho_outline[1].x) {
+      var y = $scope.linear_interpolation( ortho_outline[0], ortho_outline[1], x);
+      return {y:y, message:''};
     }
   }
   return {y:999999, message:'Point location is outside the outline range (beyond tail)'};
