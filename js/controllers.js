@@ -44,7 +44,11 @@ $scope.sst = {
       }
     },
     top_outline: [],
-    bottom_outline: []
+    bottom_outline: [],
+    display: {
+      bulk: [],
+      xsec: []
+    }
   },
   top: {
     zone: {
@@ -72,7 +76,11 @@ $scope.sst = {
       },
     },
     left_outline: [],
-    right_outline: []
+    right_outline: [],
+    display: {
+      bulk: [],
+      xsec: []
+    }
   },
   xsecs: [],
   bulkheads: []
@@ -231,6 +239,9 @@ $scope.is_point_in_top_or_side = function(point) {
 };
 
 $scope.linear_interpolation = function(p1, p2, x) {
+  if (p1.x === p2.x) {
+    return (p1.y + p2.y) / 2;  // if the x's coincide just return the average of the y's
+  }
   var rise = p2.y - p1.y;
   var run = p2.x - p1.x;
   var slope = rise/run;
@@ -264,14 +275,17 @@ $scope.make_display_point = function(args) {
   // args {tmxs: top_tmxs, recvr: top_disp_recvr}
   if (result.location === "top") {
     var ortho_point = $scope.transform(point, args.top_tmxs.tmx);
-    var center_line = $scope.transform($scope.sst.top.reference_line.nose, args.top_tmxs.tmx);
-    var center_point = {x:ortho_point.x, y:center_line.y};
+    var ortho_center_line = $scope.transform($scope.sst.top.reference_line.nose, args.top_tmxs.tmx);
+    var ortho_center_point = {x:ortho_point.x, y:ortho_center_line.y};
     var res_outline = $scope.outline_as_function(ortho_point.x, args.top_tmxs.tmx, $scope.sst.top.left_outline);
     if (res_outline.message !== "") {
       alert(res_outline.message);
       return;
     }
-    var edge_point = {x:ortho_point.x , y:res_outline.y};  // Need to finish coding this
+    var ortho_edge_point = {x:ortho_point.x , y:res_outline.y};
+    var edge_point = $scope.transform(ortho_edge_point, args.top_tmxs.inv_tmx);
+    var center_point = $scope.transform(ortho_center_point, args.top_tmxs.inv_tmx);
+    args.top_recvr.push({x1:center_point.x, y1:center_point.y, x2:edge_point.x, y2:edge_point.y})
   }
 
   args.recvr
@@ -305,7 +319,7 @@ $scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_t
 $scope.set_bulkhead_arc = function(recvr, top_ref, side_ref) {
   var top_tmxs = $scope.get_tmx_horizontal(top_ref.reference_line.nose, top_ref.reference_line.tail);
   var side_tmxs = $scope.get_tmx_horizontal(side_ref.reference_line.nose, side_ref.reference_line.tail);
-  $scope.set_arc_stations(recvr, top_ref.display, side_ref.display, top_tmxs, side_tmxs);
+  $scope.set_arc_stations(recvr, top_ref.display.bulk, side_ref.display.bulk, top_tmxs, side_tmxs);
 };
 
 $scope.set_point_and_arc = function(point, arc) {
