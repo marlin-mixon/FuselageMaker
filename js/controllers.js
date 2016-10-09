@@ -493,10 +493,12 @@ $scope.locate_toolbox = function()  {
 
 $scope.click_on_image = function(event) {
   // Firefox needs to use getBoundingClientRect().left instead of offsetLeft and offsetTop
+  // That is the source of the bugs.  Need to revert to offsetLeft and offsetTop and figure something
+  // else for Firefox
   var xOffset=Math.max(document.documentElement.scrollLeft,document.body.scrollLeft)
-    - document.getElementById('the-svg').getBoundingClientRect().left;
+    - document.getElementById('the-svg').offsetLeft;
   var yOffset=Math.max(document.documentElement.scrollTop,document.body.scrollTop)
-    - document.getElementById('the-svg').getBoundingClientRect().top;
+    - document.getElementById('the-svg').offsetTop;
   $scope.theX = event.clientX + xOffset;
   $scope.theY = event.clientY + yOffset;
   $scope.coord_available = true;
