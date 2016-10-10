@@ -300,16 +300,10 @@ $scope.make_display_point = function(args) {
     // similar to above
   }
 
-
-
-
-
-  args.recvr
-
 };
 
 // This is used for both Cross Sections and Bulkheads
-$scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_tmxs, side_tmxs) {
+$scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_tmxs, side_tmxs, is_many) {
   $scope.undoable = recvr;
   $scope.set_display('done-button', true);
   $scope.set_display('undo-button', true);
@@ -320,24 +314,29 @@ $scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_t
   $scope.coord_available = false; // turn off any existing point gathering
 
   var args2 = {top_tmxs: top_tmxs, top_recvr: top_disp_recvr, side_tmxs: side_tmxs, side_recvr: side_disp_recvr};
+  var the_instruction = 'Click to add new point.';
+  if (is_many) {
+    the_instruction += '  Click done button when done.'
+  }
   $scope.op_seq.push({
     handler:$scope.set_xy_arc_click,
     handler2:$scope.make_display_point,
     args2: args2,
     dest: recvr,
-    is_loop: true,
-    instruction: 'Click to add new point. Click done button when done.'
+    is_loop: is_many,
+    instruction: the_instruction
   });
-  $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
-  $scope.get_coord_live = true;
 };
 
 $scope.set_bulkhead_arc = function(recvr, top_ref, side_ref) {
   var top_tmxs = $scope.get_tmx_horizontal(top_ref.reference_line.nose, top_ref.reference_line.tail);
   var side_tmxs = $scope.get_tmx_horizontal(side_ref.reference_line.nose, side_ref.reference_line.tail);
-  $scope.set_arc_stations(recvr, top_ref.display.bulk, side_ref.display.bulk, top_tmxs, side_tmxs);
+  $scope.set_arc_stations(recvr, top_ref.display.bulk, side_ref.display.bulk, top_tmxs, side_tmxs, true);
+  $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
+  $scope.get_coord_live = true;
 };
 
+// Making this obsolete. See set_xsec_point_and_arc
 $scope.set_point_and_arc = function(point, arc) {
   $scope.is_dirty = true;
   $scope.op_seq = [];
@@ -349,6 +348,32 @@ $scope.set_point_and_arc = function(point, arc) {
   });
   $scope.set_arc(arc, false);
 };
+
+$scope.set_xsec_point_and_arc = function(x_recvr) {
+  var top_tmxs = $scope.get_tmx_horizontal(top_ref.reference_line.nose, top_ref.reference_line.tail);
+  var side_tmxs = $scope.get_tmx_horizontal(side_ref.reference_line.nose, side_ref.reference_line.tail);
+  var xsec_id = xsec_recvr.push({station:{},xsec:[]});
+  var xsec_index = xsec_id - 1;
+
+  $scope.is_dirty = true;
+  $scope.op_seq = [];
+  /*
+  $scope.op_seq.push({
+    handler:$scope.set_xy_click,
+    dest: x_recvr[xsec_index].station,
+    is_loop: false,
+    instruction: 'Click to position cross-section on reference line.'
+  });
+  */
+  $scope.set_arc_stations(xsec_recvr, $scope.sst.top.display.xsec, $scope.sst.side.display.xsec, top_tmxs, side_tmxs, false);
+  $scope.set_arc(arc, false);
+  $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
+  $scope.get_coord_live = true;
+};
+
+
+
+
 $scope.save_data = function() {
   localStorage.setItem('fuselage', JSON.stringify($scope.sst) );
 };
@@ -389,14 +414,13 @@ $scope.get_tmx_horizontal = function(point_a, point_b) {
   var costh = Math.cos(theta);
   var sinth = Math.sin(theta);
   var tmx = [];
-  tmx[0] = [costh,  sinth, 0];
-  tmx[1] = [-sinth, costh, 0];
-  tmx[2] = [0,      0,     1];
-  theta = angle;
-  // costh = costh; // Trig identity for neg angles
-  sinth = -sinth;   // Trig identity for neg angles
+  var h = -point_a.x;
+  tmx[0] = [costh, -sinth, h*costh];
+  tmx[1] = [sinth, costh,  h*sinth];
+  tmx[2] = [0,     0,      1];
+
   var inv_tmx = [];
-  inv_tmx[0] = [costh,  sinth, 0];
+  inv_tmx[0] = [costh,  sinth, -h];
   inv_tmx[1] = [-sinth, costh, 0];
   inv_tmx[2] = [0,      0,     1];
   return {tmx: tmx, inv_tmx: inv_tmx};

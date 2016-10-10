@@ -79,7 +79,7 @@
     ng-attr-y1="{{this_bulk.y1}}"
     ng-attr-x2="{{this_bulk.x2}}"
     ng-attr-y2="{{this_bulk.y2}}"
-    stroke-width="1" stroke="red" fill="none"/>
+    stroke-width="1" stroke="green" fill="none"/>
 </g>
 
 <!-- All side bulkhead locations -->
@@ -89,7 +89,7 @@
     ng-attr-y1="{{this_bulk.y1}}"
     ng-attr-x2="{{this_bulk.x2}}"
     ng-attr-y2="{{this_bulk.y2}}"
-    stroke-width="1" stroke="red" fill="none"/>
+    stroke-width="1" stroke="green" fill="none"/>
 </g>
 
 </svg>
@@ -119,7 +119,7 @@
 </ul>
 <li>Digitize Cross Sections</li>
 <ul>
-<li ng-click='new_xsec = sst.xsecs.push({}); sst.xsecs[new_xsec-1].station = {}; sst.xsecs[new_xsec-1].xsec = []; set_point_and_arc(sst.xsecs[new_xsec-1].station, sst.xsecs[new_xsec-1].xsec);'>Add a new cross section</li>
+<li ng-click='set_xsec_point_and_arc(sst.xsecs)'>Add a new cross section</li>
 <li ng-click='destroy_xsecs()'>Destroy ALL cross sections</li>
 <li ng-click='clean_up_xsecs()'>Clean up cross sections (removes malformed)</li>
 </ul>
