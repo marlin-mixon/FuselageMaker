@@ -308,9 +308,6 @@ $scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_t
   $scope.set_display('done-button', true);
   $scope.set_display('undo-button', true);
   $scope.is_dirty = true;
-  for (var i=recvr.length;i>=0;i--) {
-    recvr.pop();
-  }
   $scope.coord_available = false; // turn off any existing point gathering
 
   var args2 = {top_tmxs: top_tmxs, top_recvr: top_disp_recvr, side_tmxs: side_tmxs, side_recvr: side_disp_recvr};
@@ -336,37 +333,17 @@ $scope.set_bulkhead_arc = function(recvr, top_ref, side_ref) {
   $scope.get_coord_live = true;
 };
 
-// Making this obsolete. See set_xsec_point_and_arc
-$scope.set_point_and_arc = function(point, arc) {
-  $scope.is_dirty = true;
-  $scope.op_seq = [];
-  $scope.op_seq.push({
-    handler:$scope.set_xy_click,
-    dest: point,
-    is_loop: false,
-    instruction: 'Click to position cross-section on reference line.'
-  });
-  $scope.set_arc(arc, false);
-};
-
-$scope.set_xsec_point_and_arc = function(x_recvr) {
+$scope.set_xsec_point_and_arc = function(xsec_recvr, top_ref, side_ref) {
   var top_tmxs = $scope.get_tmx_horizontal(top_ref.reference_line.nose, top_ref.reference_line.tail);
   var side_tmxs = $scope.get_tmx_horizontal(side_ref.reference_line.nose, side_ref.reference_line.tail);
-  var xsec_id = xsec_recvr.push({station:{},xsec:[]});
+  var xsec_id = xsec_recvr.push({station:[],xsec:[]});
   var xsec_index = xsec_id - 1;
 
   $scope.is_dirty = true;
   $scope.op_seq = [];
-  /*
-  $scope.op_seq.push({
-    handler:$scope.set_xy_click,
-    dest: x_recvr[xsec_index].station,
-    is_loop: false,
-    instruction: 'Click to position cross-section on reference line.'
-  });
-  */
-  $scope.set_arc_stations(xsec_recvr, $scope.sst.top.display.xsec, $scope.sst.side.display.xsec, top_tmxs, side_tmxs, false);
-  $scope.set_arc(arc, false);
+
+  $scope.set_arc_stations(xsec_recvr[xsec_index].station, $scope.sst.top.display.xsec, $scope.sst.side.display.xsec, top_tmxs, side_tmxs, false);
+  $scope.set_arc(xsec_recvr[xsec_index].xsec, false);
   $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
   $scope.get_coord_live = true;
 };
