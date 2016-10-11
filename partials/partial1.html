@@ -79,7 +79,7 @@
     ng-attr-y1="{{this_bulk.y1}}"
     ng-attr-x2="{{this_bulk.x2}}"
     ng-attr-y2="{{this_bulk.y2}}"
-    stroke-width="1" stroke="green" fill="none"/>
+    stroke-width="1" stroke="lime" fill="none"/>
 </g>
 
 <!-- All side bulkhead locations -->
@@ -89,7 +89,27 @@
     ng-attr-y1="{{this_bulk.y1}}"
     ng-attr-x2="{{this_bulk.x2}}"
     ng-attr-y2="{{this_bulk.y2}}"
-    stroke-width="1" stroke="green" fill="none"/>
+    stroke-width="1" stroke="lime" fill="none"/>
+</g>
+
+<!-- All top xsec locations -->
+<g ng-repeat="this_bulk in sst.top.display.xsec">
+  <line
+    ng-attr-x1="{{this_bulk.x1}}"
+    ng-attr-y1="{{this_bulk.y1}}"
+    ng-attr-x2="{{this_bulk.x2}}"
+    ng-attr-y2="{{this_bulk.y2}}"
+    stroke-width="1" stroke="red" fill="none"/>
+</g>
+
+<!-- All side xsec locations -->
+<g ng-repeat="this_bulk in sst.side.display.xsec">
+  <line
+    ng-attr-x1="{{this_bulk.x1}}"
+    ng-attr-y1="{{this_bulk.y1}}"
+    ng-attr-x2="{{this_bulk.x2}}"
+    ng-attr-y2="{{this_bulk.y2}}"
+    stroke-width="1" stroke="red" fill="none"/>
 </g>
 
 </svg>
@@ -135,8 +155,8 @@
 <ul>
 <li ng-click='set_plan_image("")'>Hide plan image</li>
 <li ng-click='set_plan_image("img/p51_side.jpg")'>Show plan image</li>
-<li ng-click='save_data()'>Save Changes</li>
-<li ng-click='restore_data()'>Restore Changes</li>
+<li ng-click='save_data()'>Save Your Work</li>
+<li ng-click='restore_data()'>Restore Your work</li>
 <li ng-click='model_integrity_check(sst, m)'>model_integrity_check</li>
 </ul>
 </ul>

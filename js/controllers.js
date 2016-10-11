@@ -120,16 +120,14 @@ $scope.proc_op_seq = function() {
   }
   $scope.instruction = $scope.op_seq[0].instruction;
   if($scope.coord_available) {
-    if ($scope.op_seq[0].is_loop) {
-      $scope.op_seq[0].handler($scope.op_seq[0].dest,$scope.op_seq[0].index);
-      if ($scope.op_seq[0].handler2) {
-        $scope.op_seq[0].handler2($scope.op_seq[0].args2);
-      }
-      if ($scope.op_seq[0].handler3) {
-        $scope.op_seq[0].handler3($scope.op_seq[0].args3);  // Not used yet?
-      }
-    } else {
-      $scope.op_seq[0].handler($scope.op_seq[0].dest);
+    $scope.op_seq[0].handler($scope.op_seq[0].dest,$scope.op_seq[0].index);
+    if ($scope.op_seq[0].handler2) {
+      $scope.op_seq[0].handler2($scope.op_seq[0].args2);
+    }
+    if ($scope.op_seq[0].handler3) {
+      $scope.op_seq[0].handler3($scope.op_seq[0].args3);  // Not used yet?
+    }
+    if (!$scope.op_seq[0].is_loop) {
       $scope.op_seq.shift();
     }
     $scope.coord_available = false;
@@ -275,30 +273,29 @@ $scope.make_display_point = function(args) {
   // args {tmxs: top_tmxs, recvr: top_disp_recvr}
   if (result.location === "top") {
     var ortho_point = $scope.transform(point, args.top_tmxs.tmx);
-    var ortho_top_center_line = $scope.transform($scope.sst.top.reference_line.nose, args.top_tmxs.tmx);
-    var ortho_center_point = {x:ortho_point.x, y:ortho_top_center_line.y};
-    var res_outline = $scope.outline_as_function(ortho_point.x, args.top_tmxs.tmx, $scope.sst.top.left_outline);
-    var res_top_outline = $scope.outline_as_function(ortho_point.x, args.side_tmxs.tmx, $scope.sst.side.top_outline);
-    var res_bottom_outline = $scope.outline_as_function(ortho_point.x, args.top_tmxs.tmx, $scope.sst.side.bottom_outline);
-    if (res_outline.message !== "") {
-      alert(res_outline.message);
-      return;
-    }
-    // top view
-    var ortho_edge_point = {x:ortho_point.x , y:res_outline.y};
-    var edge_point = $scope.transform(ortho_edge_point, args.top_tmxs.inv_tmx);
-    var center_point = $scope.transform(ortho_center_point, args.top_tmxs.inv_tmx);
-    args.top_recvr.push({x1:center_point.x, y1:center_point.y, x2:edge_point.x, y2:edge_point.y});
-    // side view
-    var ortho_top_edge_point = {x:ortho_point.x , y:res_top_outline.y};
-    var top_edge_point =   $scope.transform(ortho_top_edge_point, args.side_tmxs.inv_tmx);
-    var ortho_bottom_edge_point = {x:ortho_point.x , y:res_bottom_outline.y};
-    var bottom_edge_point =   $scope.transform(ortho_bottom_edge_point, args.side_tmxs.inv_tmx);;
-    args.side_recvr.push({x1:top_edge_point.x, y1:top_edge_point.y, x2:bottom_edge_point.x, y2:bottom_edge_point.y});
-
   } else if (result.location === "side") {
-    // similar to above
+    var ortho_point = $scope.transform(point, args.side_tmxs.tmx);
   }
+  var ortho_top_center_line = $scope.transform($scope.sst.top.reference_line.nose, args.top_tmxs.tmx);
+  var ortho_center_point = {x:ortho_point.x, y:ortho_top_center_line.y};
+  var res_outline = $scope.outline_as_function(ortho_point.x, args.top_tmxs.tmx, $scope.sst.top.left_outline);
+  var res_top_outline = $scope.outline_as_function(ortho_point.x, args.side_tmxs.tmx, $scope.sst.side.top_outline);
+  var res_bottom_outline = $scope.outline_as_function(ortho_point.x, args.top_tmxs.tmx, $scope.sst.side.bottom_outline);
+  if (res_outline.message !== "") {
+    alert(res_outline.message);
+    return;
+  }
+  // top view
+  var ortho_edge_point = {x:ortho_point.x , y:res_outline.y};
+  var edge_point = $scope.transform(ortho_edge_point, args.top_tmxs.inv_tmx);
+  var center_point = $scope.transform(ortho_center_point, args.top_tmxs.inv_tmx);
+  args.top_recvr.push({x1:center_point.x, y1:center_point.y, x2:edge_point.x, y2:edge_point.y});
+  // side view
+  var ortho_top_edge_point = {x:ortho_point.x , y:res_top_outline.y};
+  var top_edge_point =   $scope.transform(ortho_top_edge_point, args.side_tmxs.inv_tmx);
+  var ortho_bottom_edge_point = {x:ortho_point.x , y:res_bottom_outline.y};
+  var bottom_edge_point =   $scope.transform(ortho_bottom_edge_point, args.side_tmxs.inv_tmx);;
+  args.side_recvr.push({x1:top_edge_point.x, y1:top_edge_point.y, x2:bottom_edge_point.x, y2:bottom_edge_point.y});
 
 };
 
