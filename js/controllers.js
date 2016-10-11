@@ -92,6 +92,14 @@ $scope.safe_apply = function() {
   }
 }
 
+$scope.done_button = function() {
+  $scope.get_coord_live = false;
+  $scope.set_display("done-button", false);
+  $scope.set_display("undo-button", false);
+  $scope.undoable = undefined;
+  $scope.op_seq = [];
+}
+
 $scope.undo_point = function() {
   if ($scope.undoable) {
     var throw_away = $scope.undoable.pop();
