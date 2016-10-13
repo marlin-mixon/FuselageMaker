@@ -197,8 +197,11 @@ $scope.generate_bulkheads = function() {
     var lesser = $scope.sst.xsecs[nearest_lesser.index];
     var greater = $scope.sst.xsecs[nearest_greater.index];
     var new_bulkhead = [];
-    for (j=0;j<lesser.length;j++) {
-      new_bulkhead.push( $scope.linear_interpolation({x:lesser[j].x,y:lesser[j].y},{x:lesser[j].x,y:lesser[j].y}, bulkhead.x) );
+    for (j=0;j<lesser.flood_points.length;j++) {
+      // Oops,this needs to b 3d!
+      new_bulkhead.push( $scope.linear_interpolation(lesser.flood_points[j],
+                                                     greater.flood_points[j],
+                                                     bulkhead.x) );
     }
   }
 }
