@@ -86,6 +86,123 @@ $scope.sst = {
   bulkheads: []
 };
 
+$scope.add_flood_points = function(xsec, n) {
+  var r;
+  var theta_min = -(Math.pi * 0.5);
+  var theta_dec = (Math.pi) / n;
+  var theta_max = Math.pi * 0.5;
+  var theta;
+  var offx;
+  var offy;
+  var index = 0;
+  var flood = [xsec[0]];
+  index++;
+  var minx=999999;
+  var miny=999999;
+  var maxx=-999999;
+  var maxy=-999999;
+  for (var i=0;i<xsec.length;i++) {
+    if (xsec[i].x > maxx) { maxx = xsec[i].x; }
+    if (xsec[i].x < minx) { minx = xsec[i].x; }
+    if (xsec[i].y > maxy) { maxy = xsec[i].y; }
+    if (xsec[i].y < miny) { miny = xsec[i].y; }
+  }
+  offx = minx;
+  var spanx = maxx - minx;
+  var spany = maxy - miny;
+  if (spanx > spany) {
+    r = spanx * 1.5;
+  } else {
+    r = spany * 1.5;
+  }
+  offy = miny + spany / 2;
+  for (theta = theta_min-theta_dec; theta >= theta_max+theta_dec; theta-=theta_dec) {
+    var x = Math.cos(theta)*r+offx;
+    var y = Math.sin(theta)*r+offy;
+    var new_point = math.intersect( [offx, offy], [x, y], [xsec[index-1].x, xsec[index-1].y], [xsec[index].x, xsec[index].y] );
+    if (is_null(new_point) ) {
+      index++;
+    } else {
+      flood.push({x:new_point[0],y:new_point[1]});
+    }
+  }
+  flood.push(xsec[xsec.length-1]);
+  return flood;
+}
+
+$scope.add_flood_points_old = function(xsec, n) {
+  var i;
+  // get total length
+  var total_dist = 0;
+  for (i=1;i<xsec.xsec.length;i++) {
+    var the_dist = $scope.dist({x:xsec.xsec[i].x, y:xsec.xsec[i].y},{x:xsec.xsec[i-1].x, y:xsec.xsec[i-1].y});
+    total_dist += the_dist;
+    xsec.xsec[i-1].dist = the_dist;
+  }
+  var short_dist = total_dist / n;
+  var this_dist = short_dist;
+  var flooded_xsec = [{x:xsec.xsec[0].x, y:xsec.xsec[0].y}];
+  var cum_dist = 0;
+  for (i=1;i<xsec.xsec.length;i++) {
+    var m = (xsec.xsec[i-1].y - xsec.xsec[i].y) / (xsec.xsec[i-1].x - xsec.xsec[i].x);
+    var r = Math.sqrt(1 + m*m)
+    var x1 = xsec.xsec[i-1].x;
+    var y1 = xsec.xsec[i-1].y;
+    while (cum_dist < xsec.xsec[i-1].dist) {
+      var x2 = x1 + (short_dist / r);
+      var y2 = y1 + ( (short_dist * m) / r );
+      flooded_xsec.push({x:x2,y:y2});
+      x2 = x1;
+      y2 = y1;
+      cum_dist += short_dist;
+      this_dist = short_dist;
+    }
+    flooded_xsec.pop();  //Remove last point b/c it went too far
+    var partial_dist = $scope.dist({x:x1,y:y1}, {x:xsec.xsec[i].x,y:xsec.xsec[i].y});
+    var remain_dist = xsec.xsec[i-1].dist - partial_dist;
+    cum_dist = remain_dist;
+    this_dist = remain_dist;
+  }
+}
+
+$scope.generate_bulkheads = function() {
+  // for each bulkhead
+  var i;
+  var j;
+  var nearest_lesser = {index: -1, dist:9999999999};
+  var nearest_greater = {index: -1, dist:9999999999};
+  for (i=0;i<$scope.sst.bulkheads.length;i++) {
+    var bulkhead  = $scope.sst.bulkheads[i];
+    for (j=0;j<$scope.sst.xsecs.length;j++) {
+      var xsec = $scope.sst.xsecs[j];
+      if (xsec.station.x > bulkhead.x) {
+        var greater_dist = xsec.station.x - bulkhead.x;
+        if (nearest_greater.dist > greater_dist) {
+          nearest_greater.dist = greater_dist;
+          nearest_greater.index = j
+        }
+      } else {
+        var lesser_dist = bulkhead.x - xsec.station.x;
+        if (nearest_lesser.dist > lesser_dist) {
+          nearest_lesser.dist = lesser_dist;
+          nearest_lesser.index = j
+        }
+      }
+      // Determine if we have generated flood points for the cross section yet and add if needed
+      if (!xsec.flood_points) {
+        xsec.flood_points = $scope.add_flood_points(xsec, 200);
+      }
+    }
+    // we have the bulkhead location and the two nearest xsecs
+    var lesser = $scope.sst.xsecs[nearest_lesser.index];
+    var greater = $scope.sst.xsecs[nearest_greater.index];
+    var new_bulkhead = [];
+    for (j=0;j<lesser.length;j++) {
+      new_bulkhead.push( $scope.linear_interpolation({x:lesser[j].x,y:lesser[j].y},{x:lesser[j].x,y:lesser[j].y}, bulkhead.x) );
+    }
+  }
+}
+
 $scope.safe_apply = function() {
   if ($scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') {
     $scope.$apply();
