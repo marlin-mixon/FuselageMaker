@@ -86,26 +86,65 @@ $scope.sst = {
   bulkheads: []
 };
 
+$scope.checkLineIntersection = function(line1StartX, line1StartY, line1EndX, line1EndY, line2StartX, line2StartY, line2EndX, line2EndY) {
+    // if the lines intersect, the result contains the x and y of the intersection (treating the lines as infinite) and booleans for whether line segment 1 or line segment 2 contain the point
+    var denominator, a, b, numerator1, numerator2, result = {
+        x: null,
+        y: null,
+        onLine1: false,
+        onLine2: false
+    };
+    denominator = ((line2EndY - line2StartY) * (line1EndX - line1StartX)) - ((line2EndX - line2StartX) * (line1EndY - line1StartY));
+    if (denominator == 0) {
+        return result;
+    }
+    a = line1StartY - line2StartY;
+    b = line1StartX - line2StartX;
+    numerator1 = ((line2EndX - line2StartX) * a) - ((line2EndY - line2StartY) * b);
+    numerator2 = ((line1EndX - line1StartX) * a) - ((line1EndY - line1StartY) * b);
+    a = numerator1 / denominator;
+    b = numerator2 / denominator;
+
+    // if we cast these lines infinitely in both directions, they intersect here:
+    result.x = line1StartX + (a * (line1EndX - line1StartX));
+    result.y = line1StartY + (a * (line1EndY - line1StartY));
+/*
+        // it is worth noting that this should be the same as:
+        x = line2StartX + (b * (line2EndX - line2StartX));
+        y = line2StartX + (b * (line2EndY - line2StartY));
+        */
+    // if line1 is a segment and line2 is infinite, they intersect if:
+    if (a > 0 && a < 1) {
+        result.onLine1 = true;
+    }
+    // if line2 is a segment and line1 is infinite, they intersect if:
+    if (b > 0 && b < 1) {
+        result.onLine2 = true;
+    }
+    // if line1 and line2 are segments, they intersect if both of the above are true
+    return result;
+};
+
 $scope.add_flood_points = function(xsec, n) {
   var r;
-  var theta_min = -(Math.pi * 0.5);
-  var theta_dec = (Math.pi) / n;
-  var theta_max = Math.pi * 0.5;
+  var theta_start = -(Math.PI * 0.5)
+  var theta_inc = (Math.PI) / n;
+  var theta_end = Math.PI * 0.5;
   var theta;
   var offx;
   var offy;
   var index = 0;
-  var flood = [xsec[0]];
+  var flood = [xsec.xsec[0]];
   index++;
   var minx=999999;
   var miny=999999;
   var maxx=-999999;
   var maxy=-999999;
-  for (var i=0;i<xsec.length;i++) {
-    if (xsec[i].x > maxx) { maxx = xsec[i].x; }
-    if (xsec[i].x < minx) { minx = xsec[i].x; }
-    if (xsec[i].y > maxy) { maxy = xsec[i].y; }
-    if (xsec[i].y < miny) { miny = xsec[i].y; }
+  for (var i=0;i<xsec.xsec.length;i++) {
+    if (xsec.xsec[i].x > maxx) { maxx = xsec.xsec[i].x; }
+    if (xsec.xsec[i].x < minx) { minx = xsec.xsec[i].x; }
+    if (xsec.xsec[i].y > maxy) { maxy = xsec.xsec[i].y; }
+    if (xsec.xsec[i].y < miny) { miny = xsec.xsec[i].y; }
   }
   offx = minx;
   var spanx = maxx - minx;
@@ -116,53 +155,26 @@ $scope.add_flood_points = function(xsec, n) {
     r = spany * 1.5;
   }
   offy = miny + spany / 2;
-  for (theta = theta_min-theta_dec; theta >= theta_max+theta_dec; theta-=theta_dec) {
+  for (theta = theta_start+theta_inc; theta <= theta_end-theta_inc; theta+=theta_inc) {
     var x = Math.cos(theta)*r+offx;
     var y = Math.sin(theta)*r+offy;
-    var new_point = math.intersect( [offx, offy], [x, y], [xsec[index-1].x, xsec[index-1].y], [xsec[index].x, xsec[index].y] );
-    if (is_null(new_point) ) {
+    var new_point = $scope.checkLineIntersection( offx, offy,
+                                                  x, y,
+                                                  xsec.xsec[index-1].x, xsec.xsec[index-1].y,
+                                                  xsec.xsec[index].x, xsec.xsec[index].y );
+    if ( ! new_point.onLine2 ) {
       index++;
-    } else {
-      flood.push({x:new_point[0],y:new_point[1]});
+      while ( ! new_point.onLine2 && index < xsec.xsec.length ) {  // This loop normally executes one iteration
+        new_point = $scope.checkLineIntersection( offx, offy,
+                                                   x, y,
+                                                   xsec.xsec[index-1].x, xsec.xsec[index-1].y,
+                                                   xsec.xsec[index].x, xsec.xsec[index].y );
+      }
     }
+    flood.push({x:new_point.x,y:new_point.y});
   }
-  flood.push(xsec[xsec.length-1]);
+  flood.push(xsec.xsec[xsec.xsec.length-1]);
   return flood;
-}
-
-$scope.add_flood_points_old = function(xsec, n) {
-  var i;
-  // get total length
-  var total_dist = 0;
-  for (i=1;i<xsec.xsec.length;i++) {
-    var the_dist = $scope.dist({x:xsec.xsec[i].x, y:xsec.xsec[i].y},{x:xsec.xsec[i-1].x, y:xsec.xsec[i-1].y});
-    total_dist += the_dist;
-    xsec.xsec[i-1].dist = the_dist;
-  }
-  var short_dist = total_dist / n;
-  var this_dist = short_dist;
-  var flooded_xsec = [{x:xsec.xsec[0].x, y:xsec.xsec[0].y}];
-  var cum_dist = 0;
-  for (i=1;i<xsec.xsec.length;i++) {
-    var m = (xsec.xsec[i-1].y - xsec.xsec[i].y) / (xsec.xsec[i-1].x - xsec.xsec[i].x);
-    var r = Math.sqrt(1 + m*m)
-    var x1 = xsec.xsec[i-1].x;
-    var y1 = xsec.xsec[i-1].y;
-    while (cum_dist < xsec.xsec[i-1].dist) {
-      var x2 = x1 + (short_dist / r);
-      var y2 = y1 + ( (short_dist * m) / r );
-      flooded_xsec.push({x:x2,y:y2});
-      x2 = x1;
-      y2 = y1;
-      cum_dist += short_dist;
-      this_dist = short_dist;
-    }
-    flooded_xsec.pop();  //Remove last point b/c it went too far
-    var partial_dist = $scope.dist({x:x1,y:y1}, {x:xsec.xsec[i].x,y:xsec.xsec[i].y});
-    var remain_dist = xsec.xsec[i-1].dist - partial_dist;
-    cum_dist = remain_dist;
-    this_dist = remain_dist;
-  }
 }
 
 $scope.generate_bulkheads = function() {
@@ -198,11 +210,16 @@ $scope.generate_bulkheads = function() {
     var greater = $scope.sst.xsecs[nearest_greater.index];
     var new_bulkhead = [];
     for (j=0;j<lesser.flood_points.length;j++) {
-      // Oops,this needs to b 3d!
-      new_bulkhead.push( $scope.linear_interpolation(lesser.flood_points[j],
-                                                     greater.flood_points[j],
-                                                     bulkhead.x) );
+      // Oops,this needs to be 3d. Just do this twice from two points of view.
+      var pvx = $scope.linear_interpolation({x:lesser.station.x,y:lesser.flood_points[j].x},
+                                            {x:greater.station.x,y:greater.flood_points[j].x},
+                                            bulkhead.x);
+      var pvy = $scope.linear_interpolation({x:lesser.station.x,y:lesser.flood_points[j].y},
+                                            {x:greater.station.x,y:greater.flood_points[j].y},
+                                            bulkhead.x);
+      new_bulkhead.push({x:pvx,y:pvy});
     }
+    bulkhead.shape = new_bulkhead;
   }
 }
 
