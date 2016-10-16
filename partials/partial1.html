@@ -72,6 +72,18 @@
   </g>
 </g>
 
+<!-- All final bulkheads -->
+<g ng-show="sst.show_final_bulkheads" ng-repeat="bulkhead in sst.bulkheads">
+  <g ng-repeat="point in bulkhead.shape">
+    <line ng-show="$index > 0"
+      ng-attr-x1="{{sst.bulkheads[$parent.$index].shape[$index-1].x + sst.bulkheads[$parent.$index].display_offset.x}}"
+      ng-attr-y1="{{sst.bulkheads[$parent.$index].shape[$index-1].y + sst.bulkheads[$parent.$index].display_offset.y}}"
+      ng-attr-x2="{{point.x + sst.bulkhead_placement_xy.x + sst.bulkheads[$parent.$index].display_offset.x}}"
+      ng-attr-y2="{{point.y + sst.bulkhead_placement_xy.y + sst.bulkheads[$parent.$index].display_offset.y}}"
+      stroke-width="1" stroke="lime" fill="none"/>
+  </g>
+</g>
+
 <!-- All top bulkhead locations -->
 <g ng-repeat="this_bulk in sst.top.display.bulk">
   <line

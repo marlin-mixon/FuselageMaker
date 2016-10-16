@@ -125,6 +125,20 @@ $scope.checkLineIntersection = function(line1StartX, line1StartY, line1EndX, lin
     return result;
 };
 
+$scope.get_extents = function(shape) {
+  var minx=999999;
+  var miny=999999;
+  var maxx=-999999;
+  var maxy=-999999;
+  for (var i=0;i<shape.length;i++) {
+    if (shape[i].x > maxx) { maxx = shape[i].x; }
+    if (shape[i].x < minx) { minx = shape[i].x; }
+    if (shape[i].y > maxy) { maxy = shape[i].y; }
+    if (shape[i].y < miny) { miny = shape[i].y; }
+  }
+  return {min_point: {x:minx,y:miny}, max_point: {x:maxx,y:maxy}}
+}
+
 $scope.add_flood_points = function(xsec, n) {
   var r;
   var theta_start = -(Math.PI * 0.5)
@@ -136,25 +150,17 @@ $scope.add_flood_points = function(xsec, n) {
   var index = 0;
   var flood = [xsec.xsec[0]];
   index++;
-  var minx=999999;
-  var miny=999999;
-  var maxx=-999999;
-  var maxy=-999999;
-  for (var i=0;i<xsec.xsec.length;i++) {
-    if (xsec.xsec[i].x > maxx) { maxx = xsec.xsec[i].x; }
-    if (xsec.xsec[i].x < minx) { minx = xsec.xsec[i].x; }
-    if (xsec.xsec[i].y > maxy) { maxy = xsec.xsec[i].y; }
-    if (xsec.xsec[i].y < miny) { miny = xsec.xsec[i].y; }
-  }
-  offx = minx;
-  var spanx = maxx - minx;
-  var spany = maxy - miny;
+
+  var extents=$scope.get_extents(xsec.xsec)
+  offx = extents.min_point.x;
+  var spanx = extents.max_point.x - extents.min_point.x;
+  var spany = extents.max_point.y - extents.min_point.y;
   if (spanx > spany) {
     r = spanx * 1.5;
   } else {
     r = spany * 1.5;
   }
-  offy = miny + spany / 2;
+  offy = extents.min_point.y + spany / 2;
   for (theta = theta_start+theta_inc; theta <= theta_end-theta_inc; theta+=theta_inc) {
     var x = Math.cos(theta)*r+offx;
     var y = Math.sin(theta)*r+offy;
@@ -164,17 +170,35 @@ $scope.add_flood_points = function(xsec, n) {
                                                   xsec.xsec[index].x, xsec.xsec[index].y );
     if ( ! new_point.onLine2 ) {
       index++;
-      while ( ! new_point.onLine2 && index < xsec.xsec.length ) {  // This loop normally executes one iteration
+      while ( ! new_point.onLine2 && index < xsec.xsec.length - 1 ) {  // This loop normally executes one iteration
         new_point = $scope.checkLineIntersection( offx, offy,
-                                                   x, y,
-                                                   xsec.xsec[index-1].x, xsec.xsec[index-1].y,
-                                                   xsec.xsec[index].x, xsec.xsec[index].y );
+                                                  x, y,
+                                                  xsec.xsec[index-1].x, xsec.xsec[index-1].y,
+                                                  xsec.xsec[index].x, xsec.xsec[index].y );
+        if (! new_point.onLine2) {
+          flood.push(xsec.xsec[xsec.xsec.length-1]);
+        }
       }
     }
     flood.push({x:new_point.x,y:new_point.y});
   }
-  flood.push(xsec.xsec[xsec.xsec.length-1]);
+
   return flood;
+}
+
+$scope.plot_bulkheads = function(location_xy) {
+  // Not much to do here except set the offsets and turn the bulkheads on.  partial1.html does the true plotting
+  var spacingx = 15;
+  location_xy={x:0,y:0};  // debug
+  $scope.sst.bulkhead_placement_xy = location_xy;
+  var run_pointx = 0;
+  for (var i=0;i<$scope.sst.bulkheads.length;i++) {
+    var b = $scope.sst.bulkheads[i];
+    b.extents = $scope.get_extents(b.shape);
+    b.display_offset = {x:(location_xy.x + run_pointx), y:location_xy.y};
+    run_pointx += (b.extents.max_point.x - b.extents.min_point.x) + spacingx;
+  }
+  $scope.sst.show_final_bulkheads = true;
 }
 
 $scope.generate_bulkheads = function() {
@@ -219,8 +243,23 @@ $scope.generate_bulkheads = function() {
                                             bulkhead.x);
       new_bulkhead.push({x:pvx,y:pvy});
     }
+    // Determine it's current width/height
+    bulkhead.extents = $scope.get_extents(new_bulkhead);
     bulkhead.shape = new_bulkhead;
   }
+
+  // Ask where the bulkheads will go
+  $scope.sst.bulkhead_plot_location = {x:0,y:0};
+  $scope.set_point($scope.sst.bulkhead_plot_location, false, 'Click where you want the bulkheads to be placed (they fill in horizontally to the right)');
+  $scope.op_seq.push({
+    handler: $scope.plot_bulkheads,
+    dest: $scope.sst.bulkhead_plot_location,
+    is_loop: false,
+    dont_want_coord: true,
+    instruction: 'Pretty bulkheads!'
+  });
+  $scope.get_coord_interval = setInterval($scope.proc_op_seq, 5000);
+  $scope.get_coord_live = true;
 }
 
 $scope.safe_apply = function() {
@@ -264,7 +303,7 @@ $scope.proc_op_seq = function() {
     return;
   }
   $scope.instruction = $scope.op_seq[0].instruction;
-  if($scope.coord_available) {
+  if($scope.coord_available || $scope.op_seq[0].dont_want_coord) {
     $scope.op_seq[0].handler($scope.op_seq[0].dest,$scope.op_seq[0].index);
     if ($scope.op_seq[0].handler2) {
       $scope.op_seq[0].handler2($scope.op_seq[0].args2);
@@ -278,6 +317,23 @@ $scope.proc_op_seq = function() {
     $scope.coord_available = false;
   }
   $scope.safe_apply();
+}
+
+$scope.set_point = function(element, ok_to_go, instruct) {
+  $scope.is_dirty = true;
+  element.x = null; element.y = null;
+  $scope.coord_available = false;
+  $scope.op_seq = [];
+  $scope.op_seq.push({
+    handler: $scope.set_xy_click,
+    dest: element,
+    is_loop: false,
+    instruction: instruct
+  });
+  if (ok_to_go) {
+    $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
+    $scope.get_coord_live = true;
+  }
 }
 
 $scope.set_box = function(element) {
@@ -675,6 +731,7 @@ $scope.non_modal_shown = true;
 $scope.tool_box = document.getElementById('the-toolbox');
 $scope.tool_box_width = 300;
 $scope.tool_box_height = 500;
+$scope.sst.show_final_bulkheads = false;
 }])
 .controller('MyCtrl2', [function() {
 
