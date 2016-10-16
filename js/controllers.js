@@ -258,7 +258,7 @@ $scope.generate_bulkheads = function() {
     dont_want_coord: true,
     instruction: 'Pretty bulkheads!'
   });
-  $scope.get_coord_interval = setInterval($scope.proc_op_seq, 5000);
+  $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
   $scope.get_coord_live = true;
 }
 
@@ -274,6 +274,10 @@ $scope.done_button = function() {
   $scope.set_display("undo-button", false);
   $scope.undoable = undefined;
   $scope.op_seq = [];
+  if ($scope.need_xsec_transform) {
+    $scope.need_xsec_transform = false;
+    $scope.transform_xsec_points();
+  }
 }
 
 $scope.undo_point = function() {
@@ -523,6 +527,14 @@ $scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_t
   });
 };
 
+$scope.transform_xsec_points = function() {
+  alert('now transforming coordinates.');
+  var x_index = $scope.sst.xsecs.length-1;
+  var the_xsec = $scope.sst.xsecs[x_index];
+  var is_in_top = $scope.is_point_in_view_zone('top', the_xsec.station[0]);
+  var is_in_side = $scope.is_point_in_view_zone('side', the_xsec.station[0]);
+};
+
 $scope.set_bulkhead_arc = function(recvr, top_ref, side_ref) {
   var top_tmxs = $scope.get_tmx_horizontal(top_ref.reference_line.nose, top_ref.reference_line.tail);
   var side_tmxs = $scope.get_tmx_horizontal(side_ref.reference_line.nose, side_ref.reference_line.tail);
@@ -542,12 +554,10 @@ $scope.set_xsec_point_and_arc = function(xsec_recvr, top_ref, side_ref) {
 
   $scope.set_arc_stations(xsec_recvr[xsec_index].station, $scope.sst.top.display.xsec, $scope.sst.side.display.xsec, top_tmxs, side_tmxs, false);
   $scope.set_arc(xsec_recvr[xsec_index].xsec, false);
+  $scope.need_xsec_transform = true;
   $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
   $scope.get_coord_live = true;
 };
-
-
-
 
 $scope.save_data = function() {
   localStorage.setItem('fuselage', JSON.stringify($scope.sst) );
@@ -635,6 +645,23 @@ $scope.orthofix_ref_line = function(obj, obj2) {
   return obj2;
 };
 
+$scope.is_point_in_view_zone = function(view, point) {
+  var zone;
+  if (view === 'side') {
+    zone = $scope.sst.side.zone;
+  } else if (view === 'top') {
+    zone = $scope.sst.top.zone;
+  }
+  if (  // Make sure station point is in one of the side or top zone boxes
+     (point.x >= zone.lower_left.x &&
+      point.x <= zone.upper_right.x &&
+      point.y >= zone.upper_right.y &&
+      point.y <= zone.lower_left.y)) {
+    return true;
+  }
+  return false;
+}
+
 $scope.clean_up_xsecs = function() {
   $scope.is_dirty = true;
   var i;
@@ -656,18 +683,10 @@ $scope.clean_up_xsecs = function() {
     return;
   }
   for (i=$scope.sst.xsecs.length-1;i>=0;i--) {
-    if (  // Make sure station point is in one of the side or top zone boxes
-       ($scope.sst.xsecs[i].station.x >= $scope.sst.side.zone.lower_left.x &&
-        $scope.sst.xsecs[i].station.x <= $scope.sst.side.zone.upper_right.x &&
-        $scope.sst.xsecs[i].station.y >= $scope.sst.side.zone.upper_right.y &&
-        $scope.sst.xsecs[i].station.y <= $scope.sst.side.zone.lower_left.y)
-        ||
-       ($scope.sst.xsecs[i].station.x >= $scope.sst.top.zone.lower_left.x &&
-        $scope.sst.xsecs[i].station.x <= $scope.sst.top.zone.upper_right.x &&
-        $scope.sst.xsecs[i].station.y >= $scope.sst.top.zone.upper_right.y &&
-        $scope.sst.xsecs[i].station.y <= $scope.sst.top.zone.lower_left.y)
-       )
-       {
+    var is_in_top = $scope.is_point_in_view_zone('top', $scope.sst.xsecs[i].station);
+    var is_in_side = $scope.is_point_in_view_zone('side', $scope.sst.xsecs[i].station);
+    // Make sure station point is in one of the side or top zone boxes
+    if (is_in_top || is_in_side) {
          // It's good!
        } else {
          $scope.sst.xsecs.splice(i,1);
