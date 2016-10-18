@@ -234,7 +234,7 @@ $scope.generate_bulkheads = function() {
     var greater = $scope.sst.xsecs[nearest_greater.index];
     var new_bulkhead = [];
     for (j=0;j<lesser.flood_points.length;j++) {
-      // Oops,this needs to be 3d. Just do this twice from two points of view.
+      // For 3d, we just do this twice from two points of view.
       var pvx = $scope.linear_interpolation({x:lesser.station.x,y:lesser.flood_points[j].x},
                                             {x:greater.station.x,y:greater.flood_points[j].x},
                                             bulkhead.x);
@@ -245,6 +245,26 @@ $scope.generate_bulkheads = function() {
     }
     // Determine it's current width/height
     bulkhead.extents = $scope.get_extents(new_bulkhead);
+
+    // Need to scale bulkhead x and y to fit side and top outlines.
+    var b4_width = bulkhead.extents.max_point.x - bulkhead.extents.min_point.x;
+    var top_tmxs = $scope.get_tmx_horizontal($scope.sst.top.reference_line.nose, $scope.sst.top.reference_line.tail);
+    var x_top_ref = $scope.transform($scope.sst.top.reference_line.nose, top_tmxs.tmx);
+    var desired_width = Math.abs($scope.outline_as_function(bulkhead.x, top_tmxs.tmx, $scope.sst.top.left_outline).y - x_top_ref.x);
+    var x_scale = desired_width / b4_width;
+
+    var b4_height = bulkhead.extents.max_point.y - bulkhead.extents.min_point.y;
+    var side_tmxs = $scope.get_tmx_horizontal($scope.sst.side.reference_line.nose, $scope.sst.side.reference_line.tail);
+    var y_side_1 = $scope.outline_as_function(bulkhead.x, side_tmxs.tmx, $scope.sst.side.top_outline);
+    var y_side_2 = $scope.outline_as_function(bulkhead.x, side_tmxs.tmx, $scope.sst.side.bottom_outline);
+    var desired_height = Math.abs(y_side_1.y - y_side_2.y);
+    var y_scale = desired_height / b4_height;
+
+    for (j=0;j<new_bulkhead.length;j++) {
+      new_bulkhead[j].x *= x_scale;
+      new_bulkhead[j].y *= y_scale;
+    }
+
     bulkhead.shape = new_bulkhead;
   }
 
@@ -485,7 +505,7 @@ $scope.make_display_point = function(args) {
   var ortho_center_point = {x:ortho_point.x, y:ortho_top_center_line.y};
   var res_outline = $scope.outline_as_function(ortho_point.x, args.top_tmxs.tmx, $scope.sst.top.left_outline);
   var res_top_outline = $scope.outline_as_function(ortho_point.x, args.side_tmxs.tmx, $scope.sst.side.top_outline);
-  var res_bottom_outline = $scope.outline_as_function(ortho_point.x, args.top_tmxs.tmx, $scope.sst.side.bottom_outline);
+  var res_bottom_outline = $scope.outline_as_function(ortho_point.x, args.side_tmxs.tmx, $scope.sst.side.bottom_outline);
   if (res_outline.message !== "") {
     alert(res_outline.message);
     return;
@@ -499,9 +519,8 @@ $scope.make_display_point = function(args) {
   var ortho_top_edge_point = {x:ortho_point.x , y:res_top_outline.y};
   var top_edge_point =   $scope.transform(ortho_top_edge_point, args.side_tmxs.inv_tmx);
   var ortho_bottom_edge_point = {x:ortho_point.x , y:res_bottom_outline.y};
-  var bottom_edge_point =   $scope.transform(ortho_bottom_edge_point, args.side_tmxs.inv_tmx);;
+  var bottom_edge_point =   $scope.transform(ortho_bottom_edge_point, args.side_tmxs.inv_tmx);
   args.side_recvr.push({x1:top_edge_point.x, y1:top_edge_point.y, x2:bottom_edge_point.x, y2:bottom_edge_point.y});
-
 };
 
 // This is used for both Cross Sections and Bulkheads
@@ -528,11 +547,34 @@ $scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_t
 };
 
 $scope.transform_xsec_points = function() {
-  alert('now transforming coordinates.');
   var x_index = $scope.sst.xsecs.length-1;
   var the_xsec = $scope.sst.xsecs[x_index];
   var is_in_top = $scope.is_point_in_view_zone('top', the_xsec.station[0]);
   var is_in_side = $scope.is_point_in_view_zone('side', the_xsec.station[0]);
+  if (!is_in_top && !is_in_side) {
+    alert('Your locating fore/aft coordinate for your xsec is in neither the top/bottom nor side view zones.');
+  }
+  var top_ref = $scope.sst.top.reference_line;
+  var top_tmxs = $scope.get_tmx_horizontal(top_ref.nose, top_ref.tail);
+  var side_ref = $scope.sst.side.reference_line;
+  var side_tmxs = $scope.get_tmx_horizontal(side_ref.nose, side_ref.tail);
+  var tmxs;
+  if (is_in_top) {
+    tmxs = top_tmxs;
+  } else {
+    tmxs = side_tmxs;
+  }
+  the_xsec.ortho_station = $scope.transform(the_xsec.station[0], tmxs.tmx);
+  //Now transform the arc coordinates so the center is at 0,0
+  var center_y;
+  var ortho_top_point = $scope.transform(the_xsec.xsec[0], side_tmxs.tmx);
+  var ortho_nose_point = $scope.transform(top_ref.nose, side_tmxs.tmx);
+  center_y = ortho_top_point.y - ortho_nose_point.y;
+  var arc_tmxs = $scope.get_tmx_xsec(the_xsec.xsec[0], the_xsec.xsec[the_xsec.xsec.length-1], center_y);
+  the_xsec.ortho_shape = [];
+  for (var i=0;i<the_xsec.xsec.length;i++) {
+    the_xsec.ortho_shape.push($scope.transform(the_xsec.xsec[i],side_tmxs.tmx));
+  }
 };
 
 $scope.set_bulkhead_arc = function(recvr, top_ref, side_ref) {
@@ -593,6 +635,25 @@ $scope.is_empty = function(obj) {
     return true && JSON.stringify(obj) === JSON.stringify({});
 };
 
+$scope.get_tmx_xsec = function(point_a, point_b, center_y) {
+  var angle = Math.atan2(point_b.y - point_a.y, point_b.x - point_a.x);
+  var theta = -angle;
+  var costh = Math.cos(theta);
+  var sinth = Math.sin(theta);
+  var tmx = [];
+  var h = -point_a.x;
+  var k = -(point_a.y + center_y);
+  tmx[0] = [costh, -sinth, h*costh - k*sinth];
+  tmx[1] = [sinth, costh,  h*sinth + k*costh];
+  tmx[2] = [0,     0,      1];
+
+  var inv_tmx = [];
+  inv_tmx[0] = [costh,  sinth, -h];
+  inv_tmx[1] = [-sinth, costh, -k];
+  inv_tmx[2] = [0,      0,     1];
+  return {tmx: tmx, inv_tmx: inv_tmx};
+}
+
 $scope.get_tmx_horizontal = function(point_a, point_b) {
   var angle = Math.atan2(point_b.y - point_a.y, point_b.x - point_a.x);
   var theta = -angle;
@@ -600,13 +661,14 @@ $scope.get_tmx_horizontal = function(point_a, point_b) {
   var sinth = Math.sin(theta);
   var tmx = [];
   var h = -point_a.x;
-  tmx[0] = [costh, -sinth, h*costh];
-  tmx[1] = [sinth, costh,  h*sinth];
+  var k = -point_a.y;
+  tmx[0] = [costh, -sinth, h*costh - k*sinth];
+  tmx[1] = [sinth, costh,  h*sinth + k*costh];
   tmx[2] = [0,     0,      1];
 
   var inv_tmx = [];
   inv_tmx[0] = [costh,  sinth, -h];
-  inv_tmx[1] = [-sinth, costh, 0];
+  inv_tmx[1] = [-sinth, costh, -k];
   inv_tmx[2] = [0,      0,     1];
   return {tmx: tmx, inv_tmx: inv_tmx};
 };
