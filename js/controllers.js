@@ -279,7 +279,7 @@ $scope.generate_bulkheads = function() {
     var newer_bulkhead = [];
     for (j=0;j<new_bulkhead.length;j++) {
       var scaled = math.multiply(tmx1, [[new_bulkhead[j].x],[new_bulkhead[j].y],[1]] );
-      //scaled = math.multiply(tmx2, [[scaled[0][0]],[scaled[0][0]],[1]] );
+      scaled = math.multiply(tmx2, [[scaled[0][0]],[scaled[1][0]],[1]] );
       var p = {x:scaled[0][0], y:scaled[1][0]};
       newer_bulkhead.push(p);
     }
