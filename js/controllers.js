@@ -189,7 +189,7 @@ $scope.add_flood_points = function(xsec, n) {
 $scope.plot_bulkheads = function(location_xy) {
   // Not much to do here except set the offsets and turn the bulkheads on.  partial1.html does the true plotting
   var spacingx = 15;
-  location_xy={x:0,y:0};  // debug
+  // location_xy={x:0,y:0};  // debug
   $scope.sst.bulkhead_placement_xy = location_xy;
   var run_pointx = 0;
   for (var i=0;i<$scope.sst.bulkheads.length;i++) {
@@ -260,12 +260,31 @@ $scope.generate_bulkheads = function() {
     var desired_height = Math.abs(y_side_1.y - y_side_2.y);
     var y_scale = desired_height / b4_height;
 
+    var trans_x = -bulkhead.extents.min_point.x;
+    var trans_y = -bulkhead.extents.min_point.y;
+
+    var tmx1 = [
+                 [1, 0, trans_x],
+                 [0, 1, trans_y],
+                 [9, 0, 1      ]
+               ];
+
+    var tmx2 = [
+                 [x_scale, 0,       0],
+                 [0,       y_scale, 0],
+                 [9,       0,       1]
+               ];
+
+    var tmx_1_2 = math.multiply(tmx1, tmx2);
+    var newer_bulkhead = [];
     for (j=0;j<new_bulkhead.length;j++) {
-      new_bulkhead[j].x *= x_scale;
-      new_bulkhead[j].y *= y_scale;
+      var scaled = math.multiply(tmx1, [[new_bulkhead[j].x],[new_bulkhead[j].y],[1]] );
+      //scaled = math.multiply(tmx2, [[scaled[0][0]],[scaled[0][0]],[1]] );
+      var p = {x:scaled[0][0], y:scaled[1][0]};
+      newer_bulkhead.push(p);
     }
 
-    bulkhead.shape = new_bulkhead;
+    bulkhead.shape = newer_bulkhead;
   }
 
   // Ask where the bulkheads will go
