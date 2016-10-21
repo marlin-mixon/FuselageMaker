@@ -192,7 +192,7 @@ $scope.plot_bulkheads = function(location_xy) {
   // location_xy={x:0,y:0};  // debug
   $scope.sst.bulkhead_placement_xy = location_xy;
   var run_pointx = 0;
-  for (var i=0;i<$scope.sst.bulkheads.length;i++) {
+  for (var i=1;i<$scope.sst.bulkheads.length;i++) {
     var b = $scope.sst.bulkheads[i];
     b.extents = $scope.get_extents(b.shape);
     b.display_offset = {x:(location_xy.x + run_pointx), y:location_xy.y};
@@ -207,7 +207,14 @@ $scope.generate_bulkheads = function() {
   var j;
   var nearest_lesser = {index: -1, dist:9999999999};
   var nearest_greater = {index: -1, dist:9999999999};
-  for (i=0;i<$scope.sst.bulkheads.length;i++) {
+  var top_tmxs = $scope.get_tmx_horizontal($scope.sst.top.reference_line.nose, $scope.sst.top.reference_line.tail);
+  var side_tmxs = $scope.get_tmx_horizontal($scope.sst.side.reference_line.nose, $scope.sst.side.reference_line.tail);
+  var ortho_side_top_outline = $scope.transform_array($scope.sst.side.top_outline, side_tmxs.tmx);
+  var ortho_side_bottom_outline = $scope.transform_array($scope.sst.side.bottom_outline, side_tmxs.tmx);
+  var ortho_top_left_outline = $scope.transform_array($scope.sst.top.left_outline, top_tmxs.tmx);
+  //$scope.sst.bulkheads.shift(); //Don't know where this unwanted bulkhead is coming from.  Bug from somewhere but for now just get rid of it.
+
+  for (i=1;i<$scope.sst.bulkheads.length;i++) {
     var bulkhead  = $scope.sst.bulkheads[i];
     for (j=0;j<$scope.sst.xsecs.length;j++) {
       var xsec = $scope.sst.xsecs[j];
@@ -246,17 +253,28 @@ $scope.generate_bulkheads = function() {
     // Determine it's current width/height
     bulkhead.extents = $scope.get_extents(new_bulkhead);
 
+    var result = $scope.is_point_in_top_or_side(bulkhead);
+    if (result.location === 'none' || result.location === 'all') {
+      alert("Bulkhead location is not in top/bottom nor side view zones");
+      return;
+    }
+    // args {tmxs: top_tmxs, recvr: top_disp_recvr}
+    if (result.location === "top") {
+      var ortho_point = $scope.transform(bulkhead, top_tmxs.tmx);  // make sure passing bulkhead as a point is ok
+    } else if (result.location === "side") {
+      var ortho_point = $scope.transform(bulkhead, side_tmxs.tmx); // make sure passing bulkhead as a point is ok
+    }
+
     // Need to scale bulkhead x and y to fit side and top outlines.
     var b4_width = bulkhead.extents.max_point.x - bulkhead.extents.min_point.x;
-    var top_tmxs = $scope.get_tmx_horizontal($scope.sst.top.reference_line.nose, $scope.sst.top.reference_line.tail);
     var x_top_ref = $scope.transform($scope.sst.top.reference_line.nose, top_tmxs.tmx);
-    var desired_width = Math.abs($scope.outline_as_function(bulkhead.x, top_tmxs.tmx, $scope.sst.top.left_outline).y - x_top_ref.x);
+    var width_y = $scope.outline_as_function(ortho_point.x, ortho_top_left_outline).y
+    var desired_width = Math.abs(width_y - x_top_ref.x);
     var x_scale = desired_width / b4_width;
 
     var b4_height = bulkhead.extents.max_point.y - bulkhead.extents.min_point.y;
-    var side_tmxs = $scope.get_tmx_horizontal($scope.sst.side.reference_line.nose, $scope.sst.side.reference_line.tail);
-    var y_side_1 = $scope.outline_as_function(bulkhead.x, side_tmxs.tmx, $scope.sst.side.top_outline);
-    var y_side_2 = $scope.outline_as_function(bulkhead.x, side_tmxs.tmx, $scope.sst.side.bottom_outline);
+    var y_side_1 = $scope.outline_as_function(ortho_point.x, ortho_side_top_outline);
+    var y_side_2 = $scope.outline_as_function(ortho_point.x, ortho_side_bottom_outline);
     var desired_height = Math.abs(y_side_1.y - y_side_2.y);
     var y_scale = desired_height / b4_height;
 
@@ -275,13 +293,17 @@ $scope.generate_bulkheads = function() {
                  [9,       0,       1]
                ];
 
-    var tmx_1_2 = math.multiply(tmx1, tmx2);
+    //var tmx_1_2 = math.dotMultiply(tmx1, tmx2);
     var newer_bulkhead = [];
     for (j=0;j<new_bulkhead.length;j++) {
-      var scaled = math.multiply(tmx1, [[new_bulkhead[j].x],[new_bulkhead[j].y],[1]] );
-      scaled = math.multiply(tmx2, [[scaled[0][0]],[scaled[1][0]],[1]] );
-      var p = {x:scaled[0][0], y:scaled[1][0]};
-      newer_bulkhead.push(p);
+      new_bulkhead[j].x += trans_x;
+      new_bulkhead[j].y += trans_y;
+      new_bulkhead[j].x *= x_scale;
+      new_bulkhead[j].y *= y_scale;
+      //var scaled = math.multiply(tmx_1_2, [[new_bulkhead[j].x],[new_bulkhead[j].y],[1]] );
+      //scaled = math.multiply(tmx2, [[scaled[0][0]],[scaled[1][0]],[1]] );
+      //var p = {x:scaled[0][0], y:scaled[1][0]};
+      newer_bulkhead.push(new_bulkhead[j]);
     }
 
     bulkhead.shape = newer_bulkhead;
@@ -491,16 +513,13 @@ $scope.linear_interpolation = function(p1, p2, x) {
   return y;
 }
 
-$scope.outline_as_function = function(x, tmx, outline) {
-  var ortho_outline = [];
-  for (var i=0;i<outline.length-1;i++) {
-    ortho_outline[0] = (typeof ortho_outline[1] === "undefined" ? $scope.transform(outline[i], tmx) : ortho_outline[1]);
-    ortho_outline[1] = $scope.transform(outline[i+1], tmx);
+$scope.outline_as_function = function(x, ortho_outline) {
+  for (var i=1;i<ortho_outline.length-1;i++) {
     if (i===0 && x < ortho_outline[0].x) {
       return {y:999999, message:'Point location is outside the outline range (beyond nose)'};
     }
-    if (x > ortho_outline[0].x && x < ortho_outline[1].x) {
-      var y = $scope.linear_interpolation( ortho_outline[0], ortho_outline[1], x);
+    if (x > ortho_outline[i-1].x && x < ortho_outline[i].x) {
+      var y = $scope.linear_interpolation( ortho_outline[i-1], ortho_outline[i], x);
       return {y:y, message:''};
     }
   }
@@ -520,11 +539,14 @@ $scope.make_display_point = function(args) {
   } else if (result.location === "side") {
     var ortho_point = $scope.transform(point, args.side_tmxs.tmx);
   }
+  var ortho_top_left_outline = $scope.transform_array($scope.sst.top.left_outline, args.top_tmxs.tmx);
+  var ortho_side_bottom_outline = $scope.transform_array($scope.sst.side.bottom_outline, args.side_tmxs.tmx);
+  var ortho_side_top_outline = $scope.transform_array($scope.sst.side.top_outline, args.side_tmxs.tmx);
   var ortho_top_center_line = $scope.transform($scope.sst.top.reference_line.nose, args.top_tmxs.tmx);
   var ortho_center_point = {x:ortho_point.x, y:ortho_top_center_line.y};
-  var res_outline = $scope.outline_as_function(ortho_point.x, args.top_tmxs.tmx, $scope.sst.top.left_outline);
-  var res_top_outline = $scope.outline_as_function(ortho_point.x, args.side_tmxs.tmx, $scope.sst.side.top_outline);
-  var res_bottom_outline = $scope.outline_as_function(ortho_point.x, args.side_tmxs.tmx, $scope.sst.side.bottom_outline);
+  var res_outline = $scope.outline_as_function(ortho_point.x, ortho_top_left_outline);
+  var res_top_outline = $scope.outline_as_function(ortho_point.x, ortho_side_top_outline);
+  var res_bottom_outline = $scope.outline_as_function(ortho_point.x, ortho_side_bottom_outline);
   if (res_outline.message !== "") {
     alert(res_outline.message);
     return;
@@ -702,6 +724,14 @@ $scope.transform = function(pt, tmx) {
   var pt_matrix = [[pt.x],[pt.y],[1]];
   var result_matrix = math.multiply(tmx, pt_matrix);
   return {x:result_matrix[0][0], y:result_matrix[1][0]};
+}
+
+$scope.transform_array = function(pts, tmx) {
+  var new_pts = [];
+  for (var i=0;i<pts.length;i++) {
+    new_pts.push($scope.transform(pts[i], tmx));
+  }
+  return new_pts;
 }
 
 $scope.orthofix_ref_line = function(obj, obj2) {
