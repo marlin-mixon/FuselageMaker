@@ -205,8 +205,7 @@ $scope.generate_bulkheads = function() {
   // for each bulkhead
   var i;
   var j;
-  var nearest_lesser = {index: -1, dist:9999999999};
-  var nearest_greater = {index: -1, dist:9999999999};
+
   var top_tmxs = $scope.get_tmx_horizontal($scope.sst.top.reference_line.nose, $scope.sst.top.reference_line.tail);
   var side_tmxs = $scope.get_tmx_horizontal($scope.sst.side.reference_line.nose, $scope.sst.side.reference_line.tail);
   var ortho_side_top_outline = $scope.transform_array($scope.sst.side.top_outline, side_tmxs.tmx);
@@ -216,6 +215,8 @@ $scope.generate_bulkheads = function() {
 
   for (i=1;i<$scope.sst.bulkheads.length;i++) {
     var bulkhead  = $scope.sst.bulkheads[i];
+    var nearest_lesser = {index: -1, dist:9999999999};
+    var nearest_greater = {index: -1, dist:9999999999};
     for (j=0;j<$scope.sst.xsecs.length;j++) {
       var xsec = $scope.sst.xsecs[j];
       if (xsec.station.x > bulkhead.x) {
