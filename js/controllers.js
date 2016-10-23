@@ -139,6 +139,46 @@ $scope.get_extents = function(shape) {
   return {min_point: {x:minx,y:miny}, max_point: {x:maxx,y:maxy}}
 }
 
+$scope.dist = function(p1, p2) {
+  var dx = p1.x - p2.x;
+  var dy = p1.y - p2.y;
+  return Math.sqrt(dx*dx + dy*dy) ;
+}
+
+$scope.add_flood_points_newest = function(xsec, n_total) {
+  var i;
+  // get total length
+  var total_dist = 0;
+  for (i=xsec.xsec.length-1;i>=1;i--) {
+    var the_dist = $scope.dist({x:xsec.xsec[i].x, y:xsec.xsec[i].y},{x:xsec.xsec[i-1].x, y:xsec.xsec[i-1].y});
+    if (the_dist === 0) {
+      xsec.xsec.splice(i,1);  // remmove point identical to neighbor
+    }
+    total_dist += the_dist;
+    xsec.xsec[i-1].dist = the_dist;
+  }
+  var n = n_total - xsec.xsec.length;
+  var short_dist = total_dist / n;
+  var flooded_xsec = [{x:xsec.xsec[0].x, y:xsec.xsec[0].y}];
+  var cum_dist = short_dist;
+  for (i=1;i<xsec.xsec.length;i++) {
+    var x1 = xsec.xsec[i-1].x;
+    var y1 = xsec.xsec[i-1].y;
+    var theta = Math.atan2( (y1 - xsec.xsec[i].y), (x1 - xsec.xsec[i].x) );
+    while (cum_dist < xsec.xsec[i-1].dist) {
+      var x2 = x1 + Math.cos(theta)*cum_dist;
+      var y2 = y1 + Math.sin(theta)*cum_dist;
+      flooded_xsec.push({x:x2,y:y2});
+      cum_dist += short_dist;
+    }
+    flooded_xsec.pop();  //Remove last point b/c it went too far
+    var partial_dist = $scope.dist({x:x2,y:y2}, {x:xsec.xsec[i].x,y:xsec.xsec[i].y});
+    var remain_dist = xsec.xsec[i-1].dist - partial_dist;
+    cum_dist = remain_dist;
+  }
+  return flooded_xsec;
+}
+
 $scope.add_flood_points = function(xsec, n) {
   var r;
   var theta_start = -(Math.PI * 0.5)
@@ -219,14 +259,14 @@ $scope.generate_bulkheads = function() {
     var nearest_greater = {index: -1, dist:9999999999};
     for (j=0;j<$scope.sst.xsecs.length;j++) {
       var xsec = $scope.sst.xsecs[j];
-      if (xsec.station.x > bulkhead.x) {
-        var greater_dist = xsec.station.x - bulkhead.x;
+      if (xsec.station[0].x > bulkhead.x) {
+        var greater_dist = xsec.station[0].x - bulkhead.x;
         if (nearest_greater.dist > greater_dist) {
           nearest_greater.dist = greater_dist;
           nearest_greater.index = j
         }
       } else {
-        var lesser_dist = bulkhead.x - xsec.station.x;
+        var lesser_dist = bulkhead.x - xsec.station[0].x;
         if (nearest_lesser.dist > lesser_dist) {
           nearest_lesser.dist = lesser_dist;
           nearest_lesser.index = j
@@ -234,7 +274,7 @@ $scope.generate_bulkheads = function() {
       }
       // Determine if we have generated flood points for the cross section yet and add if needed
       if (!xsec.flood_points) {
-        xsec.flood_points = $scope.add_flood_points(xsec, 200);
+        xsec.flood_points = $scope.add_flood_points_newest(xsec, 200);
       }
     }
     // we have the bulkhead location and the two nearest xsecs
@@ -243,11 +283,11 @@ $scope.generate_bulkheads = function() {
     var new_bulkhead = [];
     for (j=0;j<lesser.flood_points.length;j++) {
       // For 3d, we just do this twice from two points of view.
-      var pvx = $scope.linear_interpolation({x:lesser.station.x,y:lesser.flood_points[j].x},
-                                            {x:greater.station.x,y:greater.flood_points[j].x},
+      var pvx = $scope.linear_interpolation({x:lesser.station[0].x,y:lesser.flood_points[j].x},
+                                            {x:greater.station[0].x,y:greater.flood_points[j].x},
                                             bulkhead.x);
-      var pvy = $scope.linear_interpolation({x:lesser.station.x,y:lesser.flood_points[j].y},
-                                            {x:greater.station.x,y:greater.flood_points[j].y},
+      var pvy = $scope.linear_interpolation({x:lesser.station[0].x,y:lesser.flood_points[j].y},
+                                            {x:greater.station[0].x,y:greater.flood_points[j].y},
                                             bulkhead.x);
       new_bulkhead.push({x:pvx,y:pvy});
     }
@@ -797,6 +837,9 @@ $scope.clean_up_xsecs = function() {
   for (i=$scope.sst.xsecs.length-1;i>=0;i--) {
     if ($scope.is_empty($scope.sst.xsecs[i].station) || $scope.sst.xsecs[i].xsec.length === 0) {
       $scope.sst.xsecs.splice(i,1);
+    }
+    if ($scope.sst.xsecs[i].xsec.length === 0) {
+      $scope.sst.xsecs.splice(i,1);  // Eliminate empty cross section
     }
   }
   if (!$scope.sst.side.zone.length === 2) {
