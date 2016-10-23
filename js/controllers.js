@@ -160,21 +160,21 @@ $scope.add_flood_points_newest = function(xsec, n_total) {
   var n = n_total - xsec.xsec.length;
   var short_dist = total_dist / n;
   var flooded_xsec = [{x:xsec.xsec[0].x, y:xsec.xsec[0].y}];
-  var cum_dist = short_dist;
+  var accum_dist = short_dist;
   for (i=1;i<xsec.xsec.length;i++) {
     var x1 = xsec.xsec[i-1].x;
     var y1 = xsec.xsec[i-1].y;
-    var theta = Math.atan2( (y1 - xsec.xsec[i].y), (x1 - xsec.xsec[i].x) );
-    while (cum_dist < xsec.xsec[i-1].dist) {
-      var x2 = x1 + Math.cos(theta)*cum_dist;
-      var y2 = y1 + Math.sin(theta)*cum_dist;
+    var theta = Math.atan2( (xsec.xsec[i].y - y1), (xsec.xsec[i].x - x1) );
+    while (accum_dist < xsec.xsec[i-1].dist) {
+      var x2 = x1 + Math.cos(theta)*accum_dist;
+      var y2 = y1 + Math.sin(theta)*accum_dist;
       flooded_xsec.push({x:x2,y:y2});
-      cum_dist += short_dist;
+      accum_dist += short_dist;
     }
     flooded_xsec.pop();  //Remove last point b/c it went too far
     var partial_dist = $scope.dist({x:x2,y:y2}, {x:xsec.xsec[i].x,y:xsec.xsec[i].y});
     var remain_dist = xsec.xsec[i-1].dist - partial_dist;
-    cum_dist = remain_dist;
+    accum_dist = remain_dist;
   }
   return flooded_xsec;
 }
@@ -232,7 +232,7 @@ $scope.plot_bulkheads = function(location_xy) {
   // location_xy={x:0,y:0};  // debug
   $scope.sst.bulkhead_placement_xy = location_xy;
   var run_pointx = 0;
-  for (var i=1;i<$scope.sst.bulkheads.length;i++) {
+  for (var i=0;i<$scope.sst.bulkheads.length;i++) {
     var b = $scope.sst.bulkheads[i];
     b.extents = $scope.get_extents(b.shape);
     b.display_offset = {x:(location_xy.x + run_pointx), y:location_xy.y};
@@ -253,7 +253,7 @@ $scope.generate_bulkheads = function() {
   var ortho_top_left_outline = $scope.transform_array($scope.sst.top.left_outline, top_tmxs.tmx);
   //$scope.sst.bulkheads.shift(); //Don't know where this unwanted bulkhead is coming from.  Bug from somewhere but for now just get rid of it.
 
-  for (i=1;i<$scope.sst.bulkheads.length;i++) {
+  for (i=0;i<$scope.sst.bulkheads.length;i++) {
     var bulkhead  = $scope.sst.bulkheads[i];
     var nearest_lesser = {index: -1, dist:9999999999};
     var nearest_greater = {index: -1, dist:9999999999};
