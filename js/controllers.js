@@ -669,6 +669,19 @@ $scope.destroy_xsecs = function() {
     }
   }
 };
+$scope.destroy = function(obj, sing_noun, plural_noun) {
+  if (obj.length == 1) {
+    if (window.confirm('Are you sure you want to destroy the ' + sing_noun)) {
+      obj = [];
+    }
+  } else if (obj.length > 1) {
+    if (window.confirm('Are you sure you want to destroy all ' + obj.length + ' ' + plural_noun + '?')) {
+      obj = [];
+    }
+  } else {
+    alert('Nothing to delete')
+  }
+};
 $scope.is_empty = function(obj) {
     for(var prop in obj) {
         if(obj.hasOwnProperty(prop))

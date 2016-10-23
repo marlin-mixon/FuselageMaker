@@ -138,46 +138,132 @@
 .instruction {
   color: red;
 }
-</style>
-<div id='the-toolbox-2' class="toolbox">
-<ul>
-<li>Define Side View</li>
-<ul>
-<li ng-click='set_box(sst.side.zone)'>Set Side View Zone Box</li>
-<li ng-click='set_line(sst.side.reference_line)'>Define reference line</li>
-<li ng-click='set_arc(sst.side.top_outline, true)'>Digitize fuselage outline upper</li>
-<li ng-click='set_arc(sst.side.bottom_outline, true)'>Digitize fuselage outline lower</li>
-</ul>
-<li>Define Top/Bottom View</li>
-<ul>
-<li ng-click='set_box(sst.top.zone)'>Set Top/Bottom View Zone Box</li>
-<li ng-click='set_line(sst.top.reference_line)'>Define center line</li>
-<li ng-click='set_arc(sst.top.left_outline, true)'>Digitize fuselage outline left</li>
-<li ng-click='set_arc(sst.top.right_outline, true)'>Digitize fuselage outline right</li>
-</ul>
-<li>Digitize Cross Sections</li>
-<ul>
-<li ng-click='set_xsec_point_and_arc(sst.xsecs, sst.top, sst.side)'>Add a new cross section</li>
-<li ng-click='destroy_xsecs()'>Destroy ALL cross sections</li>
-<li ng-click='clean_up_xsecs()'>Clean up cross sections (removes malformed)</li>
-</ul>
-<li>Bulkheads</li>
-<ul>
-<li ng-click='set_bulkhead_arc(sst.bulkheads, sst.top, sst.side)'>Mark Locations of Desired Bulkheads</li>
-<li ng-click='generate_bulkheads();'>Generate Bulkheads</li>
-</ul>
 
-</ul>
-<ul>
-<li>Other Commands</li>
-<ul>
-<li ng-click='set_plan_image("")'>Hide plan image</li>
-<li ng-click='set_plan_image("img/p51_side.jpg")'>Show plan image</li>
-<li ng-click='save_data()'>Save Your Work</li>
-<li ng-click='restore_data()'>Restore Your work</li>
-<li ng-click='model_integrity_check(sst, m)'>model_integrity_check</li>
-</ul>
-</ul>
+.toolbox {
+  font-family: calibri,arial,sans-serif;
+  font-size: 10pt;
+}
+
+/* Menu General Styles */
+.menuBackground {
+	background: brown;
+}
+.dropDownMenu a {
+	color: #FFF;
+}
+.dropDownMenu,
+.dropDownMenu ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.dropDownMenu li {
+	position: relative;
+}
+.dropDownMenu a {
+	padding: 10px 20px;
+	display: block;
+	text-decoration: none;
+}
+.dropDownMenu a:hover {
+	background: #000;
+}
+
+/* Level 1 Drop Down Menu */
+.dropDownMenu > li {
+	display: inline-block;
+	vertical-align: top;
+	margin-left: -4px; /* solve the 4 pixels spacing between list-items */
+}
+.dropDownMenu > li:first-child {
+	margin-left: 0;
+}
+.dropDownMenu > li > a {}
+.dropDownMenu > li > a:hover {}
+
+/* Level 2 */
+.dropDownMenu > li > ul {
+	text-align: left;
+	width: auto; /* change auto value with 200px if you want a bigger menu */
+	display: none;
+	background: #5DBB04;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	z-index: 9999999; /* if you have YouTube iframes, is good to have a bigger z-index so the video can appear above the video */
+}
+.dropDownMenu > li:hover > ul {
+	display: block;
+}
+.dropDownMenu ul li a {}
+.dropDownMenu ul li a:hover {}
+
+  /* Level 3 */
+  .dropDownMenu > li > ul > li > ul {
+  	text-align: left;
+  	display: none;
+  	background: #E7B400;
+  	position: absolute;
+  	left: 100%;
+  	top: 0;
+  	z-index: 9999999;
+  }
+  .dropDownMenu > li > ul > li:hover > ul {
+  	display: block;
+  }
+  .dropDownMenu ul ul li {}
+  .dropDownMenu ul ul li a {}
+  .dropDownMenu ul ul li a:hover {}
+
+
+</style>
+
+<div id='the-toolbox-2' class="toolbox">
+<div class="menuBackground">
+	<ul class="dropDownMenu">
+		<li><a href="#">Define Side View</a>
+      <ul>
+        <li ng-click='set_box(sst.side.zone)'><a href="#">Set Side View Zone Box</a></li>
+        <li ng-click='set_line(sst.side.reference_line)'><a href="#">Define reference line</a></li>
+        <li ng-click='set_arc(sst.side.top_outline, true)'><a href="#">Digitize fuselage outline upper</a></li>
+        <li ng-click='set_arc(sst.side.bottom_outline, true)'><a href="#">Digitize fuselage outline lower</a></li>
+      </ul>
+    </li>
+		<li><a href="#">Define Top/Bottom View</a>
+			<ul>
+        <li ng-click='set_box(sst.top.zone)'><a href="#">Set Top/Bottom View Zone Box</a></li>
+        <li ng-click='set_line(sst.top.reference_line)'><a href="#">Define center line</a></li>
+        <li ng-click='set_arc(sst.top.left_outline, true)'><a href="#">Digitize fuselage outline left</a></li>
+        <li ng-click='set_arc(sst.top.right_outline, true)'><a href="#">Digitize fuselage outline right</a></li>
+			</ul>
+		</li>
+		<li><a href="#">Digitize Cross Sections</a>
+			<ul>
+        <li ng-click='set_xsec_point_and_arc(sst.xsecs, sst.top, sst.side)'><a href="#">Add a new cross section</a></li>
+        <li ng-click='destroy_xsecs()'><a href="#">Destroy ALL cross sections</a></li>
+        <li ng-click='clean_up_xsecs()'><a href="#">Clean up cross sections (removes malformed)</a></li>>
+			</ul>
+		</li>
+		<li><a href="#">Bulkheads</a>
+			<ul>
+        <li ng-click='set_bulkhead_arc(sst.bulkheads, sst.top, sst.side)'><a href="#">Mark Locations of Desired Bulkheads</a></li>
+        <li ng-click='generate_bulkheads();'><a href="#">Generate Bulkheads</a></li>
+        <li ng-click='destroy(sst.bulkheads,"bulkhead","bulkheads");'><a href="#">Destroy ALL Bulkheads</a></li>
+			</ul>
+		</li>
+    <li><a href="#">Other Commands</a>
+			<ul>
+        <li ng-click='set_plan_image("")'><a href="#">Hide plan image</a></li>
+        <li ng-click='set_plan_image("img/p51_side.jpg")'><a href="#">Show plan image</a></li>
+        <li ng-click='save_data()'><a href="#">Save Your Work</a></li>
+        <li ng-click='restore_data()'><a href="#">Restore Your work</a></li>
+        <li ng-click='model_integrity_check(sst, m)'><a href="#">model_integrity_check</a></li>
+			</ul>
+		</li>
+	</ul>
+</div>
+
+
 <br/>
 <button id="done-button" type="button" ng-click='done_button();'>Done</button>
 <button id="undo-button" type="button" ng-click='undo_point();'>Undo Point</button>
