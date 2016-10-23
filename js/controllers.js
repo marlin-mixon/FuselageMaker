@@ -170,7 +170,7 @@ $scope.add_flood_points = function(xsec, n) {
                                                   xsec.xsec[index].x, xsec.xsec[index].y );
     if ( ! new_point.onLine2 ) {
       index++;
-      while ( ! new_point.onLine2 && index < xsec.xsec.length - 1 ) {  // This loop normally executes one iteration
+      while ( ! new_point.onLine2 && index < xsec.xsec.length - 1 && flood.length < n ) {  // This loop normally executes one iteration
         new_point = $scope.checkLineIntersection( offx, offy,
                                                   x, y,
                                                   xsec.xsec[index-1].x, xsec.xsec[index-1].y,
@@ -808,8 +808,8 @@ $scope.clean_up_xsecs = function() {
     return;
   }
   for (i=$scope.sst.xsecs.length-1;i>=0;i--) {
-    var is_in_top = $scope.is_point_in_view_zone('top', $scope.sst.xsecs[i].station);
-    var is_in_side = $scope.is_point_in_view_zone('side', $scope.sst.xsecs[i].station);
+    var is_in_top = $scope.is_point_in_view_zone('top', $scope.sst.xsecs[i].station[0]);
+    var is_in_side = $scope.is_point_in_view_zone('side', $scope.sst.xsecs[i].station[0]);
     // Make sure station point is in one of the side or top zone boxes
     if (is_in_top || is_in_side) {
          // It's good!
