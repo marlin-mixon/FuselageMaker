@@ -16,7 +16,8 @@ $scope.set_xy_arc_click = function(element) {
 };
 $scope.op_seq = [];
 $scope.show_plan_image = true;
-
+$scope.sst2 = {};
+$scope.sst2.show_bulkheads = false;
 $scope.sst = {
   side: {
     zone: {
@@ -256,7 +257,8 @@ $scope.plot_bulkheads = function(location_xy) {
   // Not much to do here except set the offsets and turn the bulkheads on.  partial1.html does the true plotting
   var spacingx = 15;
   // location_xy={x:0,y:0};  // debug
-  $scope.sst.bulkhead_placement_xy = location_xy;
+  // $scope.sst2.bulkhead_placement_xy = location_xy;
+  $scope.sst2.show_bulkheads = true;
   var run_pointx = 0;
   for (var i=0;i<$scope.sst.bulkheads.length;i++) {
     var b = $scope.sst.bulkheads[i];
@@ -383,11 +385,11 @@ $scope.generate_bulkheads = function() {
   }
 
   // Ask where the bulkheads will go
-  $scope.sst.bulkhead_plot_location = {x:0,y:0};
-  $scope.set_point($scope.sst.bulkhead_plot_location, false, 'Click where you want the bulkheads to be placed (they fill in horizontally to the right)');
+  $scope.sst2.bulkhead_plot_location = {x:0,y:0};
+  $scope.set_point($scope.sst2.bulkhead_plot_location, false, 'Click where you want the bulkheads to be placed (they fill in horizontally to the right)');
   $scope.op_seq.push({
     handler: $scope.plot_bulkheads,
-    dest: $scope.sst.bulkhead_plot_location,
+    dest: $scope.sst2.bulkhead_plot_location,
     is_loop: false,
     dont_want_coord: true,
     instruction: 'Pretty bulkheads!'
@@ -941,6 +943,7 @@ $scope.initialize_toolbox = function() {
   $scope.set_display('done-button', $scope.show_done_button)
 };
 
+$scope.sst2.bulkhead_placement_xy = {x:-200,y:-50};
 $scope.is_dirty = false;
 $scope.show_done_button = false;
 $scope.show_undo_button = false;

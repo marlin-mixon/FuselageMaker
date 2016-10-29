@@ -1,4 +1,25 @@
-
+<div ng-show="sst2.show_bulkheads">
+  <svg width="3000" height="300">
+    <!-- All final bulkheads -->
+    <g ng-show="sst.show_final_bulkheads" ng-repeat="bulkhead in sst.bulkheads">
+      <g ng-repeat="point in bulkhead.shape">
+        <line ng-show="$index > 0"
+          ng-attr-x1="{{sst.bulkheads[$parent.$index].shape[$index-1].x + sst2.bulkhead_placement_xy.x + sst.bulkheads[$parent.$index].display_offset.x}}"
+          ng-attr-y1="{{sst.bulkheads[$parent.$index].shape[$index-1].y + sst2.bulkhead_placement_xy.y + sst.bulkheads[$parent.$index].display_offset.y}}"
+          ng-attr-x2="{{point.x + sst2.bulkhead_placement_xy.x + sst.bulkheads[$parent.$index].display_offset.x}}"
+          ng-attr-y2="{{point.y + sst2.bulkhead_placement_xy.y + sst.bulkheads[$parent.$index].display_offset.y}}"
+          stroke-width="1" stroke="lime" fill="none"/>
+      </g>
+      <line ng-show="sst.show_final_bulkheads"
+        ng-attr-x1="{{sst.bulkheads[$index].shape[0].x + sst2.bulkhead_placement_xy.x + sst.bulkheads[$index].display_offset.x}}"
+        ng-attr-y1="{{sst.bulkheads[$index].shape[0].y + sst2.bulkhead_placement_xy.y + sst.bulkheads[$index].display_offset.y}}"
+        ng-attr-x2="{{sst.bulkheads[$index].shape[sst.bulkheads[$index].shape.length-1].x + sst2.bulkhead_placement_xy.x + sst.bulkheads[$index].display_offset.x}}"
+        ng-attr-y2="{{sst.bulkheads[$index].shape[sst.bulkheads[$index].shape.length-1].y + sst2.bulkhead_placement_xy.y + sst.bulkheads[$index].display_offset.y}}"
+        stroke-width="1" stroke="lime" fill="none"/>
+    </g>
+  </svg>
+  <button id="save-final-button" type="button" ng-click='save_final_button();'>Save To File</button>
+</div>
 <div ng-click="click_on_image($event)" class="desktop-panel" style="{{sst.background_3view.length > 0 ? 'background-image: url(data:image/jpg;base64,'+sst.background_3view+') no-repeat;' : 'background: url('+sst.plan_image+') no-repeat;'}}"">
 <svg id="the-svg" width="3000" height="3000">
 <rect id="sideview-box"
@@ -70,24 +91,6 @@
       ng-attr-y2="{{point.y}}"
       stroke-width="1" stroke="red" fill="none"/>
   </g>
-</g>
-
-<!-- All final bulkheads -->
-<g ng-show="sst.show_final_bulkheads" ng-repeat="bulkhead in sst.bulkheads">
-  <g ng-repeat="point in bulkhead.shape">
-    <line ng-show="$index > 0"
-      ng-attr-x1="{{sst.bulkheads[$parent.$index].shape[$index-1].x + sst.bulkhead_placement_xy.x + sst.bulkheads[$parent.$index].display_offset.x}}"
-      ng-attr-y1="{{sst.bulkheads[$parent.$index].shape[$index-1].y + sst.bulkhead_placement_xy.y + sst.bulkheads[$parent.$index].display_offset.y}}"
-      ng-attr-x2="{{point.x + sst.bulkhead_placement_xy.x + sst.bulkheads[$parent.$index].display_offset.x}}"
-      ng-attr-y2="{{point.y + sst.bulkhead_placement_xy.y + sst.bulkheads[$parent.$index].display_offset.y}}"
-      stroke-width="1" stroke="lime" fill="none"/>
-  </g>
-  <line ng-show="sst.show_final_bulkheads"
-    ng-attr-x1="{{sst.bulkheads[$index].shape[0].x + sst.bulkhead_placement_xy.x + sst.bulkheads[$index].display_offset.x}}"
-    ng-attr-y1="{{sst.bulkheads[$index].shape[0].y + sst.bulkhead_placement_xy.y + sst.bulkheads[$index].display_offset.y}}"
-    ng-attr-x2="{{sst.bulkheads[$index].shape[sst.bulkheads[$index].shape.length-1].x + sst.bulkhead_placement_xy.x + sst.bulkheads[$index].display_offset.x}}"
-    ng-attr-y2="{{sst.bulkheads[$index].shape[sst.bulkheads[$index].shape.length-1].y + sst.bulkhead_placement_xy.y + sst.bulkheads[$index].display_offset.y}}"
-    stroke-width="1" stroke="lime" fill="none"/>
 </g>
 
 <!-- All top bulkhead locations -->
