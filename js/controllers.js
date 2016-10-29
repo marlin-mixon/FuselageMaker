@@ -86,6 +86,20 @@ $scope.sst = {
   bulkheads: []
 };
 
+$scope.set_3view = function() {
+  $scope.set_display('select-background', true);
+};
+$scope.add = function(){
+  var f = $rootScope.window.document.getElementById('background_file').files[0];
+  var r = new FileReader();
+  r.onloadend = function(e){
+    var data = btoa(e.target.result);
+    $scope.sst.background_3view = data;
+    //send your binary data via $http or $resource or do anything else with it
+  }
+  r.readAsBinaryString(f);
+}
+
 $scope.checkLineIntersection = function(line1StartX, line1StartY, line1EndX, line1EndY, line2StartX, line2StartY, line2EndX, line2EndY) {
     // if the lines intersect, the result contains the x and y of the intersection (treating the lines as infinite) and booleans for whether line segment 1 or line segment 2 contain the point
     var denominator, a, b, numerator1, numerator2, result = {
@@ -150,32 +164,44 @@ $scope.add_flood_points_newest = function(xsec, n_total) {
   // get total length
   var total_dist = 0;
   for (i=xsec.xsec.length-1;i>=1;i--) {
+    if (xsec.xsec[i].x === xsec.xsec[i-1].x && xsec.xsec[i].y === xsec.xsec[i-1].y) {
+      xsec.xsec.splice(i,1);  // remmove point because it's identical to neighbor
+      continue;
+    }
     var the_dist = $scope.dist({x:xsec.xsec[i].x, y:xsec.xsec[i].y},{x:xsec.xsec[i-1].x, y:xsec.xsec[i-1].y});
     if (the_dist === 0) {
-      xsec.xsec.splice(i,1);  // remmove point identical to neighbor
+      xsec.xsec.splice(i,1);  // remmove point because it's identical to neighbor
+      continue;
     }
     total_dist += the_dist;
-    xsec.xsec[i-1].dist = the_dist;
+    xsec.xsec[i].dist = the_dist;
   }
-  var n = n_total - xsec.xsec.length;
+  var n = n_total + xsec.xsec.length;
+  // var n = n_total;
   var short_dist = total_dist / n;
   var flooded_xsec = [{x:xsec.xsec[0].x, y:xsec.xsec[0].y}];
   var accum_dist = short_dist;
+  var ii;
+  var accum_total_dist = 0;
+  i = 1;
   for (i=1;i<xsec.xsec.length;i++) {
     var x1 = xsec.xsec[i-1].x;
     var y1 = xsec.xsec[i-1].y;
     var theta = Math.atan2( (xsec.xsec[i].y - y1), (xsec.xsec[i].x - x1) );
-    while (accum_dist < xsec.xsec[i-1].dist) {
+    while (accum_dist < xsec.xsec[i].dist) {
       var x2 = x1 + Math.cos(theta)*accum_dist;
       var y2 = y1 + Math.sin(theta)*accum_dist;
       flooded_xsec.push({x:x2,y:y2});
       accum_dist += short_dist;
+      accum_total_dist += short_dist;
     }
-    flooded_xsec.pop();  //Remove last point b/c it went too far
+    flooded_xsec.pop();  //Remove last point because it went too far
     var partial_dist = $scope.dist({x:x2,y:y2}, {x:xsec.xsec[i].x,y:xsec.xsec[i].y});
-    var remain_dist = xsec.xsec[i-1].dist - partial_dist;
-    accum_dist = remain_dist;
+    //var remain_dist = xsec.xsec[i].dist - partial_dist;
+    accum_dist = partial_dist;
+    ii = i;
   }
+  flooded_xsec.push(xsec.xsec[ii]);
   return flooded_xsec;
 }
 
@@ -281,13 +307,19 @@ $scope.generate_bulkheads = function() {
     var lesser = $scope.sst.xsecs[nearest_lesser.index];
     var greater = $scope.sst.xsecs[nearest_greater.index];
     var new_bulkhead = [];
-    for (j=0;j<lesser.flood_points.length;j++) {
+    var end = lesser.flood_points.length > greater.flood_points.length ? greater.flood_points.length : lesser.flood_points.length;
+    for (j=0;j<end;j++) {
       // For 3d, we just do this twice from two points of view.
-      var pvx = $scope.linear_interpolation({x:lesser.station[0].x,y:lesser.flood_points[j].x},
-                                            {x:greater.station[0].x,y:greater.flood_points[j].x},
+      var jlesser = j; var jgreater = j;
+      if (j === end - 1) {
+        jlesser = lesser.flood_points.length - 1;
+        jgreater = greater.flood_points.length -1;
+      }
+      var pvx = $scope.linear_interpolation({x:lesser.station[0].x,y:lesser.flood_points[jlesser].x},
+                                            {x:greater.station[0].x,y:greater.flood_points[jgreater].x},
                                             bulkhead.x);
-      var pvy = $scope.linear_interpolation({x:lesser.station[0].x,y:lesser.flood_points[j].y},
-                                            {x:greater.station[0].x,y:greater.flood_points[j].y},
+      var pvy = $scope.linear_interpolation({x:lesser.station[0].x,y:lesser.flood_points[jlesser].y},
+                                            {x:greater.station[0].x,y:greater.flood_points[jgreater].y},
                                             bulkhead.x);
       new_bulkhead.push({x:pvx,y:pvy});
     }
@@ -919,6 +951,8 @@ $scope.tool_box = document.getElementById('the-toolbox');
 $scope.tool_box_width = 300;
 $scope.tool_box_height = 500;
 $scope.sst.show_final_bulkheads = false;
+$scope.set_display('select-background', false);
+$scope.sst.background_3view = "";
 }])
 .controller('MyCtrl2', [function() {
 
