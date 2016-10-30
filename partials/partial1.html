@@ -18,9 +18,10 @@
         stroke-width="1" stroke="lime" fill="none"/>
     </g>
   </svg>
-  <button id="save-final-button" type="button" ng-click='save_final_button();'>Save To File</button>
+  <button id="save-final-button" type="button" ng-click='save_final_button();'><a href="#">Save To File</a></button>
 </div>
-<div ng-click="click_on_image($event)" class="desktop-panel" style="{{sst.background_3view.length > 0 ? 'background-image: url(data:image/jpg;base64,'+sst.background_3view+') no-repeat;' : 'background: url('+sst.plan_image+') no-repeat;'}}"">
+<img id="back-image" src="{{sst.background_3view.length > 0 ? 'data:image/jpg;base64,'+sst.background_3view : sst.plan_image}}" />
+<div id="back-image-div" ng-click="click_on_image($event)" class="desktop-panel" style="{{sst.background_3view.length > 0 ? 'background-image: url(data:image/jpg;base64,'+sst.background_3view+') no-repeat;' : 'background: url('+sst.plan_image+') no-repeat;'}}"">
 <svg id="the-svg" width="3000" height="3000">
 <rect id="sideview-box"
   ng-show="sst.side.zone.lower_left.x != null && sst.side.zone.lower_left.y != null && sst.side.zone.upper_right.x != null && sst.side.zone.upper_right.y != null"
@@ -265,7 +266,7 @@
         <li ng-click='set_plan_image("img/p51_side.jpg")'><a href="#">Show plan image</a></li>
         <li ng-click='save_data()'><a href="#">Save Your Work</a></li>
         <li ng-click='restore_data()'><a href="#">Restore Your work</a></li>
-        <li ng-click='model_integrity_check(sst, m)'><a href="#">model_integrity_check</a></li>
+        <li ng-click='model_integrity_check(sst, m)'><a href="#">Model Integrity Check</a></li>
 			</ul>
 		</li>
 	</ul>
@@ -284,7 +285,7 @@
 
 <div id="select-background">
   <input type="file" id="background_file" name="background_file"/>
-  <button ng-click="add()">Set as Background</button>
+  <button ng-click="add_image()">Set as Background</button>
 </div>
 
 <div ng-init="initialize_toolbox()"></div>

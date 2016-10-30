@@ -90,12 +90,13 @@ $scope.sst = {
 $scope.set_3view = function() {
   $scope.set_display('select-background', true);
 };
-$scope.add = function(){
+$scope.add_image = function(){
   var f = $rootScope.window.document.getElementById('background_file').files[0];
   var r = new FileReader();
   r.onloadend = function(e){
     var data = btoa(e.target.result);
     $scope.sst.background_3view = data;
+    $scope.safe_apply();
     //send your binary data via $http or $resource or do anything else with it
   }
   r.readAsBinaryString(f);
@@ -415,6 +416,10 @@ $scope.done_button = function() {
     $scope.transform_xsec_points();
   }
 }
+
+$scope.save_final_button = function() {
+
+};
 
 $scope.undo_point = function() {
   if ($scope.undoable) {

@@ -37,3 +37,15 @@
 .instruction {
   color: red;
 }
+
+back-image {
+
+}
+#back-image {
+    position: absolute;
+    z-index:-5000;
+}
+#back-image-div {
+    position: relative;
+    z-index: 2;
+}
