@@ -1,5 +1,5 @@
 <div ng-show="sst2.show_bulkheads">
-  <svg width="3000" height="300">
+  <svg id="svg-bulkheads" width="3000" height="300">
     <!-- All final bulkheads -->
     <g ng-show="sst.show_final_bulkheads" ng-repeat="bulkhead in sst.bulkheads">
       <g ng-repeat="point in bulkhead.shape">
@@ -18,7 +18,7 @@
         stroke-width="1" stroke="lime" fill="none"/>
     </g>
   </svg>
-  <button id="save-final-button" type="button" ng-click='save_final_button();'><a href="#">Save To File</a></button>
+  <button id="save-final-button" type="button" ng-click='make_svg();download_file(sst2.svg, "bulkheads.svg", "image/svg+xml");'><a href="#">Save To File</a></button>
 </div>
 <img id="back-image" src="{{sst.background_3view.length > 0 ? 'data:image/jpg;base64,'+sst.background_3view : sst.plan_image}}" />
 <div id="back-image-div" ng-click="click_on_image($event)" class="desktop-panel" style="{{sst.background_3view.length > 0 ? 'background-image: url(data:image/jpg;base64,'+sst.background_3view+') no-repeat;' : 'background: url('+sst.plan_image+') no-repeat;'}}"">
@@ -258,6 +258,7 @@
         <li ng-click='set_bulkhead_arc(sst.bulkheads, sst.top, sst.side)'><a href="#">Mark Locations of Desired Bulkheads</a></li>
         <li ng-click='generate_bulkheads();'><a href="#">Generate Bulkheads</a></li>
         <li ng-click='destroy(sst.bulkheads,"bulkhead","bulkheads");'><a href="#">Destroy ALL Bulkheads</a></li>
+        <li ng-click='make_svg();download_file(sst2.svg, "bulkheads.svg", "image/svg+xml");'><a href="#">Save Bulkheads to a file</a></li>
 			</ul>
 		</li>
     <li><a href="#">Other Commands</a>

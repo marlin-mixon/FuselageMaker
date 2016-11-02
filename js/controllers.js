@@ -386,8 +386,9 @@ $scope.generate_bulkheads = function() {
   }
 
   // Ask where the bulkheads will go
+
   $scope.sst2.bulkhead_plot_location = {x:0,y:0};
-  $scope.set_point($scope.sst2.bulkhead_plot_location, false, 'Click where you want the bulkheads to be placed (they fill in horizontally to the right)');
+  //$scope.set_point($scope.sst2.bulkhead_plot_location, false, 'Click where you want the bulkheads to be placed (they fill in horizontally to the right)');
   $scope.op_seq.push({
     handler: $scope.plot_bulkheads,
     dest: $scope.sst2.bulkhead_plot_location,
@@ -735,6 +736,33 @@ $scope.restore_data = function() {
   if (do_it) {
     $scope.sst = JSON.parse(localStorage.getItem('fuselage') );
     $scope.safe_apply();
+  }
+};
+$scope.make_svg = function() {
+  $scope.sst2.svg = $window.document.getElementById('svg-bulkheads').outerHTML;
+};
+$scope.download_file = function(content, file_name, mime_type) {
+  var a = document.createElement('a');
+  mime_type = mime_type || 'application/octet-stream';
+
+  if (navigator.msSaveBlob) { // IE10
+    return navigator.msSaveBlob(new Blob([content], { type: mime_type }),     fileName);
+  } else if ('download' in a) { //html5 A[download]
+    a.href = 'data:' + mime_type + ',' + encodeURIComponent(content);
+    a.setAttribute('download', file_name);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    return true;
+  } else { //do iframe dataURL download (old ch+FF):
+    var f = document.createElement('iframe');
+    document.body.appendChild(f);
+    f.src = 'data:' + mime_type + ',' + encodeURIComponent(content);
+
+    setTimeout(function() {
+      document.body.removeChild(f);
+    }, 333);
+    return true;
   }
 };
 $scope.destroy_xsecs = function() {
