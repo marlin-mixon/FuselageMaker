@@ -238,27 +238,59 @@ $scope.generate_bulkheads = function() {
   for (i=0;i<$scope.sst.bulkheads.length;i++) {
     var bulkhead  = $scope.sst.bulkheads[i];
     var mode = $scope.sst2.bulkhead_mode;
-    var nearest_lesser = {index: -1, dist:9999999999};
-    var nearest_greater = {index: -1, dist:9999999999};
-    for (j=0;j<$scope.sst.xsecs.length;j++) {
-      var xsec = $scope.sst.xsecs[j];
-      if (xsec.station[0].x > bulkhead.x) {
-        var greater_dist = xsec.station[0].x - bulkhead.x;
-        if (nearest_greater.dist > greater_dist) {
-          nearest_greater.dist = greater_dist;
-          nearest_greater.index = j
+    if (bulkhead.bulkhead_mode === 'normal') {
+      var nearest_lesser = {index: -1, dist:9999999999};
+      var nearest_greater = {index: -1, dist:9999999999};
+      for (j=0;j<$scope.sst.xsecs.length;j++) {
+        var xsec = $scope.sst.xsecs[j];
+        if (xsec.station[0].x > bulkhead.x) {
+          var greater_dist = xsec.station[0].x - bulkhead.x;
+          if (nearest_greater.dist > greater_dist) {
+            nearest_greater.dist = greater_dist;
+            nearest_greater.index = j
+          }
+        } else {
+          var lesser_dist = bulkhead.x - xsec.station[0].x;
+          if (nearest_lesser.dist > lesser_dist) {
+            nearest_lesser.dist = lesser_dist;
+            nearest_lesser.index = j
+          }
         }
-      } else {
-        var lesser_dist = bulkhead.x - xsec.station[0].x;
-        if (nearest_lesser.dist > lesser_dist) {
-          nearest_lesser.dist = lesser_dist;
-          nearest_lesser.index = j
+        // Determine if we have generated flood points for the cross section yet and add if needed
+        if (!xsec.flood_points) {
+          xsec.flood_points = $scope.add_flood_points_newest(xsec, 200);
         }
       }
-      // Determine if we have generated flood points for the cross section yet and add if needed
-      if (!xsec.flood_points) {
-        xsec.flood_points = $scope.add_flood_points_newest(xsec, 200);
+    } else {
+      // extrapolate 'extrapolate tail side' or 'extrapolate nose side'
+      var direction = 1;
+      if (bulkhead.bulkhead_mode === 'extrapolate nose side') {
+        direction = -1;
       }
+      var nearest_1 = {index: -1, dist:9999999999};
+      var nearest_2 = {index: -1, dist:9999999999};
+      for (j=0;j<$scope.sst.xsecs.length;j++) {
+        var xsec = $scope.sst.xsecs[j];
+        if (xsec.station[0].x > (bulkhead.x * direction) ) {
+          var dist1 = Math.abs(xsec.station[0].x - bulkhead.x);
+          if (dist1 < nearest_1.dist) {
+            nearest_1.dist = dist1;
+            nearest_1.index = j;
+          }
+          var dist2 = Math.abs(xsec.station[0].x - bulkhead.x);
+          if (dist2 < nearest_2.dist && dist2 > nearest_1.dist) {
+            nearest_2.dist = dist2;
+            nearest_2.index = j;
+          }
+        }
+        // Determine if we have generated flood points for the cross section yet and add if needed
+        if (!xsec.flood_points) {
+          xsec.flood_points = $scope.add_flood_points_newest(xsec, 200);
+        }
+      }
+      // arbitrarily assign nearest_lesser and nearest greater
+      nearest_lesser = nearest_1;
+      nearest_greater = nearest_2;
     }
     // we have the bulkhead location and the two nearest xsecs
     var lesser = $scope.sst.xsecs[nearest_lesser.index];
