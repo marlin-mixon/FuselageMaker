@@ -228,6 +228,9 @@
     <li><a href="#">File</a>
       <ul>
         <li ng-click='set_3view();'><a href="#">Set Background 3-view</a></li>
+        <li ng-click='save_data()'><a href="#">Quick Save</a></li>
+        <li ng-click='restore_data()'><a href="#">Quick Restore</a></li>
+        <li ng-click='make_fuselage();download_file(fuselage_serialized, "fuselage.json", "application/json");'><a href="#">Save Work To File</a></li>
       </ul>
     </li>
 		<li><a href="#">Define Side View</a>
@@ -265,8 +268,6 @@
 			<ul>
         <li ng-click='set_plan_image("")'><a href="#">Hide plan image</a></li>
         <li ng-click='set_plan_image("img/p51_side.jpg")'><a href="#">Show plan image</a></li>
-        <li ng-click='save_data()'><a href="#">Save Your Work</a></li>
-        <li ng-click='restore_data()'><a href="#">Restore Your work</a></li>
         <li ng-click='model_integrity_check(sst, m)'><a href="#">Model Integrity Check</a></li>
 			</ul>
 		</li>

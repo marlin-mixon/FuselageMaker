@@ -741,6 +741,9 @@ $scope.restore_data = function() {
 $scope.make_svg = function() {
   $scope.sst2.svg = $window.document.getElementById('svg-bulkheads').outerHTML;
 };
+$scope.make_fuselage = function() {
+  $scope.fuselage_serialized = JSON.stringify($scope.sst);
+};
 $scope.download_file = function(content, file_name, mime_type) {
   var a = document.createElement('a');
   mime_type = mime_type || 'application/octet-stream';
