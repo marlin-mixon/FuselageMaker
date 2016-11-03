@@ -148,6 +148,17 @@
   font-size: 10pt;
 }
 
+.button {
+    appearance: button;
+    -moz-appearance: button;
+    -webkit-appearance: button;
+    text-decoration: none;
+    font: menu;
+    color: ButtonText;
+    display: inline-block;
+    padding: 2px 8px;
+}
+
 /* Menu General Styles */
 .menuBackground {
 	background: brown;
@@ -276,8 +287,13 @@
 
 
 <br/>
-<button id="done-button" type="button" ng-click='done_button();'>Done</button>
-<button id="undo-button" type="button" ng-click='undo_point();'>Undo Point</button>
+<div id="show-button">
+  <input type="radio" name="bulkhead-mode" ng-model="sst2.bulkhead_mode" value="normal"> Normal Interpolation<br>
+  <input type="radio" name="bulkhead-mode" ng-model="sst2.bulkhead_mode" value="extrapolate tail side"> Extrapolate from tail-side<br>
+  <input type="radio" name="bulkhead-mode" ng-model="sst2.bulkhead_mode" value="extrapolate nose side"> Extrapolate from nose-side<br>
+  <a id="done-button" href="#" ng-click='done_button()' class='button'>Done</a>
+  <a id="undo-button" href="#" ng-click='undo_point()' class='button'>Undo Point</a>
+</div>
 <br/><br/>
 <div>
   <span class="instruction">{{instruction}}<span>

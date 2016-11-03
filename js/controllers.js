@@ -207,53 +207,6 @@ $scope.add_flood_points_newest = function(xsec, n_total) {
   return flooded_xsec;
 }
 
-$scope.add_flood_points = function(xsec, n) {
-  var r;
-  var theta_start = -(Math.PI * 0.5)
-  var theta_inc = (Math.PI) / n;
-  var theta_end = Math.PI * 0.5;
-  var theta;
-  var offx;
-  var offy;
-  var index = 0;
-  var flood = [xsec.xsec[0]];
-  index++;
-
-  var extents=$scope.get_extents(xsec.xsec)
-  offx = extents.min_point.x;
-  var spanx = extents.max_point.x - extents.min_point.x;
-  var spany = extents.max_point.y - extents.min_point.y;
-  if (spanx > spany) {
-    r = spanx * 1.5;
-  } else {
-    r = spany * 1.5;
-  }
-  offy = extents.min_point.y + spany / 2;
-  for (theta = theta_start+theta_inc; theta <= theta_end-theta_inc; theta+=theta_inc) {
-    var x = Math.cos(theta)*r+offx;
-    var y = Math.sin(theta)*r+offy;
-    var new_point = $scope.checkLineIntersection( offx, offy,
-                                                  x, y,
-                                                  xsec.xsec[index-1].x, xsec.xsec[index-1].y,
-                                                  xsec.xsec[index].x, xsec.xsec[index].y );
-    if ( ! new_point.onLine2 ) {
-      index++;
-      while ( ! new_point.onLine2 && index < xsec.xsec.length - 1 && flood.length < n ) {  // This loop normally executes one iteration
-        new_point = $scope.checkLineIntersection( offx, offy,
-                                                  x, y,
-                                                  xsec.xsec[index-1].x, xsec.xsec[index-1].y,
-                                                  xsec.xsec[index].x, xsec.xsec[index].y );
-        if (! new_point.onLine2) {
-          flood.push(xsec.xsec[xsec.xsec.length-1]);
-        }
-      }
-    }
-    flood.push({x:new_point.x,y:new_point.y});
-  }
-
-  return flood;
-}
-
 $scope.plot_bulkheads = function(location_xy) {
   // Not much to do here except set the offsets and turn the bulkheads on.  partial1.html does the true plotting
   var spacingx = 15;
@@ -284,6 +237,7 @@ $scope.generate_bulkheads = function() {
 
   for (i=0;i<$scope.sst.bulkheads.length;i++) {
     var bulkhead  = $scope.sst.bulkheads[i];
+    var mode = $scope.sst2.bulkhead_mode;
     var nearest_lesser = {index: -1, dist:9999999999};
     var nearest_greater = {index: -1, dist:9999999999};
     for (j=0;j<$scope.sst.xsecs.length;j++) {
@@ -408,8 +362,7 @@ $scope.safe_apply = function() {
 
 $scope.done_button = function() {
   $scope.get_coord_live = false;
-  $scope.set_display("done-button", false);
-  $scope.set_display("undo-button", false);
+  $scope.set_display("show-button", false);
   $scope.undoable = undefined;
   $scope.op_seq = [];
   if ($scope.need_xsec_transform) {
@@ -528,8 +481,7 @@ $scope.set_line = function(element) {
 
 $scope.set_arc = function(element, clean) {
   $scope.undoable = element;
-  $scope.set_display('done-button', true);
-  $scope.set_display('undo-button', true);
+  $scope.set_display('show-button', true);
   $scope.is_dirty = true;
   for (var i=element.length;i>=0;i--) {
     element.pop();
@@ -646,10 +598,9 @@ $scope.make_display_point = function(args) {
 };
 
 // This is used for both Cross Sections and Bulkheads
-$scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_tmxs, side_tmxs, is_many) {
+$scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_tmxs, side_tmxs, is_many, is_bulkhead) {
   $scope.undoable = recvr;
-  $scope.set_display('done-button', true);
-  $scope.set_display('undo-button', true);
+  $scope.set_display('show-button', true);
   $scope.is_dirty = true;
   $scope.coord_available = false; // turn off any existing point gathering
 
@@ -658,14 +609,26 @@ $scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_t
   if (is_many) {
     the_instruction += '  Click done button when done.'
   }
-  $scope.op_seq.push({
-    handler:$scope.set_xy_arc_click,
-    handler2:$scope.make_display_point,
-    args2: args2,
-    dest: recvr,
-    is_loop: is_many,
-    instruction: the_instruction
-  });
+  if (is_bulkhead) {
+    $scope.op_seq.push({
+      handler:$scope.set_xy_arc_click,
+      handler2:$scope.make_display_point,
+      handler3:$scope.set_bulkhead_mode,
+      args2: args2,
+      dest: recvr,
+      is_loop: is_many,
+      instruction: the_instruction
+    });
+  } else {
+    $scope.op_seq.push({
+      handler:$scope.set_xy_arc_click,
+      handler2:$scope.make_display_point,
+      args2: args2,
+      dest: recvr,
+      is_loop: is_many,
+      instruction: the_instruction
+    });
+  }
 };
 
 $scope.transform_xsec_points = function() {
@@ -698,11 +661,13 @@ $scope.transform_xsec_points = function() {
     the_xsec.ortho_shape.push($scope.transform(the_xsec.xsec[i],side_tmxs.tmx));
   }
 };
-
+$scope.set_bulkhead_mode = function() {
+  $scope.sst.bulkheads[$scope.sst.bulkheads.length-1].generation_mode = $scope.sst2.bulkhead_mode;
+};
 $scope.set_bulkhead_arc = function(recvr, top_ref, side_ref) {
   var top_tmxs = $scope.get_tmx_horizontal(top_ref.reference_line.nose, top_ref.reference_line.tail);
   var side_tmxs = $scope.get_tmx_horizontal(side_ref.reference_line.nose, side_ref.reference_line.tail);
-  $scope.set_arc_stations(recvr, top_ref.display.bulk, side_ref.display.bulk, top_tmxs, side_tmxs, true);
+  $scope.set_arc_stations(recvr, top_ref.display.bulk, side_ref.display.bulk, top_tmxs, side_tmxs, true, true);
   $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
   $scope.get_coord_live = true;
 };
@@ -975,14 +940,12 @@ $scope.set_display = function(the_id, is_showable) {
 };
 
 $scope.initialize_toolbox = function() {
-  $scope.set_display('undo-button', $scope.show_undo_button);
-  $scope.set_display('done-button', $scope.show_done_button)
+  $scope.set_display('show-button', $scope.show_button)
 };
 
 $scope.sst2.bulkhead_placement_xy = {x:-200,y:-50};
 $scope.is_dirty = false;
-$scope.show_done_button = false;
-$scope.show_undo_button = false;
+$scope.show_button = false;
 $scope.m = {};
 $scope.set_plan_image("img/p51_side.jpg");
 $scope.non_modal_shown = true;
@@ -992,6 +955,7 @@ $scope.tool_box_height = 500;
 $scope.sst.show_final_bulkheads = false;
 $scope.set_display('select-background', false);
 $scope.sst.background_3view = "";
+$scope.sst2.bulkhead_mode = 'normal';
 }])
 .controller('MyCtrl2', [function() {
 
