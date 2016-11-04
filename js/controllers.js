@@ -97,10 +97,22 @@ $scope.add_image = function(){
     var data = btoa(e.target.result);
     $scope.sst.background_3view = data;
     $scope.safe_apply();
-    //send your binary data via $http or $resource or do anything else with it
   }
   r.readAsBinaryString(f);
-}
+};
+
+$scope.set_fuselage = function() {
+  $scope.set_display('select-fuselage', true);
+};
+$scope.add_fuselage = function(){
+  var f = $rootScope.window.document.getElementById('fuselage_file').files[0];
+  var r = new FileReader();
+  r.onloadend = function(e){
+    $scope.sst = JSON.parse(e.target.result);
+    $scope.safe_apply();
+  }
+  r.readAsBinaryString(f);
+};
 
 $scope.checkLineIntersection = function(line1StartX, line1StartY, line1EndX, line1EndY, line2StartX, line2StartY, line2EndX, line2EndY) {
     // if the lines intersect, the result contains the x and y of the intersection (treating the lines as infinite) and booleans for whether line segment 1 or line segment 2 contain the point
@@ -996,6 +1008,7 @@ $scope.tool_box_width = 300;
 $scope.tool_box_height = 500;
 $scope.sst.show_final_bulkheads = false;
 $scope.set_display('select-background', false);
+$scope.set_display('select-fuselage', false);
 $scope.sst.background_3view = "";
 $scope.sst2.generation_mode = 'normal';
 }])

@@ -242,6 +242,7 @@
         <li ng-click='save_data()'><a href="#">Quick Save</a></li>
         <li ng-click='restore_data()'><a href="#">Quick Restore</a></li>
         <li ng-click='make_fuselage();download_file(fuselage_serialized, "fuselage.json", "application/json");'><a href="#">Save Work To File</a></li>
+        <li ng-click='set_fuselage();'><a href="#">Open Work From File</a></li>
       </ul>
     </li>
 		<li><a href="#">Define Side View</a>
@@ -285,7 +286,6 @@
 	</ul>
 </div>
 
-
 <br/>
 <div id="show-button">
   <div id="bulkhead-controls">
@@ -306,6 +306,11 @@
 <div id="select-background">
   <input type="file" id="background_file" name="background_file"/>
   <button ng-click="add_image()">Set as Background</button>
+</div>
+
+<div id="select-fuselage">
+  <input type="file" id="fuselage_file" name="background_file"/>
+  <button ng-click="add_fuselage()">Load Fuselage File</button>
 </div>
 
 <div ng-init="initialize_toolbox()"></div>
