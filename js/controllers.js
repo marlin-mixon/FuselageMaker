@@ -237,8 +237,8 @@ $scope.generate_bulkheads = function() {
 
   for (i=0;i<$scope.sst.bulkheads.length;i++) {
     var bulkhead  = $scope.sst.bulkheads[i];
-    var mode = $scope.sst2.bulkhead_mode;
-    if (bulkhead.bulkhead_mode === 'normal') {
+    var mode = $scope.sst2.generation_mode;
+    if (bulkhead.generation_mode === 'normal') {
       var nearest_lesser = {index: -1, dist:9999999999};
       var nearest_greater = {index: -1, dist:9999999999};
       for (j=0;j<$scope.sst.xsecs.length;j++) {
@@ -264,23 +264,29 @@ $scope.generate_bulkheads = function() {
     } else {
       // extrapolate 'extrapolate tail side' or 'extrapolate nose side'
       var direction = 1;
-      if (bulkhead.bulkhead_mode === 'extrapolate nose side') {
+      if (bulkhead.generation_mode === 'extrapolate nose side') {
         direction = -1;
       }
       var nearest_1 = {index: -1, dist:9999999999};
       var nearest_2 = {index: -1, dist:9999999999};
+      var dist2 = 9999999999;
+      var index2 = -1;
       for (j=0;j<$scope.sst.xsecs.length;j++) {
         var xsec = $scope.sst.xsecs[j];
-        if (xsec.station[0].x > (bulkhead.x * direction) ) {
-          var dist1 = Math.abs(xsec.station[0].x - bulkhead.x);
-          if (dist1 < nearest_1.dist) {
-            nearest_1.dist = dist1;
+        if ( (xsec.station[0].x * direction) > (bulkhead.x * direction) ) {
+          var dist = Math.abs(xsec.station[0].x - bulkhead.x);
+          if (dist < nearest_1.dist) {
+            var dist2 = nearest_1.dist;
+            var index2 = nearest_1.index;
+            nearest_1.dist = dist;
             nearest_1.index = j;
           }
-          var dist2 = Math.abs(xsec.station[0].x - bulkhead.x);
-          if (dist2 < nearest_2.dist && dist2 > nearest_1.dist) {
-            nearest_2.dist = dist2;
+          if (dist < nearest_2.dist && dist > nearest_1.dist) {
+            nearest_2.dist = dist;
             nearest_2.index = j;
+          } else if (dist2 < nearest_2.dist) {
+            nearest_2.dist = dist2;
+            nearest_2.index = index2;
           }
         }
         // Determine if we have generated flood points for the cross section yet and add if needed
@@ -394,6 +400,7 @@ $scope.safe_apply = function() {
 
 $scope.done_button = function() {
   $scope.get_coord_live = false;
+  $scope.set_display('bulkhead-controls', false);
   $scope.set_display("show-button", false);
   $scope.undoable = undefined;
   $scope.op_seq = [];
@@ -513,6 +520,7 @@ $scope.set_line = function(element) {
 
 $scope.set_arc = function(element, clean) {
   $scope.undoable = element;
+  $scope.set_display('bulkhead-controls', false);
   $scope.set_display('show-button', true);
   $scope.is_dirty = true;
   for (var i=element.length;i>=0;i--) {
@@ -632,6 +640,7 @@ $scope.make_display_point = function(args) {
 // This is used for both Cross Sections and Bulkheads
 $scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_tmxs, side_tmxs, is_many, is_bulkhead) {
   $scope.undoable = recvr;
+  $scope.set_display('bulkhead-controls', is_bulkhead);
   $scope.set_display('show-button', true);
   $scope.is_dirty = true;
   $scope.coord_available = false; // turn off any existing point gathering
@@ -645,7 +654,7 @@ $scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_t
     $scope.op_seq.push({
       handler:$scope.set_xy_arc_click,
       handler2:$scope.make_display_point,
-      handler3:$scope.set_bulkhead_mode,
+      handler3:$scope.set_generation_mode,
       args2: args2,
       dest: recvr,
       is_loop: is_many,
@@ -693,8 +702,8 @@ $scope.transform_xsec_points = function() {
     the_xsec.ortho_shape.push($scope.transform(the_xsec.xsec[i],side_tmxs.tmx));
   }
 };
-$scope.set_bulkhead_mode = function() {
-  $scope.sst.bulkheads[$scope.sst.bulkheads.length-1].generation_mode = $scope.sst2.bulkhead_mode;
+$scope.set_generation_mode = function() {
+  $scope.sst.bulkheads[$scope.sst.bulkheads.length-1].generation_mode = $scope.sst2.generation_mode;
 };
 $scope.set_bulkhead_arc = function(recvr, top_ref, side_ref) {
   var top_tmxs = $scope.get_tmx_horizontal(top_ref.reference_line.nose, top_ref.reference_line.tail);
@@ -972,6 +981,7 @@ $scope.set_display = function(the_id, is_showable) {
 };
 
 $scope.initialize_toolbox = function() {
+  $scope.set_display('bulkhead-controls', false);
   $scope.set_display('show-button', $scope.show_button)
 };
 
@@ -987,7 +997,7 @@ $scope.tool_box_height = 500;
 $scope.sst.show_final_bulkheads = false;
 $scope.set_display('select-background', false);
 $scope.sst.background_3view = "";
-$scope.sst2.bulkhead_mode = 'normal';
+$scope.sst2.generation_mode = 'normal';
 }])
 .controller('MyCtrl2', [function() {
 

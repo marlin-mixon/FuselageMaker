@@ -288,9 +288,11 @@
 
 <br/>
 <div id="show-button">
-  <input type="radio" name="bulkhead-mode" ng-model="sst2.bulkhead_mode" value="normal"> Normal Interpolation<br>
-  <input type="radio" name="bulkhead-mode" ng-model="sst2.bulkhead_mode" value="extrapolate tail side"> Extrapolate from tail-side<br>
-  <input type="radio" name="bulkhead-mode" ng-model="sst2.bulkhead_mode" value="extrapolate nose side"> Extrapolate from nose-side<br>
+  <div id="bulkhead-controls">
+    <input type="radio" name="bulkhead-mode" ng-model="sst2.generation_mode" value="normal"> Normal Interpolation<br>
+    <input type="radio" name="bulkhead-mode" ng-model="sst2.generation_mode" value="extrapolate tail side"> Extrapolate from tail-side<br>
+    <input type="radio" name="bulkhead-mode" ng-model="sst2.generation_mode" value="extrapolate nose side"> Extrapolate from nose-side<br>
+  </div>
   <a id="done-button" href="#" ng-click='done_button()' class='button'>Done</a>
   <a id="undo-button" href="#" ng-click='undo_point()' class='button'>Undo Point</a>
 </div>
