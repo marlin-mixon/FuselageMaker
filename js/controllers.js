@@ -391,7 +391,7 @@ $scope.generate_bulkheads = function() {
 
   // Ask where the bulkheads will go
 
-  $scope.sst2.bulkhead_plot_location = {x:0,y:0};
+  $scope.sst2.bulkhead_plot_location = {x:220,y:110};
   //$scope.set_point($scope.sst2.bulkhead_plot_location, false, 'Click where you want the bulkheads to be placed (they fill in horizontally to the right)');
   $scope.op_seq.push({
     handler: $scope.plot_bulkheads,
