@@ -238,49 +238,49 @@
 	<ul class="dropDownMenu">
     <li><a href="#">File</a>
       <ul>
-        <li ng-click='set_3view();'><a href="#">Set Background 3-view</a></li>
-        <li ng-click='save_data()'><a href="#">Quick Save</a></li>
-        <li ng-click='restore_data()'><a href="#">Quick Restore</a></li>
-        <li ng-click='make_fuselage();download_file(fuselage_serialized, "fuselage.json", "application/json");'><a href="#">Save Work To File</a></li>
-        <li ng-click='set_fuselage();'><a href="#">Open Work From File</a></li>
+        <li ng-click='clear_op();set_3view();'><a href="#">Set Background 3-view</a></li>
+        <li ng-click='clear_op();save_data()'><a href="#">Quick Save</a></li>
+        <li ng-click='clear_op();restore_data()'><a href="#">Quick Restore</a></li>
+        <li ng-click='clear_op();make_fuselage();download_file(fuselage_serialized, "fuselage.json", "application/json");'><a href="#">Save Work To File</a></li>
+        <li ng-click='clear_op();set_fuselage();'><a href="#">Open Work From File</a></li>
       </ul>
     </li>
 		<li><a href="#">Define Side View</a>
       <ul>
-        <li ng-click='set_box(sst.side.zone)'><a href="#">Set Side View Zone Box</a></li>
-        <li ng-click='set_line(sst.side.reference_line)'><a href="#">Define reference line</a></li>
-        <li ng-click='set_arc(sst.side.top_outline, true)'><a href="#">Digitize fuselage outline upper</a></li>
-        <li ng-click='set_arc(sst.side.bottom_outline, true)'><a href="#">Digitize fuselage outline lower</a></li>
+        <li ng-click='clear_op();set_box(sst.side.zone)'><a href="#">Set Side View Zone Box</a></li>
+        <li ng-click='clear_op();set_line(sst.side.reference_line)'><a href="#">Define reference line</a></li>
+        <li ng-click='clear_op();set_arc(sst.side.top_outline, true)'><a href="#">Digitize fuselage outline upper</a></li>
+        <li ng-click='clear_op();set_arc(sst.side.bottom_outline, true)'><a href="#">Digitize fuselage outline lower</a></li>
       </ul>
     </li>
 		<li><a href="#">Define Top/Bottom View</a>
 			<ul>
-        <li ng-click='set_box(sst.top.zone)'><a href="#">Set Top/Bottom View Zone Box</a></li>
-        <li ng-click='set_line(sst.top.reference_line)'><a href="#">Define center line</a></li>
-        <li ng-click='set_arc(sst.top.left_outline, true)'><a href="#">Digitize fuselage outline left</a></li>
-        <li ng-click='set_arc(sst.top.right_outline, true)'><a href="#">Digitize fuselage outline right</a></li>
+        <li ng-click='clear_op();set_box(sst.top.zone)'><a href="#">Set Top/Bottom View Zone Box</a></li>
+        <li ng-click='clear_op();set_line(sst.top.reference_line)'><a href="#">Define center line</a></li>
+        <li ng-click='clear_op();set_arc(sst.top.left_outline, true)'><a href="#">Digitize fuselage outline left</a></li>
+        <li ng-click='clear_op();set_arc(sst.top.right_outline, true)'><a href="#">Digitize fuselage outline right</a></li>
 			</ul>
 		</li>
 		<li><a href="#">Digitize Cross Sections</a>
 			<ul>
-        <li ng-click='set_xsec_point_and_arc(sst.xsecs, sst.top, sst.side)'><a href="#">Add a new cross section</a></li>
-        <li ng-click='destroy_xsecs()'><a href="#">Destroy ALL cross sections</a></li>
-        <li ng-click='clean_up_xsecs()'><a href="#">Clean up cross sections (removes malformed)</a></li>
+        <li ng-click='clear_op();set_xsec_point_and_arc(sst.xsecs, sst.top, sst.side)'><a href="#">Add a new cross section</a></li>
+        <li ng-click='clear_op();destroy_xsecs()'><a href="#">Destroy ALL cross sections</a></li>
+        <li ng-click='clear_op();clean_up_xsecs()'><a href="#">Clean up cross sections (removes malformed)</a></li>
 			</ul>
 		</li>
 		<li><a href="#">Bulkheads</a>
 			<ul>
-        <li ng-click='set_bulkhead_arc(sst.bulkheads, sst.top, sst.side)'><a href="#">Mark Locations of Desired Bulkheads</a></li>
-        <li ng-click='generate_bulkheads();'><a href="#">Generate Bulkheads</a></li>
-        <li ng-click='destroy(sst.bulkheads,"bulkhead","bulkheads");'><a href="#">Destroy ALL Bulkheads</a></li>
-        <li ng-click='make_svg();download_file(sst2.svg, "bulkheads.svg", "image/svg+xml");'><a href="#">Save Bulkheads to a file</a></li>
+        <li ng-click='clear_op();set_bulkhead_arc(sst.bulkheads, sst.top, sst.side)'><a href="#">Mark Locations of Desired Bulkheads</a></li>
+        <li ng-click='clear_op();generate_bulkheads();'><a href="#">Generate Bulkheads</a></li>
+        <li ng-click='clear_op();destroy(sst.bulkheads,"bulkhead","bulkheads");'><a href="#">Destroy ALL Bulkheads</a></li>
+        <li ng-click='clear_op();make_svg();download_file(sst2.svg, "bulkheads.svg", "image/svg+xml");'><a href="#">Save Bulkheads to a file</a></li>
 			</ul>
 		</li>
     <li><a href="#">Other Commands</a>
 			<ul>
-        <li ng-click='set_plan_image("")'><a href="#">Hide plan image</a></li>
-        <li ng-click='set_plan_image("img/p51_side.jpg")'><a href="#">Show plan image</a></li>
-        <li ng-click='model_integrity_check(sst, m)'><a href="#">Model Integrity Check</a></li>
+        <li ng-click='clear_op();set_plan_image("")'><a href="#">Hide plan image</a></li>
+        <li ng-click='clear_op();set_plan_image("img/p51_side.jpg")'><a href="#">Show plan image</a></li>
+        <li ng-click='clear_op();model_integrity_check(sst, m)'><a href="#">Model Integrity Check</a></li>
 			</ul>
 		</li>
 	</ul>

@@ -402,13 +402,23 @@ $scope.generate_bulkheads = function() {
   });
   $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
   $scope.get_coord_live = true;
-}
+};
+
+$scope.clear_op = function() {
+  $scope.sst.show_final_bulkheads = false;
+  $scope.set_display('select-background', false);
+  $scope.set_display('select-fuselage', false);
+  $scope.sst2.generation_mode = 'normal';
+  $scope.set_display('bulkhead-controls', false);
+  $scope.set_display("show-button", false);
+  $scope.op_seq = [];
+};
 
 $scope.safe_apply = function() {
   if ($scope.$root.$$phase != '$apply' && $scope.$root.$$phase != '$digest') {
     $scope.$apply();
   }
-}
+};
 
 $scope.done_button = function() {
   $scope.get_coord_live = false;
@@ -420,10 +430,6 @@ $scope.done_button = function() {
     $scope.need_xsec_transform = false;
     $scope.transform_xsec_points();
   }
-}
-
-$scope.save_final_button = function() {
-
 };
 
 $scope.undo_point = function() {
@@ -467,7 +473,7 @@ $scope.proc_op_seq = function() {
     $scope.coord_available = false;
   }
   $scope.safe_apply();
-}
+};
 
 $scope.set_point = function(element, ok_to_go, instruct) {
   $scope.is_dirty = true;
@@ -484,7 +490,7 @@ $scope.set_point = function(element, ok_to_go, instruct) {
     $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
     $scope.get_coord_live = true;
   }
-}
+};
 
 $scope.set_box = function(element) {
   $scope.is_dirty = true;
@@ -506,7 +512,7 @@ $scope.set_box = function(element) {
   });
   $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
   $scope.get_coord_live = true;
-}
+};
 
 $scope.set_line = function(element) {
   $scope.is_dirty = true;
@@ -528,7 +534,7 @@ $scope.set_line = function(element) {
   });
   $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
   $scope.get_coord_live = true;
-}
+};
 
 $scope.set_arc = function(element, clean) {
   $scope.undoable = element;
@@ -587,8 +593,8 @@ $scope.is_point_in_top_or_side = function(point) {
   }
 };
 
-$scope.linear_interpolation = function(p1, p2, x) {
-  if (p1.x === p2.x) {
+$scope.linear_interpolation = function(p1, p2, x) {  // Also does extrapolation
+  if (p1.x === p2.x) {         // This is an input error but we provide a fault-tolerant result
     return (p1.y + p2.y) / 2;  // if the x's coincide just return the average of the y's
   }
   var rise = p2.y - p1.y;
@@ -596,7 +602,7 @@ $scope.linear_interpolation = function(p1, p2, x) {
   var slope = rise/run;
   var y = ((x - p1.x) * slope) + p1.y
   return y;
-}
+};
 
 $scope.outline_as_function = function(x, ortho_outline) {
   for (var i=1;i<ortho_outline.length-1;i++) {
