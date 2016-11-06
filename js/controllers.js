@@ -617,6 +617,14 @@ $scope.outline_as_function = function(x, ortho_outline) {
   return {y:999999, message:'Point location is outside the outline range (beyond tail)'};
 };
 
+$scope.check_prereq_xsec_bulkhead = function(args) {
+  if ($scope.sst.top.left_outline.length === 0 || $scope.sst.side.bottom_outline.length === 0 || $scope.sst.side.top_outline.length === 0) {
+    alert("Need to define both the side-view outline and the top-view outline");
+    return false;
+  }
+  return true;
+};
+
 $scope.make_display_point = function(args) {
   var point = {x:$scope.theX, y:$scope.theY};
   var result = $scope.is_point_in_top_or_side(point);
@@ -663,7 +671,7 @@ $scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_t
   $scope.is_dirty = true;
   $scope.coord_available = false; // turn off any existing point gathering
 
-  var args2 = {top_tmxs: top_tmxs, top_recvr: top_disp_recvr, side_tmxs: side_tmxs, side_recvr: side_disp_recvr};
+  var args2 = {top_tmxs: top_tmxs, top_recvr: top_disp_recvr, side_tmxs: side_tmxs, side_recvr: side_disp_recvr, is_bulkhead: is_bulkhead};
   var the_instruction = 'Click to add new point.';
   if (is_many) {
     the_instruction += '  Click done button when done.'
@@ -724,6 +732,7 @@ $scope.set_generation_mode = function() {
   $scope.sst.bulkheads[$scope.sst.bulkheads.length-1].generation_mode = $scope.sst2.generation_mode;
 };
 $scope.set_bulkhead_arc = function(recvr, top_ref, side_ref) {
+  if (!$scope.check_prereq_xsec_bulkhead()) { return; }
   var top_tmxs = $scope.get_tmx_horizontal(top_ref.reference_line.nose, top_ref.reference_line.tail);
   var side_tmxs = $scope.get_tmx_horizontal(side_ref.reference_line.nose, side_ref.reference_line.tail);
   $scope.set_arc_stations(recvr, top_ref.display.bulk, side_ref.display.bulk, top_tmxs, side_tmxs, true, true);
@@ -732,6 +741,7 @@ $scope.set_bulkhead_arc = function(recvr, top_ref, side_ref) {
 };
 
 $scope.set_xsec_point_and_arc = function(xsec_recvr, top_ref, side_ref) {
+  if (!$scope.check_prereq_xsec_bulkhead()) { return; }
   var top_tmxs = $scope.get_tmx_horizontal(top_ref.reference_line.nose, top_ref.reference_line.tail);
   var side_tmxs = $scope.get_tmx_horizontal(side_ref.reference_line.nose, side_ref.reference_line.tail);
   var xsec_id = xsec_recvr.push({station:[],xsec:[]});
@@ -740,7 +750,7 @@ $scope.set_xsec_point_and_arc = function(xsec_recvr, top_ref, side_ref) {
   $scope.is_dirty = true;
   $scope.op_seq = [];
 
-  $scope.set_arc_stations(xsec_recvr[xsec_index].station, $scope.sst.top.display.xsec, $scope.sst.side.display.xsec, top_tmxs, side_tmxs, false);
+  $scope.set_arc_stations(xsec_recvr[xsec_index].station, $scope.sst.top.display.xsec, $scope.sst.side.display.xsec, top_tmxs, side_tmxs, false, false);
   $scope.set_arc(xsec_recvr[xsec_index].xsec, false);
   $scope.need_xsec_transform = true;
   $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
@@ -975,10 +985,11 @@ $scope.click_on_image = function(event) {
   // Firefox needs to use getBoundingClientRect().left instead of offsetLeft and offsetTop
   // That is the source of the bugs.  Need to revert to offsetLeft and offsetTop and figure something
   // else for Firefox
-  var xOffset=Math.max(document.documentElement.scrollLeft,document.body.scrollLeft)
-    - document.getElementById('the-svg').offsetLeft;
-  var yOffset=Math.max(document.documentElement.scrollTop,document.body.scrollTop)
-    - document.getElementById('the-svg').offsetTop;
+  var the_svg = document.getElementById('the-svg-div');
+  var xOffset=Math.max(document.documentElement.scrollLeft,document.body.scrollLeft)-8
+    - the_svg.offsetLeft;
+  var yOffset=Math.max(document.documentElement.scrollTop,document.body.scrollTop)-8
+    - the_svg.offsetTop;
   $scope.theX = event.clientX + xOffset;
   $scope.theY = event.clientY + yOffset;
   $scope.coord_available = true;

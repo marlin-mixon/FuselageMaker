@@ -21,7 +21,8 @@
   <button id="save-final-button" type="button" ng-click='make_svg();download_file(sst2.svg, "bulkheads.svg", "image/svg+xml");'><a href="#">Save To File</a></button>
 </div>
 <img id="back-image" src="{{sst.background_3view.length > 0 ? 'data:image/jpg;base64,'+sst.background_3view : sst.plan_image}}" />
-<div id="back-image-div" ng-click="click_on_image($event)" class="desktop-panel" style="{{sst.background_3view.length > 0 ? 'background-image: url(data:image/jpg;base64,'+sst.background_3view+') no-repeat;' : 'background: url('+sst.plan_image+') no-repeat;'}}"">
+<div id="back-image-div" ng-click="click_on_image($event)" class="desktop-panel" style="{{sst.background_3view.length > 0 ? 'background-image: url(data:image/jpg;base64,'+sst.background_3view+') no-repeat;' : 'background: url('+sst.plan_image+') no-repeat;'}}">
+<div id="the-svg-div">
 <svg id="the-svg" width="3000" height="3000">
 <rect id="sideview-box"
   ng-show="sst.side.zone.lower_left.x != null && sst.side.zone.lower_left.y != null && sst.side.zone.upper_right.x != null && sst.side.zone.upper_right.y != null"
@@ -135,6 +136,7 @@
 </g>
 
 </svg>
+</div>
 </div>
 
 <new-window>
