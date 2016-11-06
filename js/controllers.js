@@ -84,6 +84,9 @@ $scope.sst = {
     }
   },
   xsecs: [],
+  xsec: {
+    is_dirty: false
+  },
   bulkheads: []
 };
 
@@ -406,6 +409,7 @@ $scope.generate_bulkheads = function() {
 
 $scope.clear_op = function() {
   $scope.sst.show_final_bulkheads = false;
+  $scope.sst2.show_bulkheads = false;
   $scope.set_display('select-background', false);
   $scope.set_display('select-fuselage', false);
   $scope.sst2.generation_mode = 'normal';
@@ -617,7 +621,18 @@ $scope.outline_as_function = function(x, ortho_outline) {
   return {y:999999, message:'Point location is outside the outline range (beyond tail)'};
 };
 
-$scope.check_prereq_xsec_bulkhead = function(args) {
+$scope.check_prereq_xsec_bulkhead = function(type) {
+  if (type === 'bulkhead') {
+    if ($scope.sst.xsec.is_dirty) {
+      alert("Need to run 'Cleanup Cross Sections' first.");
+      return false;
+    } else if ($scope.sst.xsecs.length < 2) {
+      alert("Need at least 2 cross sections before any work with bulkheads can be done");
+      return false;
+    }
+  } else if (type === 'xsec') {
+
+  }
   if ($scope.sst.top.left_outline.length === 0 || $scope.sst.side.bottom_outline.length === 0 || $scope.sst.side.top_outline.length === 0) {
     alert("Need to define both the side-view outline and the top-view outline");
     return false;
@@ -732,7 +747,7 @@ $scope.set_generation_mode = function() {
   $scope.sst.bulkheads[$scope.sst.bulkheads.length-1].generation_mode = $scope.sst2.generation_mode;
 };
 $scope.set_bulkhead_arc = function(recvr, top_ref, side_ref) {
-  if (!$scope.check_prereq_xsec_bulkhead()) { return; }
+  if (!$scope.check_prereq_xsec_bulkhead('bulkhead')) { return; }
   var top_tmxs = $scope.get_tmx_horizontal(top_ref.reference_line.nose, top_ref.reference_line.tail);
   var side_tmxs = $scope.get_tmx_horizontal(side_ref.reference_line.nose, side_ref.reference_line.tail);
   $scope.set_arc_stations(recvr, top_ref.display.bulk, side_ref.display.bulk, top_tmxs, side_tmxs, true, true);
@@ -741,7 +756,7 @@ $scope.set_bulkhead_arc = function(recvr, top_ref, side_ref) {
 };
 
 $scope.set_xsec_point_and_arc = function(xsec_recvr, top_ref, side_ref) {
-  if (!$scope.check_prereq_xsec_bulkhead()) { return; }
+  if (!$scope.check_prereq_xsec_bulkhead('xsec')) { return; }
   var top_tmxs = $scope.get_tmx_horizontal(top_ref.reference_line.nose, top_ref.reference_line.tail);
   var side_tmxs = $scope.get_tmx_horizontal(side_ref.reference_line.nose, side_ref.reference_line.tail);
   var xsec_id = xsec_recvr.push({station:[],xsec:[]});
@@ -932,6 +947,7 @@ $scope.is_point_in_view_zone = function(view, point) {
 }
 
 $scope.clean_up_xsecs = function() {
+  $scope.sst.xsec.is_dirty = false;
   $scope.is_dirty = true;
   var i;
   if ($scope.sst.xsecs.length === 0) {

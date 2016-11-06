@@ -265,7 +265,7 @@
 		</li>
 		<li><a href="#">Digitize Cross Sections</a>
 			<ul>
-        <li ng-click='clear_op();set_xsec_point_and_arc(sst.xsecs, sst.top, sst.side)'><a href="#">Add a new cross section</a></li>
+        <li ng-click='clear_op();set_xsec_point_and_arc(sst.xsecs, sst.top, sst.side);sst.xsec.is_dirty=true;'><a href="#">Add a new cross section</a></li>
         <li ng-click='clear_op();destroy_xsecs()'><a href="#">Destroy ALL cross sections</a></li>
         <li ng-click='clear_op();clean_up_xsecs()'><a href="#">Clean up cross sections (removes malformed)</a></li>
 			</ul>
