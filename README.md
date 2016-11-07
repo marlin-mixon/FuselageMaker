@@ -34,3 +34,6 @@ Warning, this is currently alpha-grade software so it may not be fully usable ye
 - 5, Now for the cool part: look for the tab to the right of the FuselageMaker tab and click on it and drag it straight up.  The window will separate from the browser and occupy the top half of the screen.  Resize the top browser so the bottom touches the top of the browser below.
 - 6. Test the menu so you are sue you can access all the features.  Adjust the sizes of the browsers as required.
 - 7. One of the reasons for multiple browser windows is so you can take advantage of the browser zoom feature.  You can press shift-+ in the lower browser multiple times to zoom in on the drawing to make your digitizing much more accurate.  To zoom back out press shift-minus as desired.  With the multiple windows the toolbox menu is static and remains unzoomed.
+
+##Known bugs
+-1. All menu items fire twice.  This is a complication that arises from running the toolkit menubar in a separate window.  It causes error messages to pop up twice.  Other than that the main functionality is OK.
