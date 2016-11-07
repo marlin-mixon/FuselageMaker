@@ -887,10 +887,39 @@ $scope.get_tmx_horizontal = function(point_a, point_b) {
   return {tmx: tmx, inv_tmx: inv_tmx};
 };
 
-$scope.model_integrity_check = function(obj, obj2) {
-  obj2.side = $scope.orthofix_ref_line(obj.side, obj2.side);
-  obj2.top = $scope.orthofix_ref_line(obj.top, obj2.top);
+$scope.model_integrity_check = function() {
+  var i;
+  var j;
+  var reverses = 0;
+  var mirrors = 0;
+  // xsecs formed properly
   $scope.clean_up_xsecs();
+  for (var i=0; i < $scope.sst.xsecs.length; i++) {
+    var xsec = $scope.sst.xsecs[i];
+    var last = xsec.xsec.length - 1;
+    // Check for reversal of xsec coords
+    if (xsec.xsec[0].y > xsec.xsec[last].y) {
+      xsec.xsec.reverse();
+      reverses++;
+    }
+    // check for bacwards (left/right) xsec
+    var mid = Math.ceil(last/2);
+    if (xsec.xsec[mid].x < xsec.xsec[0].x) {
+      for (j=0;j<last;j++) {
+        flipx = [
+          [-1, 0, 0],
+          [0, 1, 0],
+          [0, 0, 1]
+        ]
+        var pt = [[xsec.xsec[j].x], [xsec.xsec[j].y], [1]]
+        var pt2 = math.multiply(pt, flipx);
+        xsec.xsec[j].x = pt2[0][0];
+        xsec.xsec[j].y = pt2[1][0];
+        mirrors++;
+      }
+    }
+  }
+  alert (reverses + " cross sections needed to be inverted.\n" + mirrors + " cross sections needed to be mirrored.\n")
 };
 
 $scope.transform = function(pt, tmx) {
