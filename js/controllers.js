@@ -5,6 +5,7 @@
 angular.module('fuselageMaker.controllers', []).
 controller('MyCtrl1', ['$scope', '$window', '$rootScope', function($scope, $window, $rootScope) {
 
+$scope.version = '0.1a';
 $scope.Math = window.Math;
 
 $scope.set_xy_click = function(element) {
@@ -20,6 +21,7 @@ $scope.sst2 = {};
 $scope.sst2.show_bulkheads = false;
 $scope.sst = {
   side: {
+    version: $scope.version,
     zone: {
       lower_left: {
         instruct: 'Click lower left corner of side view box zone',
