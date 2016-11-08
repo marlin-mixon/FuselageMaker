@@ -5,7 +5,7 @@
 angular.module('fuselageMaker.controllers', []).
 controller('MyCtrl1', ['$scope', '$window', '$rootScope', function($scope, $window, $rootScope) {
 
-$scope.version = '0.1a';
+$scope.version = '0.02a';
 $scope.Math = window.Math;
 
 $scope.set_xy_click = function(element) {
@@ -444,8 +444,9 @@ $scope.undo_point = function() {
   }
 };
 
-$scope.set_plan_image = function(image_file) {
+$scope.set_plan_image = function(image_file, is_on) {
   $scope.sst.plan_image = image_file;
+  $scope.show_background = is_on;
 };
 
 $scope.proc_op_seq = function() {
@@ -1065,6 +1066,7 @@ $scope.sst2.bulkhead_placement_xy = {x:-200,y:-50};
 $scope.is_dirty = false;
 $scope.show_button = false;
 $scope.m = {};
+$scope.show_background = true;
 $scope.set_plan_image("img/p51_side.jpg");
 $scope.non_modal_shown = true;
 $scope.tool_box = document.getElementById('the-toolbox');
