@@ -14,7 +14,7 @@ Warning, this is currently alpha-grade software so it may not be fully usable ye
 - 6. currently can only properly use side views that face towards the left.  
 
 ##To be successful with this you will have to have to adhere closely to the following rules:
-- 1. Always digitize (trace) the cross sections from top to bottom.
+- 1. Always digitize (trace) the cross sections from top to bottom, clock-wise.  Your first click to create a cross section must be in the side view or top/bottom view.  This locates it fore and aft.  Subsequent clicks create the cross section's shape.
 
 ![Cross Section] (img/crsc.png)
 - 2. Always digitize only half of the cross-section and only the port side as viewed from the front.  We want to see Backwards c's.
