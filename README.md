@@ -14,13 +14,16 @@ Warning, this is currently alpha-grade software so it may not be fully usable ye
 - 6. currently can only properly use side views that face towards the left.  
 
 ##To be successful with this you will have to have to adhere closely to the following rules:
-- 1. Always digitize (trace) the cross sections from top to bottom, clock-wise.  Your first click to create a cross section must be in the side view or top/bottom view.  This locates it fore and aft.  Subsequent clicks create the cross section's shape.
+
+- 1. The side and top views must be digitized from nose to tail. Also each successive point you add must get closer to the tail--no backtracking.  So just be sure features like a floatplane's step doesn't trace back on itself.  If the cross sections show the canopy then digitize the canopy.  If the cross sections omit the canopy then don't digitize it in the side view. For the top/bottom view, you only need to digitize the left side as viewed from the rear. (The right side is currently ignored)
+![Side view] (img/Sideview.jpg)
+![Anatomy of the Side View] (img/SideviewAnatomy.jpg)
+- 2. The reference lines must also be digitized from nose to tail. Additionally, the point at the nose of the side view reference line must be the same point at the nose of the top/bottom view center line.  That's important! So be sure if the first point of your reference line starts at the tip of the spinner on the side view that it also starts at the tip of the spinner on the top/bottom view.
+- 3. Always digitize (trace) the cross sections from top to bottom, clock-wise.  Your first click to create a cross section must be in the side view or top/bottom view.  This locates it fore and aft.  Subsequent clicks create the cross section's shape.
 
 ![Cross Section] (img/crsc.png)
-- 2. Always digitize only half of the cross-section and only the port side as viewed from the front.  We want to see Backwards c's.
-- 3. The side and top views must be digitized from nose to tail. Also each successive point you add must get closer to the tail--no backtracking.  So just be sure features like a floatplane's step doesn't trace back on itself.  If the cross sections show the canopy then digitize the canopy.  If the cross sections omit the canopy then don't digitize it in the side view. For the top/bottom view, you only need to digitize the left side as viewed from the rear. (The right side is currently ignored)
-![Side view] (img/Sideview.jpg)
-- 4. The reference lines must also be digitized from nose to tail. Additionally, the point at the nose of the side view reference line must be the same point at the nose of the top/bottom view center line.  That's important! So be sure if the first point of your reference line starts at the tip of the spinner on the side view that it also starts at the tip of the spinner on the top/bottom view.
+
+- 4. Always digitize only half of the cross-section and only the port side as viewed from the front.  We want to see Backwards c's.
 
 ##Work flow:
 - 1. When you first start FuselageMaker, it may appear to not work because your browser is not letting FuselageMaker create its toolbox (window with menu)  Look for a warning message at the top of your browser and click the allow button to get started.
