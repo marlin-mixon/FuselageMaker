@@ -910,13 +910,13 @@ $scope.model_integrity_check = function() {
     var mid = Math.ceil(last/2);
     if (xsec.xsec[mid].x < xsec.xsec[0].x) {
       for (j=0;j<last;j++) {
-        flipx = [
+        var flipx = [
           [-1, 0, 0],
           [0, 1, 0],
           [0, 0, 1]
         ]
         var pt = [[xsec.xsec[j].x], [xsec.xsec[j].y], [1]]
-        var pt2 = math.multiply(pt, flipx);
+        var pt2 = math.multiply(flipx, pt);
         xsec.xsec[j].x = pt2[0][0];
         xsec.xsec[j].y = pt2[1][0];
         mirrors++;
@@ -990,9 +990,11 @@ $scope.clean_up_xsecs = function() {
   for (i=$scope.sst.xsecs.length-1;i>=0;i--) {
     if ($scope.is_empty($scope.sst.xsecs[i].station) || $scope.sst.xsecs[i].xsec.length === 0) {
       $scope.sst.xsecs.splice(i,1);
+      i--;
     }
     if ($scope.sst.xsecs[i].xsec.length === 0) {
       $scope.sst.xsecs.splice(i,1);  // Eliminate empty cross section
+      i--;
     }
   }
   if (!$scope.sst.side.zone.length === 2) {
