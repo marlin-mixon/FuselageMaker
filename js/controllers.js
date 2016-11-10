@@ -101,6 +101,7 @@ $scope.add_image = function(){
   r.onloadend = function(e){
     var data = btoa(e.target.result);
     $scope.sst.background_3view = data;
+    $scope.set_plan_image("img/p51_side.jpg", true)
     $scope.safe_apply();
   }
   r.readAsBinaryString(f);
