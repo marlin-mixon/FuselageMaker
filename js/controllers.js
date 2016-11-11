@@ -5,7 +5,7 @@
 angular.module('fuselageMaker.controllers', []).
 controller('MyCtrl1', ['$scope', '$window', '$rootScope', function($scope, $window, $rootScope) {
 
-$scope.version = '0.02a';
+$scope.version = '0.03a';
 $scope.Math = window.Math;
 
 $scope.set_xy_click = function(element) {
@@ -613,7 +613,7 @@ $scope.linear_interpolation = function(p1, p2, x) {  // Also does extrapolation
 };
 
 $scope.outline_as_function = function(x, ortho_outline) {
-  for (var i=1;i<ortho_outline.length-1;i++) {
+  for (var i=1;i<ortho_outline.length;i++) {
     if (i===0 && x < ortho_outline[0].x) {
       return {y:999999, message:'Point location is outside the outline range (beyond nose)'};
     }
@@ -788,6 +788,7 @@ $scope.restore_data = function() {
   }
   if (do_it) {
     $scope.sst = JSON.parse(localStorage.getItem('fuselage') );
+    $scope.show_background = true;
     $scope.safe_apply();
   }
 };
@@ -909,18 +910,20 @@ $scope.model_integrity_check = function() {
     // check for bacwards (left/right) xsec
     var mid = Math.ceil(last/2);
     if (xsec.xsec[mid].x < xsec.xsec[0].x) {
-      for (j=0;j<last;j++) {
-        var flipx = [
-          [-1, 0, 0],
-          [0, 1, 0],
-          [0, 0, 1]
-        ]
+      var flipx = [
+        [-1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1]
+      ];
+      var reX = xsec.xsec[0].x;
+      for (j=0;j<xsec.xsec.length;j++) {
         var pt = [[xsec.xsec[j].x], [xsec.xsec[j].y], [1]]
         var pt2 = math.multiply(flipx, pt);
-        xsec.xsec[j].x = pt2[0][0];
+        xsec.xsec[j].x = pt2[0][0] + (reX*2);
         xsec.xsec[j].y = pt2[1][0];
-        mirrors++;
       }
+      xsec.flood_points = undefined;
+      mirrors++;
     }
   }
   alert (reverses + " cross sections needed to be inverted.\n" + mirrors + " cross sections needed to be mirrored.\n")
