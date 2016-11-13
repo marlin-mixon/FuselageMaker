@@ -839,11 +839,18 @@ $scope.destroy_xsecs = function(mode) {
       }
     }
   } else {
+    if ($scope.sst2.selected_xsec === -2) {
+      $scope.sst2.selected_xsec = -1
+      return;
+    }
     if (!$scope.sst2.selected_xsec || $scope.sst2.selected_xsec === -1) {
       alert ('Need to select a cross secton to first');
     } else {
       if (window.confirm('Are you sure you want to delete the selected cross section?')) {
         $scope.sst.xsecs.splice($scope.sst2.selected_xsec,1);
+        $scope.sst.top.display.xsec.splice($scope.sst2.selected_xsec,1);
+        $scope.sst.side.display.xsec.splice($scope.sst2.selected_xsec,1);
+        $scope.sst2.selected_xsec = -2;
         $scope.is_dirty = true;
       }
     }
