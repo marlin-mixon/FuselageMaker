@@ -822,14 +822,30 @@ $scope.download_file = function(content, file_name, mime_type) {
     return true;
   }
 };
-$scope.destroy_xsecs = function() {
-  if ($scope.sst.xsecs.length == 1) {
-    if (window.confirm('Are you sure you want to destroy the cross section?')) {
-      $scope.sst.xsecs = [];
+$scope.select_xsec = function(ix) {
+  $scope.sst2.selected_xsec = ix;
+}
+$scope.destroy_xsecs = function(mode) {
+  if (mode === 'all') {
+    if ($scope.sst.xsecs.length == 1) {
+      if (window.confirm('Are you sure you want to delete the cross section?')) {
+        $scope.sst.xsecs = [];
+        $scope.is_dirty = true;
+      }
+    } else if ($scope.sst.xsecs.length > 1) {
+      if (window.confirm('Are you sure you want to delete all ' + $scope.sst.xsecs.length + ' cross sections?')) {
+        $scope.sst.xsecs = [];
+        $scope.is_dirty = true;
+      }
     }
-  } else if ($scope.sst.xsecs.length > 1) {
-    if (window.confirm('Are you sure you want to destroy all ' + $scope.sst.xsecs.length + ' cross sections?')) {
-      $scope.sst.xsecs = [];
+  } else {
+    if (!$scope.sst2.selected_xsec || $scope.sst2.selected_xsec === -1) {
+      alert ('Need to select a cross secton to first');
+    } else {
+      if (window.confirm('Are you sure you want to delete the selected cross section?')) {
+        $scope.sst.xsecs.splice($scope.sst2.selected_xsec,1);
+        $scope.is_dirty = true;
+      }
     }
   }
 };

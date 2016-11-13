@@ -83,9 +83,15 @@
     stroke-width="1" stroke="blue" fill="none"/>
 </g>
 
-<!-- All cross sections -->
+<!-- All cross sections (curves) -->
 <g ng-repeat="this_sec in sst.xsecs">
   <g ng-repeat="point in this_sec.xsec">
+    <line ng-click="select_xsec($parent.$index)" ng-show="$index > 0"
+      ng-attr-x1="{{sst.xsecs[$parent.$index].xsec[$index-1].x}}"
+      ng-attr-y1="{{sst.xsecs[$parent.$index].xsec[$index-1].y}}"
+      ng-attr-x2="{{point.x}}"
+      ng-attr-y2="{{point.y}}"
+      stroke-width="12" stroke="blue" fill="none" opacity="0.0"/>
     <line ng-show="$index > 0"
       ng-attr-x1="{{sst.xsecs[$parent.$index].xsec[$index-1].x}}"
       ng-attr-y1="{{sst.xsecs[$parent.$index].xsec[$index-1].y}}"
@@ -93,6 +99,24 @@
       ng-attr-y2="{{point.y}}"
       stroke-width="1" stroke="red" fill="none"/>
   </g>
+  <rect ng-show="sst2.selected_xsec == $index"
+    ng-attr-x="{{sst.xsecs[$index].xsec[0].x - 4}}"
+    ng-attr-y="{{sst.xsecs[$index].xsec[0].y - 4}}"
+    width="8"
+    height="8"
+    fill="red"/>
+  <rect ng-show="sst2.selected_xsec == $index"
+    ng-attr-x="{{sst.xsecs[$index].xsec[sst.xsecs[$index].xsec.length-1].x - 4}}"
+    ng-attr-y="{{sst.xsecs[$index].xsec[sst.xsecs[$index].xsec.length-1].y - 4}}"
+    width="8"
+    height="8"
+    fill="red"/>
+  <rect ng-show="sst2.selected_xsec == $index"
+    ng-attr-x="{{sst.xsecs[$index].xsec[Math.ceil(sst.xsecs[$index].xsec.length/2)].x - 4}}"
+    ng-attr-y="{{sst.xsecs[$index].xsec[Math.ceil(sst.xsecs[$index].xsec.length/2)].y - 4}}"
+    width="8"
+    height="8"
+    fill="red"/>
 </g>
 
 <!-- All top bulkhead locations -->
@@ -116,23 +140,59 @@
 </g>
 
 <!-- All top xsec locations -->
-<g ng-repeat="this_bulk in sst.top.display.xsec">
+<g ng-repeat="this_xsec in sst.top.display.xsec">
   <line
-    ng-attr-x1="{{this_bulk.x1}}"
-    ng-attr-y1="{{this_bulk.y1}}"
-    ng-attr-x2="{{this_bulk.x2}}"
-    ng-attr-y2="{{this_bulk.y2}}"
+    ng-attr-x1="{{this_xsec.x1}}"
+    ng-attr-y1="{{this_xsec.y1}}"
+    ng-attr-x2="{{this_xsec.x2}}"
+    ng-attr-y2="{{this_xsec.y2}}"
     stroke-width="1" stroke="red" fill="none"/>
+  <line ng-click="select_xsec($index)"
+    ng-attr-x1="{{this_xsec.x1}}"
+    ng-attr-y1="{{this_xsec.y1}}"
+    ng-attr-x2="{{this_xsec.x2}}"
+    ng-attr-y2="{{this_xsec.y2}}"
+    stroke-width="12" stroke="blue" fill="none" opacity="0.0"/>    
+  <rect ng-show="sst2.selected_xsec == $index"
+    ng-attr-x="{{this_xsec.x1 - 4}}"
+    ng-attr-y="{{this_xsec.y1 - 4}}"
+    width="8"
+    height="8"
+    fill="red"/>
+  <rect ng-show="sst2.selected_xsec == $index"
+    ng-attr-x="{{this_xsec.x2 - 4}}"
+    ng-attr-y="{{this_xsec.y2 - 4}}"
+    width="8"
+    height="8"
+    fill="red"/>
 </g>
 
 <!-- All side xsec locations -->
-<g ng-repeat="this_bulk in sst.side.display.xsec">
+<g ng-repeat="this_xsec in sst.side.display.xsec">
   <line
-    ng-attr-x1="{{this_bulk.x1}}"
-    ng-attr-y1="{{this_bulk.y1}}"
-    ng-attr-x2="{{this_bulk.x2}}"
-    ng-attr-y2="{{this_bulk.y2}}"
+    ng-attr-x1="{{this_xsec.x1}}"
+    ng-attr-y1="{{this_xsec.y1}}"
+    ng-attr-x2="{{this_xsec.x2}}"
+    ng-attr-y2="{{this_xsec.y2}}"
     stroke-width="1" stroke="red" fill="none"/>
+  <line ng-click="select_xsec($index)"
+    ng-attr-x1="{{this_xsec.x1}}"
+    ng-attr-y1="{{this_xsec.y1}}"
+    ng-attr-x2="{{this_xsec.x2}}"
+    ng-attr-y2="{{this_xsec.y2}}"
+    stroke-width="12" stroke="blue" fill="none" opacity="0.0"/>
+  <rect ng-show="sst2.selected_xsec == $index"
+    ng-attr-x="{{this_xsec.x1 - 4}}"
+    ng-attr-y="{{this_xsec.y1 - 4}}"
+    width="8"
+    height="8"
+    fill="red"/>
+  <rect ng-show="sst2.selected_xsec == $index"
+    ng-attr-x="{{this_xsec.x2 - 4}}"
+    ng-attr-y="{{this_xsec.y2 - 4}}"
+    width="8"
+    height="8"
+    fill="red"/>
 </g>
 
 </svg>
@@ -266,7 +326,8 @@
 		<li><a href="#">Digitize Cross Sections</a>
 			<ul>
         <li ng-click='clear_op();set_xsec_point_and_arc(sst.xsecs, sst.top, sst.side);sst.xsec.is_dirty=true;'><a href="#">Add a new cross section</a></li>
-        <li ng-click='clear_op();destroy_xsecs()'><a href="#">Destroy ALL cross sections</a></li>
+        <li ng-click='clear_op();destroy_xsecs("one")'><a href="#">Delete SELECTED cross section</a></li>
+        <li ng-click='clear_op();destroy_xsecs("all")'><a href="#">Delete ALL cross sections</a></li>
         <li ng-click='clear_op();clean_up_xsecs()'><a href="#">Clean up cross sections (removes malformed)</a></li>
 			</ul>
 		</li>
@@ -274,7 +335,7 @@
 			<ul>
         <li ng-click='clear_op();set_bulkhead_arc(sst.bulkheads, sst.top, sst.side)'><a href="#">Mark Locations of Desired Bulkheads</a></li>
         <li ng-click='clear_op();generate_bulkheads();'><a href="#">Generate Bulkheads</a></li>
-        <li ng-click='clear_op();destroy(sst.bulkheads,"bulkhead","bulkheads");'><a href="#">Destroy ALL Bulkheads</a></li>
+        <li ng-click='clear_op();destroy(sst.bulkheads,"bulkhead","bulkheads");'><a href="#">Delete ALL Bulkheads</a></li>
         <li ng-click='clear_op();make_svg();download_file(sst2.svg, "bulkheads.svg", "image/svg+xml");'><a href="#">Save Bulkheads to a file</a></li>
 			</ul>
 		</li>
