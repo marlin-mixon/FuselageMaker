@@ -5,7 +5,7 @@
 angular.module('fuselageMaker.controllers', []).
 controller('MyCtrl1', ['$scope', '$window', '$rootScope', function($scope, $window, $rootScope) {
 
-$scope.version = '0.03a';
+$scope.version = '0.04a';
 $scope.Math = window.Math;
 
 $scope.set_xy_click = function(element) {
@@ -428,6 +428,7 @@ $scope.safe_apply = function() {
 };
 
 $scope.done_button = function() {
+  if ($scope.is_ghost_echo_bug()) {return;}
   $scope.get_coord_live = false;
   $scope.set_display('bulkhead-controls', false);
   $scope.set_display("show-button", false);
@@ -440,6 +441,7 @@ $scope.done_button = function() {
 };
 
 $scope.undo_point = function() {
+  if ($scope.is_ghost_echo_bug()) {return;}
   if ($scope.undoable) {
     var throw_away = $scope.undoable.pop();
   }
@@ -501,6 +503,7 @@ $scope.set_point = function(element, ok_to_go, instruct) {
 };
 
 $scope.set_box = function(element) {
+  if ($scope.is_ghost_echo_bug()) {return;}
   $scope.is_dirty = true;
   element.lower_left.x = null; element.lower_left.y = null;
   element.upper_right.x = null;element.upper_right.y = null;
@@ -523,6 +526,7 @@ $scope.set_box = function(element) {
 };
 
 $scope.set_line = function(element) {
+  if ($scope.is_ghost_echo_bug()) {return;}
   $scope.is_dirty = true;
   element.nose.x = null; element.nose.y = null;
   element.tail.x = null; element.tail.y = null;
@@ -545,6 +549,7 @@ $scope.set_line = function(element) {
 };
 
 $scope.set_arc = function(element, clean) {
+  // if ($scope.is_ghost_echo_bug()) {return;}
   $scope.undoable = element;
   $scope.set_display('bulkhead-controls', false);
   $scope.set_display('show-button', true);
@@ -760,6 +765,7 @@ $scope.set_bulkhead_arc = function(recvr, top_ref, side_ref) {
 };
 
 $scope.set_xsec_point_and_arc = function(xsec_recvr, top_ref, side_ref) {
+  if ($scope.is_ghost_echo_bug()) {return;}
   if (!$scope.check_prereq_xsec_bulkhead('xsec')) { return; }
   var top_tmxs = $scope.get_tmx_horizontal(top_ref.reference_line.nose, top_ref.reference_line.tail);
   var side_tmxs = $scope.get_tmx_horizontal(side_ref.reference_line.nose, side_ref.reference_line.tail);
@@ -824,33 +830,41 @@ $scope.download_file = function(content, file_name, mime_type) {
 };
 $scope.select_xsec = function(ix) {
   $scope.sst2.selected_xsec = ix;
-}
-$scope.destroy_xsecs = function(mode) {
+};
+$scope.select_bulkhead = function(ix) {
+  $scope.sst2.selected_bulkhead = ix;
+};
+$scope.destroy_any = function(mode, type1, type2, sing_noun, plural_noun, selected_index) {
+  if ($scope.is_ghost_echo_bug()) {return;}
   if (mode === 'all') {
-    if ($scope.sst.xsecs.length == 1) {
-      if (window.confirm('Are you sure you want to delete the cross section?')) {
-        $scope.sst.xsecs = [];
+    if ($scope.sst[type1].length == 1) {
+      if (window.confirm('Are you sure you want to delete the '+sing_noun+'?')) {
+        $scope.sst[type1] = [];
+        $scope.sst.top.display[type2] = [];
+        $scope.sst.side.display[type2] = [];
         $scope.is_dirty = true;
       }
-    } else if ($scope.sst.xsecs.length > 1) {
-      if (window.confirm('Are you sure you want to delete all ' + $scope.sst.xsecs.length + ' cross sections?')) {
-        $scope.sst.xsecs = [];
+    } else if ($scope.sst[type1].length > 1) {
+      if (window.confirm('Are you sure you want to delete all ' + $scope.sst[type1].length + ' '+plural_noun+'?')) {
+        $scope.sst[type1] = [];
+        $scope.sst.top.display[type2] = [];
+        $scope.sst.side.display[type2] = [];
         $scope.is_dirty = true;
       }
     }
   } else {
-    if ($scope.sst2.selected_xsec === -2) {
-      $scope.sst2.selected_xsec = -1
+    if (selected_index === -2) {
+      selected_index = -1
       return;
     }
-    if (!$scope.sst2.selected_xsec || $scope.sst2.selected_xsec === -1) {
-      alert ('Need to select a cross secton to first');
+    if (!selected_index || selected_index === -1) {
+      alert ('Need to select a '+sing_noun+' first');
     } else {
-      if (window.confirm('Are you sure you want to delete the selected cross section?')) {
-        $scope.sst.xsecs.splice($scope.sst2.selected_xsec,1);
-        $scope.sst.top.display.xsec.splice($scope.sst2.selected_xsec,1);
-        $scope.sst.side.display.xsec.splice($scope.sst2.selected_xsec,1);
-        $scope.sst2.selected_xsec = -2;
+      if (window.confirm('Are you sure you want to delete the selected '+sing_noun+'?')) {
+        $scope.sst[type1].splice(selected_index,1);
+        $scope.sst.top.display[type2].splice(selected_index,1);
+        $scope.sst.side.display[type2].splice(selected_index,1);
+        selected_index = -2;
         $scope.is_dirty = true;
       }
     }
@@ -858,11 +872,11 @@ $scope.destroy_xsecs = function(mode) {
 };
 $scope.destroy = function(obj, sing_noun, plural_noun) {
   if (obj.length == 1) {
-    if (window.confirm('Are you sure you want to destroy the ' + sing_noun)) {
+    if (window.confirm('Are you sure you want to delete the ' + sing_noun)) {
       obj = [];
     }
   } else if (obj.length > 1) {
-    if (window.confirm('Are you sure you want to destroy all ' + obj.length + ' ' + plural_noun + '?')) {
+    if (window.confirm('Are you sure you want to delete all ' + obj.length + ' ' + plural_noun + '?')) {
       obj = [];
     }
   } else {
@@ -951,6 +965,15 @@ $scope.model_integrity_check = function() {
   }
   alert (reverses + " cross sections needed to be inverted.\n" + mirrors + " cross sections needed to be mirrored.\n")
 };
+
+$scope.is_ghost_echo_bug = function() {
+  $scope.sst2.call_nbr++;
+  if ( ($scope.sst2.call_nbr % 2) === 0 ) {
+    return false;
+  } else {
+    return true;
+  }
+}
 
 $scope.transform = function(pt, tmx) {
   var pt_matrix = [[pt.x],[pt.y],[1]];
@@ -1094,6 +1117,7 @@ $scope.initialize_toolbox = function() {
 $scope.sst2.bulkhead_placement_xy = {x:-200,y:-50};
 $scope.is_dirty = false;
 $scope.show_button = false;
+$scope.sst2.call_nbr = 0;
 $scope.m = {};
 $scope.show_background = true;
 $scope.set_plan_image("img/p51_side.jpg");
