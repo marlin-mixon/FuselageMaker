@@ -1,4 +1,4 @@
-# FuselageMaker 0.03a
+# FuselageMaker 0.04a
 CAD tool for designing model airplane fuselages. Written in AngularJS 1.2
 
 Access this online by going here: https://rawgit.com/marlin-mixon/FuselageMaker/master/index.html
@@ -11,7 +11,8 @@ Warning, this is currently alpha-grade software so it may not be fully usable ye
 - 3. The 3-view's cross sections must be vertical as viewed from the front, i.e. not angled or sideways.  It's OK if they are 'concentric', i.e. all on top of each other.  
 - 4. This works with Chrome and Firefox. Not sure about Internet Explorer nor Edge as I don't have them.
 - 5. All cross sections and bulkheads must be vertical as viewed from the side.
-- 6. currently can only properly use side views that face towards the left.  
+- 6. Currently can only properly use side views that face towards the left.  
+- 7. Bulkhead output is limited to SVG only.  When more options such as adding stringer notches, etc. become available, new outputs such as DXF will be considered.
 
 ##To be successful with this you will have to have to adhere closely to the following rules:
 
