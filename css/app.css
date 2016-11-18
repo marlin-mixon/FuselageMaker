@@ -49,3 +49,109 @@ back-image {
     position: relative;
     z-index: 2;
 }
+
+.opaque-div {
+  padding-left: 10px;
+  background-color: #ffd034;
+}
+
+.instruction {
+  color: red;
+}
+
+#the-toolbox-2 {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 1000px;
+  z-index: 100;
+}
+
+.toolbox {
+  font-family: calibri,arial,sans-serif;
+  font-size: 10pt;
+}
+
+.button {
+    appearance: button;
+    -moz-appearance: button;
+    -webkit-appearance: button;
+    text-decoration: none;
+    font: menu;
+    color: ButtonText;
+    display: inline-block;
+    padding: 2px 8px;
+}
+
+/* Menu General Styles */
+.menuBackground {
+  background: #0072bb;
+}
+.dropDownMenu a {
+  color: #FFF;
+}
+.dropDownMenu,
+.dropDownMenu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.dropDownMenu li {
+  position: relative;
+}
+.dropDownMenu a {
+  padding: 10px 20px;
+  display: block;
+  text-decoration: none;
+}
+.dropDownMenu a:hover {
+  background: #000;
+}
+
+/*  Gold background #ffd034 */
+/* Level 1 Drop Down Menu */
+.dropDownMenu > li {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: -4px; /* solve the 4 pixels spacing between list-items */
+}
+.dropDownMenu > li:first-child {
+  margin-left: 0;
+}
+.dropDownMenu > li > a {}
+.dropDownMenu > li > a:hover {}
+
+/* Level 2 */
+.dropDownMenu > li > ul {
+  text-align: left;
+  width: auto; /* change auto value with 200px if you want a bigger menu */
+  display: none;
+  background: #ff4c3b;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 9999999; /* if you have YouTube iframes, is good to have a bigger z-index so the video can appear above the video */
+}
+.dropDownMenu > li:hover > ul {
+  display: block;
+}
+.dropDownMenu ul li a {}
+.dropDownMenu ul li a:hover {}
+
+  /* Level 3 */
+  .dropDownMenu > li > ul > li > ul {
+    text-align: left;
+    display: none;
+    background: #0072bb;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    z-index: 9999999;
+  }
+  .dropDownMenu > li > ul > li:hover > ul {
+    display: block;
+  }
+  .dropDownMenu ul ul li {}
+  .dropDownMenu ul ul li a {}
+  .dropDownMenu ul ul li a:hover {}
+
