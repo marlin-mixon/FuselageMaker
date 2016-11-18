@@ -3,9 +3,9 @@
 /* Controllers */
 
 angular.module('fuselageMaker.controllers', []).
-controller('MyCtrl1', ['$scope', '$window', '$rootScope', function($scope, $window, $rootScope) {
+controller('FuselageMakerCtrl', ['$scope', '$window', '$rootScope', function($scope, $window, $rootScope) {
 
-$scope.version = '0.04a';
+$scope.version = '0.05a';
 $scope.Math = window.Math;
 
 $scope.set_xy_click = function(element) {
@@ -93,10 +93,11 @@ $scope.sst = {
 };
 
 $scope.set_3view = function() {
-  $scope.set_display('select-background', true);
+  $scope.sst2.show_select_background = true;
+  $scope.sst2.scope_id = 2;
 };
 $scope.add_image = function(){
-  var f = $rootScope.window.document.getElementById('background_file').files[0];
+  var f = $window.document.getElementById('background_file').files[0];
   var r = new FileReader();
   r.onloadend = function(e){
     var data = btoa(e.target.result);
@@ -108,10 +109,10 @@ $scope.add_image = function(){
 };
 
 $scope.set_fuselage = function() {
-  $scope.set_display('select-fuselage', true);
+  $scope.sst2.show_select_fuselage = true;
 };
 $scope.add_fuselage = function(){
-  var f = $rootScope.window.document.getElementById('fuselage_file').files[0];
+  var f = $window.document.getElementById('fuselage_file').files[0];
   var r = new FileReader();
   r.onloadend = function(e){
     $scope.sst = JSON.parse(e.target.result);
@@ -410,14 +411,16 @@ $scope.generate_bulkheads = function() {
   $scope.get_coord_live = true;
 };
 
-$scope.clear_op = function() {
-  $scope.sst.show_final_bulkheads = false;
-  $scope.sst2.show_bulkheads = false;
-  $scope.set_display('select-background', false);
-  $scope.set_display('select-fuselage', false);
+$scope.clear_op = function(mode) {
+  if (mode !== 'keep_bulkheads') {
+    $scope.sst.show_final_bulkheads = false;
+    $scope.sst2.show_bulkheads = false;
+  }
+  $scope.sst2.show_select_fuselage = false;
+  $scope.sst2.show_select_background = false;
   $scope.sst2.generation_mode = 'normal';
-  $scope.set_display('bulkhead-controls', false);
-  $scope.set_display("show-button", false);
+  $scope.sst2.show_bulkhead_controls = false;
+  $scope.sst2.show_button = false;
   $scope.op_seq = [];
 };
 
@@ -428,10 +431,9 @@ $scope.safe_apply = function() {
 };
 
 $scope.done_button = function() {
-  if ($scope.is_ghost_echo_bug()) {return;}
   $scope.get_coord_live = false;
-  $scope.set_display('bulkhead-controls', false);
-  $scope.set_display("show-button", false);
+  $scope.sst2.show_bulkhead_controls = false;
+  $scope.sst2.show_button = false;
   $scope.undoable = undefined;
   $scope.op_seq = [];
   if ($scope.need_xsec_transform) {
@@ -441,7 +443,6 @@ $scope.done_button = function() {
 };
 
 $scope.undo_point = function() {
-  if ($scope.is_ghost_echo_bug()) {return;}
   if ($scope.undoable) {
     var throw_away = $scope.undoable.pop();
   }
@@ -449,7 +450,7 @@ $scope.undo_point = function() {
 
 $scope.set_plan_image = function(image_file, is_on) {
   $scope.sst.plan_image = image_file;
-  $scope.show_background = is_on;
+  $scope.sst2.show_background = is_on;
 };
 
 $scope.proc_op_seq = function() {
@@ -503,7 +504,6 @@ $scope.set_point = function(element, ok_to_go, instruct) {
 };
 
 $scope.set_box = function(element) {
-  if ($scope.is_ghost_echo_bug()) {return;}
   $scope.is_dirty = true;
   element.lower_left.x = null; element.lower_left.y = null;
   element.upper_right.x = null;element.upper_right.y = null;
@@ -526,7 +526,6 @@ $scope.set_box = function(element) {
 };
 
 $scope.set_line = function(element) {
-  if ($scope.is_ghost_echo_bug()) {return;}
   $scope.is_dirty = true;
   element.nose.x = null; element.nose.y = null;
   element.tail.x = null; element.tail.y = null;
@@ -549,10 +548,9 @@ $scope.set_line = function(element) {
 };
 
 $scope.set_arc = function(element, clean) {
-  // if ($scope.is_ghost_echo_bug()) {return;}
   $scope.undoable = element;
-  $scope.set_display('bulkhead-controls', false);
-  $scope.set_display('show-button', true);
+  $scope.sst2.show_bulkhead_controls = false;
+  $scope.sst2.show_button = true;
   $scope.is_dirty = true;
   for (var i=element.length;i>=0;i--) {
     element.pop();
@@ -690,15 +688,20 @@ $scope.make_display_point = function(args) {
 // This is used for both Cross Sections and Bulkheads
 $scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_tmxs, side_tmxs, is_many, is_bulkhead) {
   $scope.undoable = recvr;
-  $scope.set_display('bulkhead-controls', is_bulkhead);
-  $scope.set_display('show-button', true);
+  $scope.sst2.show_bulkhead_controls = is_bulkhead;
+  $scope.sst2.show_button = true;
   $scope.is_dirty = true;
   $scope.coord_available = false; // turn off any existing point gathering
 
   var args2 = {top_tmxs: top_tmxs, top_recvr: top_disp_recvr, side_tmxs: side_tmxs, side_recvr: side_disp_recvr, is_bulkhead: is_bulkhead};
-  var the_instruction = 'Click to add new point.';
+  var the_instruction;
+  if (is_bulkhead) {
+    the_instruction = 'Click to locate new bulkhead in side or top/bottom view.';
+  } else {
+    the_instruction = 'Click to locate new cross section in side or top/bottom view.';
+  }
   if (is_many) {
-    the_instruction += '  Click done button when done.'
+    the_instruction += 'Click to add point to the cross-section.  Press done button when done.'
   }
   if (is_bulkhead) {
     $scope.op_seq.push({
@@ -765,7 +768,6 @@ $scope.set_bulkhead_arc = function(recvr, top_ref, side_ref) {
 };
 
 $scope.set_xsec_point_and_arc = function(xsec_recvr, top_ref, side_ref) {
-  if ($scope.is_ghost_echo_bug()) {return;}
   if (!$scope.check_prereq_xsec_bulkhead('xsec')) { return; }
   var top_tmxs = $scope.get_tmx_horizontal(top_ref.reference_line.nose, top_ref.reference_line.tail);
   var side_tmxs = $scope.get_tmx_horizontal(side_ref.reference_line.nose, side_ref.reference_line.tail);
@@ -794,7 +796,7 @@ $scope.restore_data = function() {
   }
   if (do_it) {
     $scope.sst = JSON.parse(localStorage.getItem('fuselage') );
-    $scope.show_background = true;
+    $scope.sst2.show_background = true;
     $scope.safe_apply();
   }
 };
@@ -835,7 +837,6 @@ $scope.select_bulkhead = function(ix) {
   $scope.sst2.selected_bulkhead = ix;
 };
 $scope.destroy_any = function(mode, type1, type2, sing_noun, plural_noun, selected_index) {
-  if ($scope.is_ghost_echo_bug()) {return;}
   if (mode === 'all') {
     if ($scope.sst[type1].length == 1) {
       if (window.confirm('Are you sure you want to delete the '+sing_noun+'?')) {
@@ -853,10 +854,6 @@ $scope.destroy_any = function(mode, type1, type2, sing_noun, plural_noun, select
       }
     }
   } else {
-    if (selected_index === -2) {
-      selected_index = -1
-      return;
-    }
     if (!selected_index || selected_index === -1) {
       alert ('Need to select a '+sing_noun+' first');
     } else {
@@ -864,8 +861,12 @@ $scope.destroy_any = function(mode, type1, type2, sing_noun, plural_noun, select
         $scope.sst[type1].splice(selected_index,1);
         $scope.sst.top.display[type2].splice(selected_index,1);
         $scope.sst.side.display[type2].splice(selected_index,1);
-        selected_index = -2;
         $scope.is_dirty = true;
+        if (type2 === 'xsec') {
+          $scope.sst2.selected_xsec = -1;
+        } else if (type2 === 'bulk') {
+          $scope.sst2.selected_bulkhead = -1;
+        }
       }
     }
   }
@@ -965,15 +966,6 @@ $scope.model_integrity_check = function() {
   }
   alert (reverses + " cross sections needed to be inverted.\n" + mirrors + " cross sections needed to be mirrored.\n")
 };
-
-$scope.is_ghost_echo_bug = function() {
-  $scope.sst2.call_nbr++;
-  if ( ($scope.sst2.call_nbr % 2) === 0 ) {
-    return false;
-  } else {
-    return true;
-  }
-}
 
 $scope.transform = function(pt, tmx) {
   var pt_matrix = [[pt.x],[pt.y],[1]];
@@ -1095,41 +1087,34 @@ $scope.click_on_image = function(event) {
   $scope.coord_available = true;
 };
 
-$scope.set_display = function(the_id, is_showable) {
-  var display;
-  if (is_showable) {
-    display = 'block';
-  } else {
-    display = 'none';
-  }
-  if ($window.document.getElementById(the_id) !== null) {
-    $window.document.getElementById(the_id).style.display = display;
-  } else {
-    $rootScope.window.document.getElementById(the_id).style.display = display;
+$scope.set_drawing_scale = function(mode) {
+  if (mode === '+') {
+    $scope.sst2.scale += 0.1;
+  } else if (mode === '-') {
+    $scope.sst2.scale -= 0.1;
   }
 };
-
 $scope.initialize_toolbox = function() {
-  $scope.set_display('bulkhead-controls', false);
-  $scope.set_display('show-button', $scope.show_button)
+  $scope.sst2.show_bulkhead_controls = false;
 };
 
+$scope.sst2.show_select_background = false;
 $scope.sst2.bulkhead_placement_xy = {x:-200,y:-50};
 $scope.is_dirty = false;
-$scope.show_button = false;
-$scope.sst2.call_nbr = 0;
+$scope.sst2.show_button = false;
+$scope.sst2.scope_id = 1
 $scope.m = {};
-$scope.show_background = true;
+$scope.sst2.show_background = true;
 $scope.set_plan_image("img/p51_side.jpg");
 $scope.non_modal_shown = true;
 $scope.tool_box = document.getElementById('the-toolbox');
 $scope.tool_box_width = 300;
 $scope.tool_box_height = 500;
 $scope.sst.show_final_bulkheads = false;
-$scope.set_display('select-background', false);
-$scope.set_display('select-fuselage', false);
+$scope.clear_op();
 $scope.sst.background_3view = "";
 $scope.sst2.generation_mode = 'normal';
+$scope.sst2.scale=1;
 }])
 .controller('MyCtrl2', [function() {
 
