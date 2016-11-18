@@ -795,7 +795,7 @@ $scope.restore_data = function() {
     }
   }
   if (do_it) {
-    if (JSON.parse(localStorage.getItem('fuselage') === null) {
+    if (JSON.parse(localStorage.getItem('fuselage')) === null) {
       alert("No fuselage data available for quick restore");
     } else { 
       $scope.sst = JSON.parse(localStorage.getItem('fuselage') );
