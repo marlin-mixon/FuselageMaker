@@ -795,9 +795,13 @@ $scope.restore_data = function() {
     }
   }
   if (do_it) {
-    $scope.sst = JSON.parse(localStorage.getItem('fuselage') );
-    $scope.sst2.show_background = true;
-    $scope.safe_apply();
+    if (JSON.parse(localStorage.getItem('fuselage') === null) {
+      alert("No fuselage data available for quick restore");
+    } else { 
+      $scope.sst = JSON.parse(localStorage.getItem('fuselage') );
+      $scope.sst2.show_background = true;
+      $scope.safe_apply();
+    }
   }
 };
 $scope.make_svg = function() {
