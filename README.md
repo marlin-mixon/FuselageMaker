@@ -35,4 +35,4 @@ Warning, this is currently alpha-grade software and as such it may not be fully 
 
 ##Known bugs
 - 1. Limitation on left facing fuselages only.  This is considered a bug and should be fixed.
-- 2. Only way to zoom or scale up your drawing to record minute details right now is to use your browser's zoom (ctrl +, ctrl -).  This also blows up the menu making it harder to compete for screen real estate.
+- 2. Only way to zoom or scale up your drawing to record minute details right now is to use your browser's zoom (ctrl +, ctrl -).  This also blows up the menu making it harder to compete for screen real estate. Next version will have zoom-in and zoom-out buttons.
