@@ -1,4 +1,7 @@
 # FuselageMaker 0.05a
+# Sorry, FuselageMaker is Broken
+--It broke during the current upgrade and I wasn't able to fix it entirely.  Hopefully it will be fixed in the next couple of days.
+
 CAD tool for designing model airplane fuselages. Written in AngularJS 1.2
 
 Access this online by going here: https://rawgit.com/marlin-mixon/FuselageMaker/master/index.html
