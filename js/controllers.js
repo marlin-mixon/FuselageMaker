@@ -804,7 +804,14 @@ $scope.restore_data = function() {
     }
   }
 };
-$scope.make_svg = function() {
+$scope.background_image = function() {
+  if ($scope.sst.background_3view.length > 0) {
+    return 'data:image/jpg;base64,'+$scope.sst.background_3view;
+  } else {
+    return $scope.sst.plan_image;
+  }
+}
+$scope.make_svg_file = function() {
   $scope.sst2.svg = $window.document.getElementById('svg-bulkheads').outerHTML;
 };
 $scope.make_fuselage = function() {
