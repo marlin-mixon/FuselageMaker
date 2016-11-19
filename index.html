@@ -116,10 +116,10 @@
         stroke-width="1" stroke="lime" fill="none"/>
     </g>
   </svg>
-  <button id="save-final-button" type="button" ng-click='make_svg();download_file(sst2.svg, "bulkheads.svg", "image/svg+xml");'><a href="#">Save To File</a></button>
+  <button id="save-final-button" type="button" ng-click='make_svg_file();download_file(sst2.svg, "bulkheads.svg", "image/svg+xml");'><a href="#">Save To File</a></button>
 </div>
 <div ng-style="{'transform': 'scale('+sst2.scale+')'}">
-<img ng-show="sst2.show_background" id="back-image" src="{{sst.background_3view.length > 0 ? 'data:image/jpg;base64,'+sst.background_3view : sst.plan_image}}" />
+<img ng-show="sst2.show_background" id="back-image" ng-src="{{background_image()}}" />
 <div id="back-image-div" ng-click="click_on_image($event)" class="desktop-panel" style="{{sst.background_3view.length > 0 ? 'background-image: url(data:image/jpg;base64,'+sst.background_3view+') no-repeat;' : 'background: url('+sst.plan_image+') no-repeat;'}}">
 <div id="the-svg-div">
 <svg id="the-svg" width="3000" height="3000">
@@ -335,11 +335,10 @@
 </div>
 </div>
 
-
   <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.js"></script> -->
 
-  <script src="lib/angular/angular.js"></script> 
-  <script src="lib/angular/angular-route.js"></script>
+  <script src="lib/angular/angular.js"></script>
+  <!-- <script src="lib/angular/angular-route.js"></script> -->
   <script src="lib/math.min.js"></script>
   <script src="js/app.js"></script>
   <script src="js/services.js"></script>
