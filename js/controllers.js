@@ -16,8 +16,8 @@ $scope.set_xy_arc_click = function(element) {
   element.push({x:$scope.theX, y:$scope.theY});
 };
 $scope.op_seq = [];
-$scope.show_plan_image = true;
 $scope.sst2 = {};
+$scope.sst2.show_background = true;
 $scope.sst2.show_bulkheads = false;
 $scope.sst = {
   side: {
@@ -116,6 +116,7 @@ $scope.add_fuselage = function(){
   var r = new FileReader();
   r.onloadend = function(e){
     $scope.sst = JSON.parse(e.target.result);
+    $scope.sst2.show_background = true;
     $scope.safe_apply();
   }
   r.readAsBinaryString(f);
@@ -1126,6 +1127,9 @@ $scope.clear_op();
 $scope.sst.background_3view = "";
 $scope.sst2.generation_mode = 'normal';
 $scope.sst2.scale=1;
+$scope.$watch("sst2.scale", function() {
+    $scope.transform_scale();
+});
 }])
 .controller('MyCtrl2', [function() {
 
