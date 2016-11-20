@@ -64,9 +64,9 @@
   </div>
 
   <div class="opaque-div">    
-    <!-- <a href="#" ng-click="set_drawing_scale('+');">[+]</a> <a href="#" ng-click="set_drawing_scale('-');">[-]</a> --><br/>
-    <div ng-show="sst2.show_button">
-      <div ng-show="sst2.show_bulkhead_controls">
+    <a href="#" ng-click="set_drawing_scale('+');"><img src="img/scale_up.png"/></a> <a href="#" ng-click="set_drawing_scale('-');"><img src="img/scale_down.png"/></a><br/>
+    <div ng-hide="!sst2.show_button">
+      <div ng-hide="!sst2.show_bulkhead_controls">
         <input type="radio" name="bulkhead-mode" ng-model="sst2.generation_mode" value="normal"> Normal Interpolation<br>
         <input type="radio" name="bulkhead-mode" ng-model="sst2.generation_mode" value="extrapolate tail side"> Extrapolate from tail-side<br>
         <input type="radio" name="bulkhead-mode" ng-model="sst2.generation_mode" value="extrapolate nose side"> Extrapolate from nose-side<br>
@@ -80,13 +80,13 @@
       <br/>&nbsp;
     </div>
 
-    <div ng-show="sst2.show_select_background">
+    <div ng-hide="!sst2.show_select_background" id="background-loader">
       <input type="file" id="background_file" name="background_file"/>
       <button ng-click="add_image()">Set as Background</button>
       <br/>&nbsp;
     </div>
 
-    <div ng-show="sst2.show_select_fuselage">
+    <div ng-hide="!sst2.show_select_fuselage" id="fuselage-loader">
       <input type="file" id="fuselage_file" name="background_file"/>
       <button ng-click="add_fuselage()">Load Fuselage File</button>
       <br/>&nbsp;
@@ -95,9 +95,9 @@
   <div ng-init="initialize_toolbox()"></div>
 </div>
 
-<div ng-show="sst2.show_bulkheads" ng-style="{'transform': 'scale('+sst2.scale+')'}">
+<div ng-show="sst2.show_bulkheads" ng-style="{'-webkit-transform':'scale('+$scope.sst2.scale+')','-moz-transform':'scale('+$scope.sst2.scale+')','-webkit-transform-origin-x':'0px','-webkit-transform-origin-y':'0px','-moz-transform-origin':'0px 0px','transform': 'scale('+sst2.scale+')','transform-origin': '0px 0px 0px'}">
   <br/><br/><br/>
-  <svg id="svg-bulkheads" width="3000" height="300">
+  <svg id="svg-bulkheads" ng-attr-width="{{3000 * sst2.scale}}" ng-attr-height="{{300 * sst2.scale}}">
     <!-- All final bulkheads -->
     <g ng-show="sst.show_final_bulkheads" ng-repeat="bulkhead in sst.bulkheads">
       <g ng-repeat="point in bulkhead.shape">
@@ -118,11 +118,11 @@
   </svg>
   <button id="save-final-button" type="button" ng-click='make_svg_file();download_file(sst2.svg, "bulkheads.svg", "image/svg+xml");'><a href="#">Save To File</a></button>
 </div>
-<div ng-style="{'transform': 'scale('+sst2.scale+')'}">
+<div ng-style="{'-webkit-transform':'scale('+$scope.sst2.scale+')','-moz-transform':'scale('+$scope.sst2.scale+')','-webkit-transform-origin-x':'0px','-webkit-transform-origin-y':'0px','-moz-transform-origin':'0px 0px','transform': 'scale('+sst2.scale+')','transform-origin': '0px 0px 0px'}">
 <img ng-show="sst2.show_background" id="back-image" ng-src="{{background_image()}}" />
 <div id="back-image-div" ng-click="click_on_image($event)" class="desktop-panel" style="{{sst.background_3view.length > 0 ? 'background-image: url(data:image/jpg;base64,'+sst.background_3view+') no-repeat;' : 'background: url('+sst.plan_image+') no-repeat;'}}">
 <div id="the-svg-div">
-<svg id="the-svg" width="3000" height="3000">
+<svg id="the-svg" ng-attr-width="{{3000 * sst2.scale}}" ng-attr-height="{{3000 * sst2.scale}}">
 <rect id="sideview-box"
   ng-show="sst.side.zone.lower_left.x != null && sst.side.zone.lower_left.y != null && sst.side.zone.upper_right.x != null && sst.side.zone.upper_right.y != null"
   ng-attr-x="{{sst.side.zone.lower_left.x}}"
