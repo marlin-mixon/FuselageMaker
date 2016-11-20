@@ -1,10 +1,14 @@
 # FuselageMaker 0.05a
-
 CAD tool for designing model airplane fuselages. Written in AngularJS 1.2
 
 Access this online by going here: https://rawgit.com/marlin-mixon/FuselageMaker/master/index.html
 
 Warning, this is currently alpha-grade software and as such it may not be fully usable yet.  If you intend to proceed, please carefully read the following sections.
+
+## 11/20/2016, Fixes/enhancements have been made:
+Ability to zoom in and out so you can capture fine detail.
+## Upcoming enhancements:
+Stringer notches
 
 ##Limitations:
 - 1. This only lets you model fuselages that have bilateral symmetry when viewed from the top and front.  (I've not seen an airplane where this is not the case. Even asymmetric aircraft like the Rutan Boomerang or the German Blohm & Voss Bv-141 seem to have symmetrical fuselages.)
@@ -36,4 +40,3 @@ Warning, this is currently alpha-grade software and as such it may not be fully 
 
 ##Known bugs
 - 1. Limitation on left facing fuselages only.  This is considered a bug and should be fixed.
-- 2. Only way to zoom or scale up your drawing to record minute details right now is to use your browser's zoom (ctrl +, ctrl -).  This also blows up the menu making it harder to compete for screen real estate. Next version will have zoom-in and zoom-out buttons.
