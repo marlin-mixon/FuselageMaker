@@ -1127,9 +1127,6 @@ $scope.clear_op();
 $scope.sst.background_3view = "";
 $scope.sst2.generation_mode = 'normal';
 $scope.sst2.scale=1;
-$scope.$watch("sst2.scale", function() {
-    $scope.transform_scale();
-});
 }])
 .controller('MyCtrl2', [function() {
 
