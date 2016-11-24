@@ -106,14 +106,14 @@
           ng-attr-y1="{{sst.bulkheads[$parent.$index].shape[$index-1].y + sst2.bulkhead_placement_xy.y + sst.bulkheads[$parent.$index].display_offset.y}}"
           ng-attr-x2="{{point.x + sst2.bulkhead_placement_xy.x + sst.bulkheads[$parent.$index].display_offset.x}}"
           ng-attr-y2="{{point.y + sst2.bulkhead_placement_xy.y + sst.bulkheads[$parent.$index].display_offset.y}}"
-          stroke-width="1" stroke="lime" fill="none"/>
+          ng-attr-stroke-width="{{1 / sst2.scale}}" stroke="lime" fill="none"/>
       </g>
       <line ng-show="sst.show_final_bulkheads"
         ng-attr-x1="{{sst.bulkheads[$index].shape[0].x + sst2.bulkhead_placement_xy.x + sst.bulkheads[$index].display_offset.x}}"
         ng-attr-y1="{{sst.bulkheads[$index].shape[0].y + sst2.bulkhead_placement_xy.y + sst.bulkheads[$index].display_offset.y}}"
         ng-attr-x2="{{sst.bulkheads[$index].shape[sst.bulkheads[$index].shape.length-1].x + sst2.bulkhead_placement_xy.x + sst.bulkheads[$index].display_offset.x}}"
         ng-attr-y2="{{sst.bulkheads[$index].shape[sst.bulkheads[$index].shape.length-1].y + sst2.bulkhead_placement_xy.y + sst.bulkheads[$index].display_offset.y}}"
-        stroke-width="1" stroke="lime" fill="none"/>
+        ng-attr-stroke-width="{{1 / sst2.scale}}" stroke="lime" fill="none"/>
     </g>
   </svg>
   <button id="save-final-button" type="button" ng-click='make_svg_file();download_file(sst2.svg, "bulkheads.svg", "image/svg+xml");'><a href="#">Save To File</a></button>
@@ -129,33 +129,33 @@
   ng-attr-y="{{sst.side.zone.upper_right.y}}"
   ng-attr-width="{{Math.abs(sst.side.zone.upper_right.x - sst.side.zone.lower_left.x)}}"
   ng-attr-height="{{Math.abs(sst.side.zone.lower_left.y - sst.side.zone.upper_right.y)}}"
-  stroke-width="5" stroke="lime" fill="none" />
+  ng-attr-stroke-width="{{5 / sst2.scale}}" stroke="lime" fill="none" />
 <rect id="topview-box" ng-attr-x="{{sst.top.zone.lower_left.x}}"
   ng-show="sst.top.zone.lower_left.x != null && sst.top.zone.lower_left.y != null && sst.top.zone.upper_right.x != null && sst.top.zone.upper_right.y != null"
   ng-attr-y="{{sst.top.zone.upper_right.y}}"
   ng-attr-width="{{Math.abs(sst.top.zone.upper_right.x - sst.top.zone.lower_left.x)}}"
   ng-attr-height="{{Math.abs(sst.top.zone.lower_left.y - sst.top.zone.upper_right.y)}}"
-  stroke-width="5" stroke="cornflowerblue" fill="none" />
+  ng-attr-stroke-width="{{5 / sst2.scale}}" stroke="cornflowerblue" fill="none" />
 <line id="sideview-ref-line"
   ng-show="sst.side.reference_line.nose.x != null && sst.side.reference_line.nose.y != null && sst.side.reference_line.tail.x != null && sst.side.reference_line.tail.y != null"
   ng-attr-x1="{{sst.side.reference_line.nose.x}}"
   ng-attr-y1="{{sst.side.reference_line.nose.y}}"
   ng-attr-x2="{{sst.side.reference_line.tail.x}}"
   ng-attr-y2="{{sst.side.reference_line.tail.y}}"
-  stroke-width="1" stroke="orangered" fill="none" />
+  ng-attr-stroke-width="{{1 / sst2.scale}}" stroke="orangered" fill="none" />
 <line id="topview-ref-line" ng-attr-x1="{{sst.top.reference_line.nose.x}}"
   ng-show="sst.top.reference_line.nose.x != null && sst.top.reference_line.nose.y != null && sst.top.reference_line.tail.x != null && sst.top.reference_line.tail.y != null"
   ng-attr-y1="{{sst.top.reference_line.nose.y}}"
   ng-attr-x2="{{sst.top.reference_line.tail.x}}"
   ng-attr-y2="{{sst.top.reference_line.tail.y}}"
-  stroke-width="1" stroke="orangered" fill="none" />
+  ng-attr-stroke-width="{{1 / sst2.scale}}" stroke="orangered" fill="none" />
 <g ng-repeat="point in sst.top.left_outline">
   <line ng-show="$index > 0"
     ng-attr-x1="{{sst.top.left_outline[$index-1].x}}"
     ng-attr-y1="{{sst.top.left_outline[$index-1].y}}"
     ng-attr-x2="{{point.x}}"
     ng-attr-y2="{{point.y}}"
-    stroke-width="1" stroke="blue" fill="none"/>
+    ng-attr-stroke-width="{{1 / sst2.scale}}" stroke="blue" fill="none"/>
 </g>
 <g ng-repeat="point in sst.top.right_outline">
   <line ng-show="$index > 0"
@@ -163,7 +163,7 @@
     ng-attr-y1="{{sst.top.right_outline[$index-1].y}}"
     ng-attr-x2="{{point.x}}"
     ng-attr-y2="{{point.y}}"
-    stroke-width="1" stroke="blue" fill="none"/>
+    ng-attr-stroke-width="{{1 / sst2.scale}}" stroke="blue" fill="none"/>
 </g>
 <g ng-repeat="point in sst.side.top_outline">
   <line ng-show="$index > 0"
@@ -171,7 +171,7 @@
     ng-attr-y1="{{sst.side.top_outline[$index-1].y}}"
     ng-attr-x2="{{point.x}}"
     ng-attr-y2="{{point.y}}"
-    stroke-width="1" stroke="blue" fill="none"/>
+    ng-attr-stroke-width="{{1 / sst2.scale}}" stroke="blue" fill="none"/>
 </g>
 <g ng-repeat="point in sst.side.bottom_outline">
   <line ng-show="$index > 0"
@@ -179,7 +179,7 @@
     ng-attr-y1="{{sst.side.bottom_outline[$index-1].y}}"
     ng-attr-x2="{{point.x}}"
     ng-attr-y2="{{point.y}}"
-    stroke-width="1" stroke="blue" fill="none"/>
+    ng-attr-stroke-width="{{1 / sst2.scale}}" stroke="blue" fill="none"/>
 </g>
 
 <!-- All cross sections (curves) -->
@@ -190,13 +190,13 @@
       ng-attr-y1="{{sst.xsecs[$parent.$index].xsec[$index-1].y}}"
       ng-attr-x2="{{point.x}}"
       ng-attr-y2="{{point.y}}"
-      stroke-width="12" stroke="blue" fill="none" opacity="0.0"/>
+      ng-attr-stroke-width="{{12 / sst2.scale}}" stroke="blue" fill="none" opacity="0.0"/>
     <line ng-show="$index > 0"
       ng-attr-x1="{{sst.xsecs[$parent.$index].xsec[$index-1].x}}"
       ng-attr-y1="{{sst.xsecs[$parent.$index].xsec[$index-1].y}}"
       ng-attr-x2="{{point.x}}"
       ng-attr-y2="{{point.y}}"
-      stroke-width="1" stroke="red" fill="none"/>
+      ng-attr-stroke-width="{{1 / sst2.scale}}" stroke="red" fill="none"/>
   </g>
   <rect ng-show="sst2.selected_xsec == $index"
     ng-attr-x="{{sst.xsecs[$index].xsec[0].x - 4}}"
@@ -225,13 +225,13 @@
     ng-attr-y1="{{this_bulk.y1}}"
     ng-attr-x2="{{this_bulk.x2}}"
     ng-attr-y2="{{this_bulk.y2}}"
-    stroke-width="1" stroke="lime" fill="none"/>
+    ng-attr-stroke-width="{{1 / sst2.scale}}" stroke="lime" fill="none"/>
   <line ng-click="select_bulkhead($index)"
     ng-attr-x1="{{this_bulk.x1}}"
     ng-attr-y1="{{this_bulk.y1}}"
     ng-attr-x2="{{this_bulk.x2}}"
     ng-attr-y2="{{this_bulk.y2}}"
-    stroke-width="12" stroke="blue" fill="none" opacity="0.0"/>
+    ng-attr-stroke-width="{{12 / sst2.scale}}" stroke="blue" fill="none" opacity="0.0"/>
   <rect ng-show="sst2.selected_bulkhead == $index"
     ng-attr-x="{{this_bulk.x1 - 4}}"
     ng-attr-y="{{this_bulk.y1 - 4}}"
@@ -253,13 +253,13 @@
     ng-attr-y1="{{this_bulk.y1}}"
     ng-attr-x2="{{this_bulk.x2}}"
     ng-attr-y2="{{this_bulk.y2}}"
-    stroke-width="1" stroke="lime" fill="none"/>
+    ng-attr-stroke-width="{{1 / sst2.scale}}" stroke="lime" fill="none"/>
   <line ng-click="select_bulkhead($index)"
     ng-attr-x1="{{this_bulk.x1}}"
     ng-attr-y1="{{this_bulk.y1}}"
     ng-attr-x2="{{this_bulk.x2}}"
     ng-attr-y2="{{this_bulk.y2}}"
-    stroke-width="12" stroke="blue" fill="none" opacity="0.0"/>
+    ng-attr-stroke-width="{{12 / sst2.scale}}" stroke="blue" fill="none" opacity="0.0"/>
   <rect ng-show="sst2.selected_bulkhead == $index"
     ng-attr-x="{{this_bulk.x1 - 4}}"
     ng-attr-y="{{this_bulk.y1 - 4}}"
@@ -281,13 +281,13 @@
     ng-attr-y1="{{this_xsec.y1}}"
     ng-attr-x2="{{this_xsec.x2}}"
     ng-attr-y2="{{this_xsec.y2}}"
-    stroke-width="1" stroke="red" fill="none"/>
+    ng-attr-stroke-width="{{1 / sst2.scale}}" stroke="red" fill="none"/>
   <line ng-click="select_xsec($index)"
     ng-attr-x1="{{this_xsec.x1}}"
     ng-attr-y1="{{this_xsec.y1}}"
     ng-attr-x2="{{this_xsec.x2}}"
     ng-attr-y2="{{this_xsec.y2}}"
-    stroke-width="12" stroke="blue" fill="none" opacity="0.0"/>
+    ng-attr-stroke-width="{{12 / sst2.scale}}" stroke="blue" fill="none" opacity="0.0"/>
   <rect ng-show="sst2.selected_xsec == $index"
     ng-attr-x="{{this_xsec.x1 - 4}}"
     ng-attr-y="{{this_xsec.y1 - 4}}"
@@ -309,13 +309,13 @@
     ng-attr-y1="{{this_xsec.y1}}"
     ng-attr-x2="{{this_xsec.x2}}"
     ng-attr-y2="{{this_xsec.y2}}"
-    stroke-width="1" stroke="red" fill="none"/>
+    ng-attr-stroke-width="{{1 / sst2.scale}}" stroke="red" fill="none"/>
   <line ng-click="select_xsec($index)"
     ng-attr-x1="{{this_xsec.x1}}"
     ng-attr-y1="{{this_xsec.y1}}"
     ng-attr-x2="{{this_xsec.x2}}"
     ng-attr-y2="{{this_xsec.y2}}"
-    stroke-width="12" stroke="blue" fill="none" opacity="0.0"/>
+    ng-attr-stroke-width="{{12 / sst2.scale}}" stroke="blue" fill="none" opacity="0.0"/>
   <rect ng-show="sst2.selected_xsec == $index"
     ng-attr-x="{{this_xsec.x1 - 4}}"
     ng-attr-y="{{this_xsec.y1 - 4}}"
