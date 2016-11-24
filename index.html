@@ -199,21 +199,21 @@
       ng-attr-stroke-width="{{1 / sst2.scale}}" stroke="red" fill="none"/>
   </g>
   <rect ng-show="sst2.selected_xsec == $index"
-    ng-attr-x="{{sst.xsecs[$index].xsec[0].x - 4}}"
-    ng-attr-y="{{sst.xsecs[$index].xsec[0].y - 4}}"
-    width="8"
-    height="8"
+    ng-attr-x="{{sst.xsecs[$index].xsec[0].x - 4 / sst2.scale}}"
+    ng-attr-y="{{sst.xsecs[$index].xsec[0].y - 4 / sst2.scale}}"
+    ng-width="{{8 / sst2.scale}}"
+    ng-height="{{8 / sst2.scale}}"
     fill="red"/>
   <rect ng-show="sst2.selected_xsec == $index"
-    ng-attr-x="{{sst.xsecs[$index].xsec[sst.xsecs[$index].xsec.length-1].x - 4}}"
-    ng-attr-y="{{sst.xsecs[$index].xsec[sst.xsecs[$index].xsec.length-1].y - 4}}"
-    width="8"
-    height="8"
+    ng-attr-x="{{sst.xsecs[$index].xsec[sst.xsecs[$index].xsec.length-1].x - 4 / sst2.scale}}"
+    ng-attr-y="{{sst.xsecs[$index].xsec[sst.xsecs[$index].xsec.length-1].y - 4 / sst2.scale}}"
+    ng-width="{{8 / sst2.scale}}"
+    ng-height="{{8 / sst2.scale}}"
     fill="red"/>
   <rect ng-show="sst2.selected_xsec == $index"
-    ng-attr-x="{{sst.xsecs[$index].xsec[Math.ceil(sst.xsecs[$index].xsec.length/2)].x - 4}}"
-    ng-attr-y="{{sst.xsecs[$index].xsec[Math.ceil(sst.xsecs[$index].xsec.length/2)].y - 4}}"
-    width="8"
+    ng-attr-x="{{sst.xsecs[$index].xsec[Math.ceil(sst.xsecs[$index].xsec.length/2)].x - 4 / sst2.scale}}"
+    ng-attr-y="{{sst.xsecs[$index].xsec[Math.ceil(sst.xsecs[$index].xsec.length/2)].y - 4 / sst2.scale}}"
+    ng-width="{{8 / sst2.scale}}"
     height="8"
     fill="red"/>
 </g>
@@ -233,16 +233,16 @@
     ng-attr-y2="{{this_bulk.y2}}"
     ng-attr-stroke-width="{{12 / sst2.scale}}" stroke="blue" fill="none" opacity="0.0"/>
   <rect ng-show="sst2.selected_bulkhead == $index"
-    ng-attr-x="{{this_bulk.x1 - 4}}"
-    ng-attr-y="{{this_bulk.y1 - 4}}"
-    width="8"
-    height="8"
+    ng-attr-x="{{this_bulk.x1 - 4 / sst2.scale}}"
+    ng-attr-y="{{this_bulk.y1 - 4 / sst2.scale}}"
+    ng-width="{{8 / sst2.scale}}"
+    ng-height="{{8 / sst2.scale}}"
     fill="lime"/>
   <rect ng-show="sst2.selected_bulkhead == $index"
-    ng-attr-x="{{this_bulk.x2 - 4}}"
-    ng-attr-y="{{this_bulk.y2 - 4}}"
-    width="8"
-    height="8"
+    ng-attr-x="{{this_bulk.x2 - 4 / sst2.scale}}"
+    ng-attr-y="{{this_bulk.y2 - 4 / sst2.scale}}"
+    ng-width="{{8 / sst2.scale}}"
+    ng-height="{{8 / sst2.scale}}"
     fill="lime"/>
 </g>
 
@@ -261,16 +261,16 @@
     ng-attr-y2="{{this_bulk.y2}}"
     ng-attr-stroke-width="{{12 / sst2.scale}}" stroke="blue" fill="none" opacity="0.0"/>
   <rect ng-show="sst2.selected_bulkhead == $index"
-    ng-attr-x="{{this_bulk.x1 - 4}}"
-    ng-attr-y="{{this_bulk.y1 - 4}}"
-    width="8"
-    height="8"
+    ng-attr-x="{{this_bulk.x1 - 4 / sst2.scale}}"
+    ng-attr-y="{{this_bulk.y1 - 4 / sst2.scale}}"
+    ng-width="{{8 / sst2.scale}}"
+    ng-height="{{8 / sst2.scale}}"
     fill="lime"/>
   <rect ng-show="sst2.selected_bulkhead == $index"
-    ng-attr-x="{{this_bulk.x2 - 4}}"
-    ng-attr-y="{{this_bulk.y2 - 4}}"
-    width="8"
-    height="8"
+    ng-attr-x="{{this_bulk.x2 - 4 / sst2.scale}}"
+    ng-attr-y="{{this_bulk.y2 - 4 / sst2.scale}}"
+    ng-width="{{8 / sst2.scale}}"
+    ng-height="{{8 / sst2.scale}}"
     fill="lime"/>
 </g>
 
@@ -289,16 +289,16 @@
     ng-attr-y2="{{this_xsec.y2}}"
     ng-attr-stroke-width="{{12 / sst2.scale}}" stroke="blue" fill="none" opacity="0.0"/>
   <rect ng-show="sst2.selected_xsec == $index"
-    ng-attr-x="{{this_xsec.x1 - 4}}"
-    ng-attr-y="{{this_xsec.y1 - 4}}"
-    width="8"
-    height="8"
+    ng-attr-x="{{this_xsec.x1 - 4 / sst2.scale}}"
+    ng-attr-y="{{this_xsec.y1 - 4 / sst2.scale}}"
+    ng-width="{{8 / sst2.scale}}"
+    ng-height="{{8 / sst2.scale}}"
     fill="red"/>
   <rect ng-show="sst2.selected_xsec == $index"
-    ng-attr-x="{{this_xsec.x2 - 4}}"
-    ng-attr-y="{{this_xsec.y2 - 4}}"
-    width="8"
-    height="8"
+    ng-attr-x="{{this_xsec.x2 - 4 / sst2.scale}}"
+    ng-attr-y="{{this_xsec.y2 - 4 / sst2.scale}}"
+    ng-width="{{8 / sst2.scale}}"
+    ng-height="{{8 / sst2.scale}}"
     fill="red"/>
 </g>
 
@@ -317,16 +317,16 @@
     ng-attr-y2="{{this_xsec.y2}}"
     ng-attr-stroke-width="{{12 / sst2.scale}}" stroke="blue" fill="none" opacity="0.0"/>
   <rect ng-show="sst2.selected_xsec == $index"
-    ng-attr-x="{{this_xsec.x1 - 4}}"
-    ng-attr-y="{{this_xsec.y1 - 4}}"
-    width="8"
+    ng-attr-x="{{this_xsec.x1 - 4 / sst2.scale}}"
+    ng-attr-y="{{this_xsec.y1 - 4 / sst2.scale}}"
+    ng-width="{{8 / sst2.scale}}"
     height="8"
     fill="red"/>
   <rect ng-show="sst2.selected_xsec == $index"
-    ng-attr-x="{{this_xsec.x2 - 4}}"
-    ng-attr-y="{{this_xsec.y2 - 4}}"
-    width="8"
-    height="8"
+    ng-attr-x="{{this_xsec.x2 - 4 / sst2.scale}}"
+    ng-attr-y="{{this_xsec.y2 - 4 / sst2.scale}}"
+    ng-width="{{8 / sst2.scale}}"
+    ng-height="{{8 / sst2.scale}}"
     fill="red"/>
 </g>
 
