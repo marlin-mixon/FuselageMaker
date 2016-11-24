@@ -214,7 +214,7 @@
     ng-attr-x="{{sst.xsecs[$index].xsec[Math.ceil(sst.xsecs[$index].xsec.length/2)].x - 4 / sst2.scale}}"
     ng-attr-y="{{sst.xsecs[$index].xsec[Math.ceil(sst.xsecs[$index].xsec.length/2)].y - 4 / sst2.scale}}"
     ng-width="{{8 / sst2.scale}}"
-    height="8"
+    ng-height="{{8 / sst2.scale}}"
     fill="red"/>
 </g>
 
@@ -320,7 +320,7 @@
     ng-attr-x="{{this_xsec.x1 - 4 / sst2.scale}}"
     ng-attr-y="{{this_xsec.y1 - 4 / sst2.scale}}"
     ng-width="{{8 / sst2.scale}}"
-    height="8"
+    ng-height="{{8 / sst2.scale}}"
     fill="red"/>
   <rect ng-show="sst2.selected_xsec == $index"
     ng-attr-x="{{this_xsec.x2 - 4 / sst2.scale}}"
