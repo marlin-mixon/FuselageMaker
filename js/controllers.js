@@ -662,7 +662,7 @@ $scope.make_display_point = function(args) {
     var ortho_point = $scope.transform(point, args.side_tmxs.tmx);
   }
     // save point
-  args.main_recvr = ortho_point;
+  args.main_recvr.push(ortho_point);
   
   var ortho_top_left_outline = $scope.transform_array($scope.sst.top.left_outline, args.top_tmxs.tmx);
   var ortho_side_bottom_outline = $scope.transform_array($scope.sst.side.bottom_outline, args.side_tmxs.tmx);
