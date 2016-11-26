@@ -661,6 +661,9 @@ $scope.make_display_point = function(args) {
   } else if (result.location === "side") {
     var ortho_point = $scope.transform(point, args.side_tmxs.tmx);
   }
+    // save point
+  args.main_recvr = ortho_point;
+  
   var ortho_top_left_outline = $scope.transform_array($scope.sst.top.left_outline, args.top_tmxs.tmx);
   var ortho_side_bottom_outline = $scope.transform_array($scope.sst.side.bottom_outline, args.side_tmxs.tmx);
   var ortho_side_top_outline = $scope.transform_array($scope.sst.side.top_outline, args.side_tmxs.tmx);
@@ -694,7 +697,7 @@ $scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_t
   $scope.is_dirty = true;
   $scope.coord_available = false; // turn off any existing point gathering
 
-  var args2 = {top_tmxs: top_tmxs, top_recvr: top_disp_recvr, side_tmxs: side_tmxs, side_recvr: side_disp_recvr, is_bulkhead: is_bulkhead};
+  var args2 = {top_tmxs: top_tmxs, top_recvr: top_disp_recvr, side_tmxs: side_tmxs, side_recvr: side_disp_recvr, is_bulkhead: is_bulkhead, main_recvr:recvr};
   var the_instruction;
   if (is_bulkhead) {
     the_instruction = 'Click to locate new bulkhead in side or top/bottom view.';
@@ -706,20 +709,16 @@ $scope.set_arc_stations = function(recvr, top_disp_recvr, side_disp_recvr, top_t
   }
   if (is_bulkhead) {
     $scope.op_seq.push({
-      handler:$scope.set_xy_arc_click,
-      handler2:$scope.make_display_point,
-      handler3:$scope.set_generation_mode,
-      args2: args2,
-      dest: recvr,
+      handler:$scope.make_display_point,
+      handler2:$scope.set_generation_mode,
+      dest: args2,
       is_loop: is_many,
       instruction: the_instruction
     });
   } else {
     $scope.op_seq.push({
-      handler:$scope.set_xy_arc_click,
-      handler2:$scope.make_display_point,
-      args2: args2,
-      dest: recvr,
+      handler:$scope.make_display_point,
+      dest: args2,
       is_loop: is_many,
       instruction: the_instruction
     });
