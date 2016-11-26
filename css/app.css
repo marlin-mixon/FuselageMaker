@@ -50,7 +50,7 @@ back-image {
     z-index: 2;
 }
 #top-spacer {
-  height: 170px;
+  height: 0px;
 }
 
 .opaque-div {
