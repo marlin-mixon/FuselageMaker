@@ -1096,7 +1096,7 @@ $scope.click_on_image = function(event) {
     - the_svg.offsetTop;
   $scope.theX = event.clientX / $scope.sst2.scale + xOffset / $scope.sst2.scale;
   $scope.theY = event.clientY / $scope.sst2.scale + yOffset / $scope.sst2.scale;
-  $scope.theY -= 170;
+  $scope.theY -= 0;
   $scope.coord_available = true;
 };
 
