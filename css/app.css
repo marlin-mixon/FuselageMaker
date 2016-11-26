@@ -49,6 +49,9 @@ back-image {
     position: relative;
     z-index: 2;
 }
+#top-spacer {
+  height: 170px;
+}
 
 .opaque-div {
   padding-left: 10px;
