@@ -12,6 +12,9 @@ $scope.set_xy_click = function(element) {
   element.x = $scope.theX;
   element.y = $scope.theY;
 };
+$scope.set_xy_ortho_arc_click = function(element, tmx) {
+  element.push({x:$scope.theX, y:$scope.theY});
+};
 $scope.set_xy_arc_click = function(element) {
   element.push({x:$scope.theX, y:$scope.theY});
 };
@@ -243,11 +246,171 @@ $scope.plot_bulkheads = function(location_xy) {
   $scope.sst.show_final_bulkheads = true;
 }
 
+$scope.generate_bulkheads_simplified = function() {
+  var i;
+  var j;
+  $scope.sst2.bulkhead_context_on = true;
+  var top_tmxs = $scope.get_tmx_horizontal($scope.sst.top.reference_line.nose, $scope.sst.top.reference_line.tail);
+  var side_tmxs = $scope.get_tmx_horizontal($scope.sst.side.reference_line.nose, $scope.sst.side.reference_line.tail);
+  var ortho_side_top_outline = $scope.transform_array($scope.sst.side.top_outline, side_tmxs.tmx);
+  var ortho_side_bottom_outline = $scope.transform_array($scope.sst.side.bottom_outline, side_tmxs.tmx);
+  var ortho_top_left_outline = $scope.transform_array($scope.sst.top.left_outline, top_tmxs.tmx);
+  var greater;
+  var lesser;
+
+  var bs = $scope.sst.bulkheads;
+  var xs = $scope.sst.xsecs;
+
+  for (i=0; i<bs.length; i++) {
+    var b = bs[i];
+    var gmode = $scope.sst2.generation_mode;
+    var xsec_list = [];
+    for (j=0; j<xs.length; j++) {
+      xsec_list.push({x:xs[j].station[0].x, index:j});
+    }
+    if (xsec_list.length < 2) {
+      alert("We don't have enough cross-sections to do anything.  We must have a minimum of 2.");
+      return;
+    }
+    xsec_list.push({x:bs[i].x, index:-1});
+    xsec_list.sort(function(a, b) {
+      return a.x - b.x;
+    });
+    for (j=0; j<xsec_list.length; j++) {
+      var xs_index = xsec_list[j].index
+      if (xs_index === -1) {
+        if (gmode === 'normal' ) {
+          if (j === 0) {
+            alert("We cannot interpolate bulkhead #"+i+" because it doesn't have cross-sections on either side. Either delete it and recreate it for extrapolation or better yet, add a new cross section closer to the nose.");
+            return;
+          } else if (j === xsec_list.length-1) {
+            alert("We cannot interpolate bulkhead #"+i+" because it doesn't have cross-sections on either side. Either delete it and recreate it for extrapolation or better yet, add a new cross section closer to the tail.");
+            return;
+          }
+          lesser = xs[xsec_list[j-1].index];
+          greater = xs[xsec_list[j+1].index];
+        } else if (gmode === 'extrapolate tail side') {
+          if (j >= xsec_list.length - 3) {
+            alert("We cannot do a tail-side extrapolation of bulkhead #"+i+" because it needs 2 cross-sections beyond it towards the tail.");
+            return;            
+          }
+          lesser = xs[xsec_list[j+1].index];
+          greater = xs[xsec_list[j+2].index];
+        } else if (gmode === 'extrapolate nose side') {
+          if (j <= 1) {
+            alert("We cannot do a nose-side extrapolation of bulkhead #"+i+" because it needs 2 cross-sections in front of it towards the nose.");
+            return;            
+          }
+          lesser = xs[xsec_list[j-2].index];
+          greater = xs[xsec_list[j-1].index];
+        }
+      }
+      // Determine if we have generated flood points for the cross section yet and add if needed
+      if (xs_index !== -1 && !xs[xs_index].flood_points) {
+        xs[xs_index].flood_points = $scope.add_flood_points_newest(xs[xs_index], 200);
+      }
+    }
+    // we have the bulkhead location and the two nearest xsecs
+    var new_bulkhead = [];
+    var end = lesser.flood_points.length > greater.flood_points.length ? greater.flood_points.length : lesser.flood_points.length;
+    for (j=0;j<end;j++) {
+      // For 3d, we just do this twice from two points of view.
+      var jlesser = j; var jgreater = j;
+      if (j === end - 1) {
+        jlesser = lesser.flood_points.length - 1;
+        jgreater = greater.flood_points.length -1;
+      }
+      var pvx = $scope.linear_interpolation({x:lesser.station[0].x,y:lesser.flood_points[jlesser].x},
+                                            {x:greater.station[0].x,y:greater.flood_points[jgreater].x},
+                                            b.x);
+      var pvy = $scope.linear_interpolation({x:lesser.station[0].x,y:lesser.flood_points[jlesser].y},
+                                            {x:greater.station[0].x,y:greater.flood_points[jgreater].y},
+                                            b.x);
+      new_bulkhead.push({x:pvx,y:pvy});
+    }
+    // Determine it's current width/height
+    b.extents = $scope.get_extents(new_bulkhead);
+
+    /*
+    var result = $scope.is_point_in_top_or_side(b);
+    if (result.location === 'none' || result.location === 'all') {
+      alert("Bulkhead location is not in top/bottom nor side view zones");
+      return;
+    }
+    // args {tmxs: top_tmxs, recvr: top_disp_recvr}
+    if (result.location === "top") {
+      var ortho_point = $scope.transform(b, top_tmxs.tmx);  // make sure passing bulkhead as a point is ok
+    } else if (result.location === "side") {
+      var ortho_point = $scope.transform(b, side_tmxs.tmx); // make sure passing bulkhead as a point is ok
+    }
+    */
+    var ortho_point = b;
+
+    // Need to scale bulkhead x and y to fit side and top outlines.
+    var b4_width = b.extents.max_point.x - b.extents.min_point.x;
+    var x_top_ref = $scope.transform($scope.sst.top.reference_line.nose, top_tmxs.tmx);
+    var width_y = $scope.outline_as_function(ortho_point.x, ortho_top_left_outline).y
+    var desired_width = Math.abs(width_y - x_top_ref.x);
+    var x_scale = desired_width / b4_width;
+
+    var b4_height = b.extents.max_point.y - b.extents.min_point.y;
+    var y_side_1 = $scope.outline_as_function(ortho_point.x, ortho_side_top_outline);
+    var y_side_2 = $scope.outline_as_function(ortho_point.x, ortho_side_bottom_outline);
+    var desired_height = Math.abs(y_side_1.y - y_side_2.y);
+    var y_scale = desired_height / b4_height;
+
+    var trans_x = -b.extents.min_point.x;
+    var trans_y = -b.extents.min_point.y;
+
+    var tmx1 = [
+                 [1, 0, trans_x],
+                 [0, 1, trans_y],
+                 [9, 0, 1      ]
+               ];
+
+    var tmx2 = [
+                 [x_scale, 0,       0],
+                 [0,       y_scale, 0],
+                 [9,       0,       1]
+               ];
+
+    //var tmx_1_2 = math.dotMultiply(tmx1, tmx2);
+    var newer_bulkhead = [];
+    for (j=0;j<new_bulkhead.length;j++) {
+      new_bulkhead[j].x += trans_x;
+      new_bulkhead[j].y += trans_y;
+      new_bulkhead[j].x *= x_scale;
+      new_bulkhead[j].y *= y_scale;
+      //var scaled = math.multiply(tmx_1_2, [[new_bulkhead[j].x],[new_bulkhead[j].y],[1]] );
+      //scaled = math.multiply(tmx2, [[scaled[0][0]],[scaled[1][0]],[1]] );
+      //var p = {x:scaled[0][0], y:scaled[1][0]};
+      newer_bulkhead.push(new_bulkhead[j]);
+    }
+
+    b.shape = newer_bulkhead;   
+  }
+  // Ask where the bulkheads will go
+
+  $scope.sst2.bulkhead_plot_location = {x:220,y:$scope.sst2.min_bulkead_height};
+  //$scope.set_point($scope.sst2.bulkhead_plot_location, false, 'Click where you want the bulkheads to be placed (they fill in horizontally to the right)');
+  $scope.op_seq.push({
+    handler: $scope.plot_bulkheads,
+    dest: $scope.sst2.bulkhead_plot_location,
+    is_loop: false,
+    dont_want_coord: true,
+    instruction: 'Pretty bulkheads!'
+  });
+  $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
+  $scope.get_coord_live = true;  
+}
+
+/*
+
 $scope.generate_bulkheads = function() {
   // for each bulkhead
   var i;
   var j;
-
+  $scope.sst2.bulkhead_context_on = true;
   var top_tmxs = $scope.get_tmx_horizontal($scope.sst.top.reference_line.nose, $scope.sst.top.reference_line.tail);
   var side_tmxs = $scope.get_tmx_horizontal($scope.sst.side.reference_line.nose, $scope.sst.side.reference_line.tail);
   var ortho_side_top_outline = $scope.transform_array($scope.sst.side.top_outline, side_tmxs.tmx);
@@ -399,7 +562,7 @@ $scope.generate_bulkheads = function() {
 
   // Ask where the bulkheads will go
 
-  $scope.sst2.bulkhead_plot_location = {x:220,y:110};
+  $scope.sst2.bulkhead_plot_location = {x:220,y:$scope.sst2.min_bulkead_height};
   //$scope.set_point($scope.sst2.bulkhead_plot_location, false, 'Click where you want the bulkheads to be placed (they fill in horizontally to the right)');
   $scope.op_seq.push({
     handler: $scope.plot_bulkheads,
@@ -411,6 +574,8 @@ $scope.generate_bulkheads = function() {
   $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
   $scope.get_coord_live = true;
 };
+
+*/
 
 $scope.clear_op = function(mode) {
   if (mode !== 'keep_bulkheads') {
@@ -661,9 +826,9 @@ $scope.make_display_point = function(args) {
   } else if (result.location === "side") {
     var ortho_point = $scope.transform(point, args.side_tmxs.tmx);
   }
-    // save point
+  // save point
   args.main_recvr.push(ortho_point);
-  
+
   var ortho_top_left_outline = $scope.transform_array($scope.sst.top.left_outline, args.top_tmxs.tmx);
   var ortho_side_bottom_outline = $scope.transform_array($scope.sst.side.bottom_outline, args.side_tmxs.tmx);
   var ortho_side_top_outline = $scope.transform_array($scope.sst.side.top_outline, args.side_tmxs.tmx);
@@ -841,11 +1006,59 @@ $scope.download_file = function(content, file_name, mime_type) {
     return true;
   }
 };
-$scope.select_xsec = function(ix) {
-  $scope.sst2.selected_xsec = ix;
+/*
+$scope.select_xsec = function(ix,event) {
+  $scope.sst2.selected_bulkhead = [];
+  if (event.ctrlKey) {
+    var loc = $scope.sst2.selected_xsec.indexOf(ix);
+    if (loc === -1) {
+      $scope.sst2.selected_xsec.push(ix);
+    } else {
+      $scope.sst2.selected_xsec.splice(loc, 1);
+    }
+    $scope.sst2.selected_xsec = [ix];
+  } else if (event.shiftKey) {
+    var loc = $scope.sst2.selected_xsec.indexOf(ix);
+    if (loc === -1) {
+      $scope.sst2.selected_xsec.push(ix);
+    }
+  } else {
+    $scope.sst2.selected_xsec = [ix];
+  }
 };
-$scope.select_bulkhead = function(ix) {
-  $scope.sst2.selected_bulkhead = ix;
+*/
+$scope.select_xsec = function(ix, event) {
+  $scope.select_any(ix, $scope.sst2.selected_xsec, $scope.sst2.selected_bulkhead, event);
+}
+$scope.select_bulkhead = function(ix, event) {
+  $scope.select_any(ix, $scope.sst2.selected_bulkhead, $scope.sst2.selected_xsec, event);
+}
+$scope.select_any = function(ix, sel_list, other_sel_list, event) {
+  while (other_sel_list.length > 0) {
+    other_sel_list.pop();
+  }
+  if (event.ctrlKey) {
+    var loc = sel_list.indexOf(ix);
+    if (loc === -1) {
+      sel_list.push(ix);
+    } else {
+      sel_list.splice(loc, 1);
+    }
+    while (sel_list.length > 0) {
+      sel_list.pop();
+    }
+    sel_list.push(ix);
+  } else if (event.shiftKey) {   // Shift has weird rules and this is not right
+    var loc = sel_list.indexOf(ix);
+    if (loc === -1) {
+      sel_list.push(ix);
+    }
+  } else {
+    while (sel_list.length > 0) {
+      sel_list.pop();
+    }
+    sel_list.push(ix);
+  }
 };
 $scope.destroy_any = function(mode, type1, type2, sing_noun, plural_noun, selected_index) {
   if (mode === 'all') {
@@ -865,18 +1078,26 @@ $scope.destroy_any = function(mode, type1, type2, sing_noun, plural_noun, select
       }
     }
   } else {
-    if (!selected_index || selected_index === -1) {
+    if (selected_index.length === 0) {
       alert ('Need to select a '+sing_noun+' first');
     } else {
-      if (window.confirm('Are you sure you want to delete the selected '+sing_noun+'?')) {
-        $scope.sst[type1].splice(selected_index,1);
-        $scope.sst.top.display[type2].splice(selected_index,1);
-        $scope.sst.side.display[type2].splice(selected_index,1);
+      if (selected_index.length === 1) {
+        var noun = sing_noun;
+      } else {
+        var noun = plural_noun;
+      }
+      if (window.confirm('Are you sure you want to delete the selected '+noun+'?')) {
+        for (var i=selected_index.length-1; i>=0; i--) {
+          $scope.sst[type1].splice(selected_index[i],1);
+          $scope.sst.top.display[type2].splice(selected_index[i],1);
+          $scope.sst.side.display[type2].splice(selected_index[i],1);          
+        }
+
         $scope.is_dirty = true;
         if (type2 === 'xsec') {
-          $scope.sst2.selected_xsec = -1;
+          $scope.sst2.selected_xsec = [];
         } else if (type2 === 'bulk') {
-          $scope.sst2.selected_bulkhead = -1;
+          $scope.sst2.selected_bulkhead = [];
         }
       }
     }
@@ -1049,24 +1270,26 @@ $scope.clean_up_xsecs = function() {
       i--;
     }
   }
-  if (!$scope.sst.side.zone.length === 2) {
+  if (!$scope.sst.side.zone.lower_left && !$scope.sst.side.zone.upper_right) {
     alert("You don't have a side zone box defined (or it's improperly formed). Fix this and run this clean up again and it will be more thorough.");
     return;
   }
-  if (!$scope.sst.top.zone.length === 2) {
+  if (!$scope.sst.top.zone.lower_left && !$scope.sst.top.zone.upper_right) {
     alert("You don't have a top zone box defined (or it's improperly formed). Fix this and run this clean up again and it will be more thorough.");
     return;
   }
+  /*
   for (i=$scope.sst.xsecs.length-1;i>=0;i--) {
     var is_in_top = $scope.is_point_in_view_zone('top', $scope.sst.xsecs[i].station[0]);
     var is_in_side = $scope.is_point_in_view_zone('side', $scope.sst.xsecs[i].station[0]);
     // Make sure station point is in one of the side or top zone boxes
     if (is_in_top || is_in_side) {
-         // It's good!
-       } else {
-         $scope.sst.xsecs.splice(i,1);
-       }
+     // It's good!
+    } else {
+     $scope.sst.xsecs.splice(i,1);
     }
+  }
+  */
 };
 
 $scope.window_width = function(){
@@ -1095,11 +1318,12 @@ $scope.click_on_image = function(event) {
     - the_svg.offsetTop;
   $scope.theX = event.clientX / $scope.sst2.scale + xOffset / $scope.sst2.scale;
   $scope.theY = event.clientY / $scope.sst2.scale + yOffset / $scope.sst2.scale;
-  $scope.theY -= 0;
+  // $scope.theY -= 170;
   $scope.coord_available = true;
 };
 
 $scope.set_drawing_scale = function(mode) {
+  $scope.clear_op('keep_bulkheads');
   if (mode === '+') {
     $scope.sst2.scale += 0.1;
   } else if (mode === '-') {
@@ -1126,7 +1350,11 @@ $scope.sst.show_final_bulkheads = false;
 $scope.clear_op();
 $scope.sst.background_3view = "";
 $scope.sst2.generation_mode = 'normal';
-$scope.sst2.scale=1;
+$scope.sst2.scale = 1;
+$scope.sst2.min_bulkead_height = 125;
+$scope.sst2.bulkhead_context_on = false;
+$scope.sst2.selected_xsec = [];
+$scope.sst2.selected_bulkhead = [];
 }])
 .controller('MyCtrl2', [function() {
 
