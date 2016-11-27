@@ -1315,10 +1315,10 @@ $scope.click_on_image = function(event) {
   var xOffset=Math.max(document.documentElement.scrollLeft,document.body.scrollLeft)-8
     - the_svg.offsetLeft;
   var yOffset=Math.max(document.documentElement.scrollTop,document.body.scrollTop)-8
-    - the_svg.offsetTop;
+    - (the_svg.offsetTop + 190);
   $scope.theX = event.clientX / $scope.sst2.scale + xOffset / $scope.sst2.scale;
   $scope.theY = event.clientY / $scope.sst2.scale + yOffset / $scope.sst2.scale;
-  $scope.theY -= 190;
+  // $scope.theY -= 190;
   $scope.coord_available = true;
 };
 
