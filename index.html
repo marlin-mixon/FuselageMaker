@@ -98,7 +98,7 @@
   </div>
   <div ng-init="initialize_toolbox()"></div>
 </div>
-
+<div id="top-spacer"></div>
 <div ng-show="sst2.show_bulkheads" ng-style="{'-webkit-transform':'scale('+$scope.sst2.scale+')','-moz-transform':'scale('+$scope.sst2.scale+')','-webkit-transform-origin-x':'0px','-webkit-transform-origin-y':'0px','-moz-transform-origin':'0px 0px','transform': 'scale('+sst2.scale+')','transform-origin': '0px 0px 0px'}">
   <br/><br/><br/>
   <svg id="svg-bulkheads" ng-attr-width="{{3000 * sst2.scale}}" ng-attr-height="{{350 * sst2.scale}}">
@@ -123,7 +123,6 @@
   <button id="save-final-button" type="button" ng-click='make_svg_file();download_file(sst2.svg, "bulkheads.svg", "image/svg+xml");'><a href="#">Save To File</a></button>
 </div>
 
-<div id="top-spacer"></div>
 <div ng-style="{'-webkit-transform':'scale('+$scope.sst2.scale+')','-moz-transform':'scale('+$scope.sst2.scale+')','-webkit-transform-origin-x':'0px','-webkit-transform-origin-y':'0px','-moz-transform-origin':'0px 0px','transform': 'scale('+sst2.scale+')','transform-origin': '0px 0px 0px'}">
 <img ng-show="sst2.show_background" id="back-image" ng-src="{{background_image()}}" />
 <div id="back-image-div" ng-click="click_on_image($event)" class="desktop-panel" style="{{sst.background_3view.length > 0 ? 'background-image: url(data:image/jpg;base64,'+sst.background_3view+') no-repeat;' : 'background: url('+sst.plan_image+') no-repeat;'}}">
