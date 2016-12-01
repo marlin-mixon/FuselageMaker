@@ -602,10 +602,6 @@ $scope.done_button = function() {
   $scope.sst2.show_button = false;
   $scope.undoable = undefined;
   $scope.op_seq = [];
-  if ($scope.need_xsec_transform) {
-    $scope.need_xsec_transform = false;
-    $scope.transform_xsec_points();
-  }
 };
 
 $scope.undo_point = function() {
@@ -944,7 +940,6 @@ $scope.set_xsec_point_and_arc = function(xsec_recvr, top_ref, side_ref) {
 
   $scope.set_arc_stations(xsec_recvr[xsec_index].station, $scope.sst.top.display.xsec, $scope.sst.side.display.xsec, top_tmxs, side_tmxs, false, false);
   $scope.set_arc(xsec_recvr[xsec_index].xsec, false);
-  $scope.need_xsec_transform = true;
   $scope.get_coord_interval = setInterval($scope.proc_op_seq, 500);
   $scope.get_coord_live = true;
 };
