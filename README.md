@@ -5,7 +5,10 @@ Access this online by going here: https://rawgit.com/marlin-mixon/FuselageMaker/
 
 Warning, this is currently alpha-grade software and as such it may not be fully usable yet.  If you intend to proceed, please carefully read the following sections.
 
-## 11/20/2016, Fixes/enhancements have been made:
+## 12/1/2016, Fixes/enhancements have been made:
+Bug fixes - 
+- 1. Fixed bug where erroneous message was reported after creating a cross section. The error said that the initial point was not created in the side nor top view.
+- 2. Fixed xsec creation issue where if your initial locating point was outside the side or top view it would continue with accepting points anyway.  Now it terminates the xsec creation.
 Ability to zoom in and out so you can capture fine detail.
 ## Upcoming enhancements:
 Stringer notches
@@ -29,14 +32,13 @@ Stringer notches
 
 ![Cross Section] (img/crsc.png)
 
-- 4. Always digitize only half of the cross-section and only the port side as viewed from the front.  We want to see Backwards c's.
+- 4. Always digitize only half of the cross-section and only the port side as viewed from the front.  We want to see Backwards c's. If you DO need to create a starboard-side cross section, be sure to run "Other Commands"->"Model Integrity Check" and any reversed cross sections will be automatically detected and mirrored.  
 
 ##Work flow:
-- 1. When you first start FuselageMaker, it may appear to not work because your browser is not letting FuselageMaker create its toolbox (window with menu)  Look for a warning message at the top of your browser and click the allow button to get started.
-- 2. Generally, the menu should be followed from left to right, top to bottom, i.e. do "Define Side View" first followed by "Define top/bottom view" etc.  Many things can be done out of order but you must have all of the side and top outlines done before you create cross sections and you must have cross sections before you can digitize bulkhead locations.
-- 3. Quick save saves only one fuselage at a time.  It kills whatever previously existed.
-- 4. Save to a file writes to fuselage.json only. It is placed in your browser's download directory.  You can manually rename this file and later read it back into FuselageMaker using it's new name.
-- 5. "Save Bulkheads to a File" only writes to bulkheads.svg (browser download directory).  Bulkheads.svg can then be read into any program that reads SVG files including Inkscape and Corel Draw.
+- 1. Generally, the menu should be followed from left to right, top to bottom, i.e. do "Define Side View" first followed by "Define top/bottom view" etc.  Many things can be done out of order but you must have all of the side and top outlines done before you create cross sections and you must have cross sections before you can digitize bulkhead locations.
+- 2. Quick save saves only one fuselage at a time.  It kills whatever previously existed.
+- 3. Save to a file writes to fuselage.json only. It is placed in your browser's download directory.  You can manually rename this file and later read it back into FuselageMaker using it's new name.
+- 4. "Save Bulkheads to a File" only writes to bulkheads.svg (browser download directory).  Bulkheads.svg can then be read into any program that reads SVG files including Inkscape and Corel Draw.
 
 ##Known bugs
 - 1. Limitation on left facing fuselages only.  This is considered a bug and should be fixed.
