@@ -10,6 +10,7 @@ Bug fixes -
 - 1. Fixed bug where erroneous message was reported after creating a cross section. The error said that the initial point was not created in the side nor top view.
 - 2. Fixed xsec creation issue where if your initial locating point was outside the side or top view it would continue with accepting points anyway.  Now it terminates the xsec creation.
 Ability to zoom in and out so you can capture fine detail.
+
 ## Upcoming enhancements:
 Stringer notches
 
