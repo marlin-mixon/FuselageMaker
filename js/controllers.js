@@ -814,6 +814,10 @@ $scope.make_display_point = function(args) {
   var result = $scope.is_point_in_top_or_side(point);
   if (result.location === 'none' || result.location === 'all') {
     alert(result.message);
+    if (!args.is_bulkhead) {
+      // abort this operation if this is a xsec
+      $scope.op_seq = [];
+    }
     return;
   }
   // args {tmxs: top_tmxs, recvr: top_disp_recvr}
