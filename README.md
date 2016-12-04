@@ -9,8 +9,10 @@ Warning, this is currently alpha-grade software and as such it may not be fully 
 12/4/2016 - Version 0.06a
 Features -
 - Added ability to relieve bulkheads for sheeting having a constant thickness and to remove the center for rubber clearence.
+
 Bug fixes -
 - Fixed issue where saving bulkhead SVG file was no longer possible.
+
 12/1/2016
 Bug fixes - 
 - 1. Fixed bug where erroneous message was reported after creating a cross section. The error said that the initial point was not created in the side nor top view.
