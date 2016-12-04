@@ -8,7 +8,7 @@ Warning, this is currently alpha-grade software and as such it may not be fully 
 ## Fixes/enhancements:
 12/4/2016 - Version 0.06a
 Features -
-- Added ability to relieve bulkheads for sheeting having a constant thickness and to remove the center for rubber clearence.
+- Added ability to relieve bulkheads for sheeting having a constant thickness and to remove the center for rubber clearance.
 
 Bug fixes -
 - Fixed issue where saving bulkhead SVG file was no longer possible.
