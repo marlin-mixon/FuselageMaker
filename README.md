@@ -1,11 +1,17 @@
-# FuselageMaker 0.05a
+# FuselageMaker 0.06a
 CAD tool for designing model airplane fuselages. Written in AngularJS 1.2
 
 Access this online by going here: https://rawgit.com/marlin-mixon/FuselageMaker/master/index.html
 
 Warning, this is currently alpha-grade software and as such it may not be fully usable yet.  If you intend to proceed, please carefully read the following sections.
 
-## 12/1/2016, Fixes/enhancements have been made:
+## Fixes/enhancements:
+12/4/2016 - Version 0.06a
+Features -
+- Added ability to relieve bulkheads for sheeting having a constant thickness and to remove the center for rubber clearence.
+Bug fixes -
+- Fixed issue where saving bulkhead SVG file was no longer possible.
+12/1/2016
 Bug fixes - 
 - 1. Fixed bug where erroneous message was reported after creating a cross section. The error said that the initial point was not created in the side nor top view.
 - 2. Fixed xsec creation issue where if your initial locating point was outside the side or top view it would continue with accepting points anyway.  Now it terminates the xsec creation.
