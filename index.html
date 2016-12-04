@@ -49,7 +49,7 @@
           <li ng-click='clear_op();generate_bulkheads_simplified();'><a href="#">Generate Bulkheads</a></li>
           <li ng-click='clear_op("keep_bulkheads");destroy_any("one", "bulkheads", "bulk", "bulkhead", "bulkheads", sst2.selected_bulkhead);'><a href="#">Delete SELECTED Bulkhead</a></li>
           <li ng-click='clear_op();destroy_any("all", "bulkheads", "bulk", "bulkhead", "bulkheads");'><a href="#">Delete ALL Bulkheads</a></li>
-          <li ng-click='clear_op();make_svg();download_file(sst2.svg, "bulkheads.svg", "image/svg+xml");'><a href="#">Save Bulkheads to a file</a></li>
+          <li ng-click='clear_op("keep_bulkheads");make_svg_file();download_file(sst2.svg, "bulkheads.svg", "image/svg+xml");'><a href="#">Save Bulkheads to a file</a></li>
         </ul>
       </li>
       <li><a href="#">&nbsp;&nbsp;Other Commands&nbsp;&nbsp;</a>
@@ -64,9 +64,9 @@
   </div>
 
   <div class="opaque-div">    
-    <a href="#" ng-click="set_drawing_scale('+');"><img src="img/scale_up.png"/></a> <a href="#" ng-click="set_drawing_scale('-');"><img src="img/scale_down.png"/></a>
+    <a href="#" ng-click="set_drawing_scale('+');" title="Zoom in 30%"><img src="img/scale_up.png"/></a> <a href="#" ng-click="set_drawing_scale('-');"title="Zoom out 30%"><img src="img/scale_down.png"/></a>
     <span class="bulkhead-menu" ng-show="sst2.bulkhead_context_on">
-      <!-- <a href="#" ng-click="shave_exterior();"><img src="img/ShaveExterior.png"/></a> -->
+      <a href="#" ng-click="relief_exterior_controls();" title="Create relief for outer sheeting and/or interior for rubber clearence"><img src="img/ShaveExterior.png"/></a>
     </span>
     <br/>
     <div ng-hide="!sst2.show_button">
@@ -78,6 +78,18 @@
       <a id="done-button" href="#" ng-click='done_button()' class='button'>Done</a>
       <a id="undo-button" href="#" ng-click='undo_point()' class='button'>Undo Point</a>
     </div>
+    <div ng-hide="sst2.the_set_context != 'relief'" class="context-set">
+      Relieve (# pixels measured from exterior): 
+      <input type="text" ng-model="sst2.relief_width1" class="relief-field">
+      Optional 2nd relief:
+      <input type="text" ng-model="sst2.relief_width2" class="relief-field">
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <button ng-click="do_relief()">Bulkheads Relieve</button>
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <button ng-click="delete_relief()">Delete ALL relief arcs</button> 
+    </div>
+    <div ng-hide="sst2.the_set_context != 'stringer'" class="context-set">
+    </div>    
     <br/><br/>
     <div>
       <span class="instruction">{{instruction}}</span>
@@ -112,6 +124,16 @@
           ng-attr-y2="{{point.y + sst2.bulkhead_placement_xy.y + sst.bulkheads[$parent.$index].display_offset.y}}"
           ng-attr-stroke-width="{{1 / sst2.scale}}" stroke="lime" fill="none"/>
       </g>
+      <g ng-repeat="relief_shape in bulkhead.relief_shapes">
+        <g ng-repeat="point in relief_shape">
+          <line ng-show="$index > 0"
+            ng-attr-x1="{{relief_shape[$index-1].x + sst2.bulkhead_placement_xy.x + sst.bulkheads[$parent.$parent.$index].display_offset.x}}"
+            ng-attr-y1="{{relief_shape[$index-1].y + sst2.bulkhead_placement_xy.y + sst.bulkheads[$parent.$parent.$index].display_offset.y}}"
+            ng-attr-x2="{{point.x + sst2.bulkhead_placement_xy.x + sst.bulkheads[$parent.$parent.$index].display_offset.x}}"
+            ng-attr-y2="{{point.y + sst2.bulkhead_placement_xy.y + sst.bulkheads[$parent.$parent.$index].display_offset.y}}"
+            ng-attr-stroke-width="{{1 / sst2.scale}}" stroke="red" fill="none"/>
+        </g>
+      </g> 
       <line ng-show="sst.show_final_bulkheads"
         ng-attr-x1="{{sst.bulkheads[$index].shape[0].x + sst2.bulkhead_placement_xy.x + sst.bulkheads[$index].display_offset.x}}"
         ng-attr-y1="{{sst.bulkheads[$index].shape[0].y + sst2.bulkhead_placement_xy.y + sst.bulkheads[$index].display_offset.y}}"
@@ -340,7 +362,7 @@
 </div>
 </div>
 
-  <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.js"></script> -->
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.js"></script>  -->
 
   <script src="lib/angular/angular.js"></script>
   <!-- <script src="lib/angular/angular-route.js"></script> -->
