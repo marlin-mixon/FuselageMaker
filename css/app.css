@@ -38,9 +38,20 @@
   color: red;
 }
 
-back-image {
-
+/*
+#fuselage-loader {
+  display: none;
 }
+
+#background-loader {
+  display: none;
+}
+*/
+
+.relief-field {
+  width: 35px;
+}
+
 #back-image {
     position: absolute;
     z-index:-5000;
@@ -49,6 +60,7 @@ back-image {
     position: relative;
     z-index: 2;
 }
+
 #top-spacer {
   height: 190px;
 }
