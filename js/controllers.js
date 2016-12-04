@@ -5,7 +5,7 @@
 angular.module('fuselageMaker.controllers', []).
 controller('FuselageMakerCtrl', ['$scope', '$window', '$rootScope', function($scope, $window, $rootScope) {
 
-$scope.version = '0.05a';
+$scope.version = '0.06a';
 $scope.Math = window.Math;
 
 $scope.set_xy_click = function(element) {
@@ -1298,13 +1298,82 @@ $scope.window_height = function(){
    return window.innerHeight||document.documentElement.clientHeight||document.body.clientHeight||0;
 };
 
-$scope.locate_toolbox = function()  {
+$scope.locate_toolbox = function() {
   var left = $scope.window_width() - $scope.tool_box_width + "px";
   var top = 0 + "px";
   $scope.tool_box.style.left = left;
   $scope.tool_box.style.top = top;
-
 };
+
+$scope.averageify_points = function(pts, range) {
+  var n2 = Math.ceil(range/2);
+  var nn = n2*2;
+  var newpts = [];
+  newpts.push(pts[0]);
+  for (var i=n2;i<pts.length-n2;i++) {
+    var xsum = 0;
+    var ysum = 0;
+    for (var j=-n2;j<n2;j++) {
+      xsum += pts[i+j].x;
+      ysum += pts[i+j].y;
+    }
+    var xavg = xsum / nn;
+    var yavg = ysum / nn;
+    newpts.push({x:xavg,y:yavg});
+  }
+  newpts.push(pts[pts.length-1]);
+  return newpts;
+}
+
+$scope.is_numeric = function (n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+$scope.relief_exterior_controls = function() {
+  $scope.sst2.the_set_context = 'relief';
+}
+$scope.delete_relief = function() {
+  var bs = $scope.sst.bulkheads;
+  for (var i=0; i<bs.length; i++) {
+    if (bs[i].relief_shapes) {
+      delete bs[i].relief_shapes;
+    }
+  }
+}
+$scope.do_relief = function() {
+  if ($scope.sst2.selected_bulkhead.length === 0) {
+    alert("Please first select one or more bulkeads.  Hint multiples can be selected by holding shift.");
+    return;
+  }  
+  var bs = $scope.sst.bulkheads;
+  var relief_pixels = [];
+  relief_pixels[0] = $scope.sst2.relief_width1;
+  relief_pixels[1] = $scope.sst2.relief_width2;
+  for (var i=0; i<$scope.sst2.selected_bulkhead.length; i++) {
+    var index = $scope.sst2.selected_bulkhead[i];
+    var b = bs[index];
+    var relief_index = -1;
+    var relief_shapes = [];
+    b.relief_shapes = [];
+    for (var j=0; j<relief_pixels.length; j++) {
+      if ($scope.is_numeric(relief_pixels[j])) {
+        relief_index++;        
+        relief_shapes[relief_index] = [{x:b.shape[0].x, y:b.shape[0].y - -relief_pixels[j]}];
+        for (var k=1; k<b.shape.length-1; k++) {
+          var theta = Math.atan2(b.shape[k-1].y - b.shape[k].y, b.shape[k-1].x - b.shape[k].x);
+          var x1 = Math.cos(theta - (Math.PI / 2.0) )*relief_pixels[j] + b.shape[k].x;
+          var y1 = Math.sin(theta - (Math.PI / 2.0) )*relief_pixels[j] + b.shape[k].y;
+          var x2 = Math.cos(theta - (Math.PI / 2.0) )*relief_pixels[j] + b.shape[k].x;
+          var y2 = Math.sin(theta - (Math.PI / 2.0) )*relief_pixels[j] + b.shape[k].y; 
+          var the_x = (x1 + x2) / 2.0;
+          var the_y = (y1 + y2) / 2.0;
+          relief_shapes[relief_index].push({x:the_x, y:the_y});
+        }
+        relief_shapes[relief_index].push({x:b.shape[b.shape.length-1].x, y:b.shape[b.shape.length-1].y - relief_pixels[j]});
+        b.relief_shapes[relief_index] = $scope.averageify_points(relief_shapes[relief_index],10);
+      }
+    }
+  }
+}
 
 $scope.click_on_image = function(event) {
   // Firefox needs to use getBoundingClientRect().left instead of offsetLeft and offsetTop
@@ -1315,18 +1384,19 @@ $scope.click_on_image = function(event) {
     - the_svg.offsetLeft;
   var yOffset=Math.max(document.documentElement.scrollTop,document.body.scrollTop)-8
     - (the_svg.offsetTop + 190);
+
   $scope.theX = event.clientX / $scope.sst2.scale + xOffset / $scope.sst2.scale;
   $scope.theY = event.clientY / $scope.sst2.scale + yOffset / $scope.sst2.scale;
-  // $scope.theY -= 190;
+  //$scope.theY -= 190;
   $scope.coord_available = true;
 };
 
 $scope.set_drawing_scale = function(mode) {
   $scope.clear_op('keep_bulkheads');
   if (mode === '+') {
-    $scope.sst2.scale += 0.1;
+    $scope.sst2.scale += 0.3;
   } else if (mode === '-') {
-    $scope.sst2.scale -= 0.1;
+    $scope.sst2.scale -= 0.3;
   }
 };
 $scope.initialize_toolbox = function() {
@@ -1354,6 +1424,7 @@ $scope.sst2.min_bulkead_height = 125;
 $scope.sst2.bulkhead_context_on = false;
 $scope.sst2.selected_xsec = [];
 $scope.sst2.selected_bulkhead = [];
+$scope.sst2.the_set_context = '';
 }])
 .controller('MyCtrl2', [function() {
 
